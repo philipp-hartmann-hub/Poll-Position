@@ -28,5 +28,6 @@ st.info(
 
 st.caption(
     "Umfragedaten: [dawum.de](https://dawum.de/) "
-    "([Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/))"
+    "([Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/)) · "
+    "Wikipedia-Mitwirkende ([CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/))"
 )

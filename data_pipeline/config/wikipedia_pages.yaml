@@ -1,0 +1,83 @@
+# Paneuropäische Wikipedia-Umfragequellen
+# Politico Poll of Polls hat keine offene API; Europe Elects ist kostenpflichtig /
+# nicht-kommerziell lizenziert — daher Wikipedia (CC BY-SA) als freie Alternative.
+#
+# Liste leicht erweiterbar: neuen Eintrag + optionalen Parser-Key ergänzen.
+
+version: 1
+attribution: "Quelle: Wikipedia-Mitwirkende, CC BY-SA"
+license_url: "https://creativecommons.org/licenses/by-sa/4.0/"
+user_agent: "PollPosition/0.1 (https://github.com/philipp-hartmann-hub/Poll-Position; educational poll aggregator)"
+
+pages:
+  - id: at_national
+    country: AT
+    parliament_id: at_nationalrat
+    level: national
+    title: Next Austrian legislative election
+    url: https://en.wikipedia.org/wiki/Next_Austrian_legislative_election
+    parser: austria
+    enabled: true
+
+  - id: fr_national
+    country: FR
+    parliament_id: fr_assemblee
+    level: national
+    title: Next French legislative election
+    url: https://en.wikipedia.org/wiki/Next_French_legislative_election
+    parser: france
+    enabled: true
+
+  - id: nl_national
+    country: NL
+    parliament_id: nl_tweede_kamer
+    level: national
+    title: Next Dutch general election
+    url: https://en.wikipedia.org/wiki/Next_Dutch_general_election
+    parser: netherlands
+    enabled: true
+
+  - id: it_national
+    country: IT
+    parliament_id: it_camera
+    level: national
+    title: Opinion polling for the next Italian general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_Italian_general_election
+    parser: italy
+    enabled: true
+
+  - id: es_national
+    country: ES
+    parliament_id: es_congreso
+    level: national
+    title: Opinion polling for the next Spanish general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_Spanish_general_election
+    parser: spain
+    enabled: true
+
+  - id: pl_national
+    country: PL
+    parliament_id: pl_sejm
+    level: national
+    title: Opinion polling for the next Polish parliamentary election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_Polish_parliamentary_election
+    parser: poland
+    enabled: true
+
+  - id: se_national
+    country: SE
+    parliament_id: se_riksdag
+    level: national
+    title: Opinion polling for the 2026 Swedish general election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_2026_Swedish_general_election
+    parser: sweden
+    enabled: true
+
+  - id: pt_national
+    country: PT
+    parliament_id: pt_assembleia
+    level: national
+    title: Opinion polling for the next Portuguese legislative election
+    url: https://en.wikipedia.org/wiki/Opinion_polling_for_the_next_Portuguese_legislative_election
+    parser: portugal
+    enabled: true

@@ -33,6 +33,7 @@ packages = ["data_pipeline", "analysis", "app"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "data_pipeline/config" = "data_pipeline/config"
+"data_pipeline/reference" = "data_pipeline/reference"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

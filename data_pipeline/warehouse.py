@@ -110,6 +110,31 @@ def ensure_warehouse() -> Path:
             share DOUBLE NOT NULL,
             PRIMARY KEY (survey_id, party_id)
         );
+
+        CREATE TABLE IF NOT EXISTS party_averages (
+            parliament_id VARCHAR NOT NULL,
+            party_id VARCHAR NOT NULL,
+            as_of DATE NOT NULL,
+            average_share DOUBLE NOT NULL,
+            n_surveys INTEGER NOT NULL,
+            total_weight DOUBLE NOT NULL,
+            swing DOUBLE,
+            election_share DOUBLE,
+            election_date DATE,
+            election_label VARCHAR,
+            updated_at TIMESTAMP NOT NULL,
+            PRIMARY KEY (parliament_id, party_id, as_of)
+        );
+
+        CREATE TABLE IF NOT EXISTS party_trends (
+            parliament_id VARCHAR NOT NULL,
+            party_id VARCHAR NOT NULL,
+            as_of DATE NOT NULL,
+            trend_share DOUBLE NOT NULL,
+            n_surveys_in_window INTEGER NOT NULL,
+            updated_at TIMESTAMP NOT NULL,
+            PRIMARY KEY (parliament_id, party_id, as_of)
+        );
         """
     )
     con.close()
@@ -170,6 +195,8 @@ def upsert_institutes(rows: list[dict[str, Any]]) -> int:
 def insert_surveys_incremental(
     survey_rows: list[dict[str, Any]],
     result_rows: list[dict[str, Any]],
+    *,
+    source: str = "dawum",
 ) -> tuple[int, int]:
     """Fügt nur neue Surveys (nach source_id) hinzu; Dimensionen werden upserted."""
     ensure_warehouse()
@@ -178,7 +205,7 @@ def insert_surveys_incremental(
         row[0]
         for row in con.execute(
             "SELECT source_id FROM surveys WHERE source = ?",
-            ["dawum"],
+            [source],
         ).fetchall()
     }
     new_surveys = [r for r in survey_rows if r["source_id"] not in existing]
@@ -204,3 +231,48 @@ def existing_dawum_survey_ids() -> set[str]:
     ).fetchall()
     con.close()
     return {row[0] for row in rows}
+
+
+def replace_party_averages(rows: list[dict[str, Any]]) -> int:
+    """Ersetzt Gold-Tabelle party_averages vollständig."""
+    ensure_warehouse()
+    con = duckdb.connect(str(WAREHOUSE))
+    con.execute("DELETE FROM party_averages")
+    n = _upsert_rows(con, "party_averages", rows)
+    con.close()
+    return n
+
+
+def replace_party_trends(rows: list[dict[str, Any]]) -> int:
+    """Ersetzt Gold-Tabelle party_trends vollständig."""
+    ensure_warehouse()
+    con = duckdb.connect(str(WAREHOUSE))
+    con.execute("DELETE FROM party_trends")
+    n = _upsert_rows(con, "party_trends", rows)
+    con.close()
+    return n
+
+
+def refresh_gold_averages(*, reference_date: date | None = None) -> tuple[int, int]:
+    """Berechnet Averages/Trends aus Silver und schreibt Gold-Tabellen."""
+    from analysis.averages import (
+        averages_to_rows,
+        compute_all_averages_and_trends,
+        load_poll_points_from_warehouse,
+        trends_to_rows,
+    )
+
+    ensure_warehouse()
+    con = duckdb.connect(str(WAREHOUSE))
+    points = load_poll_points_from_warehouse(con)
+    con.close()
+    if not points:
+        replace_party_averages([])
+        replace_party_trends([])
+        return 0, 0
+    averages, trends = compute_all_averages_and_trends(
+        points, reference_date=reference_date
+    )
+    n_avg = replace_party_averages(averages_to_rows(averages))
+    n_tr = replace_party_trends(trends_to_rows(trends))
+    return n_avg, n_tr

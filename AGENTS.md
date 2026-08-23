@@ -17,10 +17,12 @@ Umfragen aus Dawum und paneuropäischen Quellen zusammenführen, Sitzverteilung 
 
 3. **Datenquellen = eigene Adapter + einheitliches Schema**
    - Jede neue Quelle bekommt ein Modul unter `data_pipeline/sources/` (z. B. `dawum.py`, `wikipedia_polls.py`).
+   - Alle Adapter implementieren `PollSourceAdapter.fetch() -> list[Survey]` (`data_pipeline/sources/base.py`).
    - Kanonisches Domänenmodell: `data_pipeline/schema.py` (`Country`, `Parliament`, `Party`, `Pollster`, `Survey`, `ElectionSystem`).
    - Leichtes ETL-Zwischenformat: `analysis.schema.PollBatch` / `PollObservation` (Adapter-Rohrückgabe).
-   - „Sonstige“ immer als eigene Partei (`SONSTIGE_PARTY_ID`), nie als Restwert ohne ID.
+   - „Sonstige“ immer als eigene Partei (`SONSTIGE_PARTY_ID` bzw. `{country}:others`), nie als Restwert ohne ID.
    - Wahlrechtsparameter: `data_pipeline/config/de_parliaments.yaml` (Bundestag + Landtage).
+   - Wikipedia-Seitenliste: `data_pipeline/config/wikipedia_pages.yaml` (paneuropäisch, CC BY-SA + Revision-ID).
    - Keine Quell-Sonderformen direkt in Silver/Gold schreiben — Normalisierung im Adapter bzw. `schema_bridge`.
 
 4. **Wahlrechts-Mathematik nie ohne Beleg-Test**

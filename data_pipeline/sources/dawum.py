@@ -20,6 +20,7 @@ from data_pipeline.schema import (
     Survey,
     load_parliament_config,
 )
+from data_pipeline.sources.base import PollSourceAdapter
 from data_pipeline.warehouse import (
     insert_surveys_incremental,
     upsert_institutes,
@@ -333,11 +334,13 @@ def load_silver(parsed: dict[str, Any]) -> tuple[int, int, int, int, int]:
     p = upsert_parliaments(parsed["parliament_rows"])
     pt = upsert_parties(parsed["party_rows"])
     i = upsert_institutes(parsed["institute_rows"])
-    s, r = insert_surveys_incremental(parsed["survey_rows"], parsed["result_rows"])
+    s, r = insert_surveys_incremental(
+        parsed["survey_rows"], parsed["result_rows"], source=SOURCE
+    )
     return p, pt, i, s, r
 
 
-class DawumAdapter:
+class DawumAdapter(PollSourceAdapter):
     source_id = SOURCE
 
     def __init__(self, session: requests.Session | None = None) -> None:
@@ -364,7 +367,6 @@ class DawumAdapter:
             fetched = True
         else:
             log.info("Dawum: last_update unverändert (%s)", remote_last_update)
-            # Bronze erneut aus letztem Snapshot lesen, falls vorhanden
             latest = sorted(RAW_DIR.glob("*.parquet"), reverse=True)
             latest = [p for p in latest if p.name != "last_update.txt"]
             if latest:
@@ -378,6 +380,7 @@ class DawumAdapter:
 
         parsed = parse_dawum_payload(payload)
         p, pt, i, s, r = load_silver(parsed)
+        self._last_parsed = parsed
 
         return DawumLoadResult(
             fetched=fetched,
@@ -391,18 +394,8 @@ class DawumAdapter:
             notes=None if s else "Keine neuen Surveys",
         )
 
-    def fetch(self):
-        """Legacy-Kompatibilität für alte Pipeline — delegiert an run()."""
-        result = self.run()
-        from analysis.schema import PollBatch
-
-        return PollBatch(
-            source=self.source_id,
-            observations=[],
-            fetched_at=_utc_now(),
-            status="ok" if result.surveys_new >= 0 else "empty",
-            notes=(
-                f"Dawum run: fetched={result.fetched}, "
-                f"new_surveys={result.surveys_new}, last_update={result.last_update}"
-            ),
-        )
+    def fetch(self) -> list[Survey]:
+        """Lädt bei Bedarf und gibt kanonische Survey-Objekte zurück."""
+        if not hasattr(self, "_last_parsed"):
+            self.run()
+        return list(self._last_parsed["surveys"])

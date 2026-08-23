@@ -1,17 +1,11 @@
-"""Adapter-Protokoll und Registry für Datenquellen."""
+"""Adapter-Paket: Basisklasse + konkrete Quellen."""
 
-from __future__ import annotations
+from data_pipeline.sources.base import PollSourceAdapter
+from data_pipeline.sources.dawum import DawumAdapter
+from data_pipeline.sources.wikipedia_polls import WikipediaPollsAdapter
 
-from typing import Protocol
-
-from analysis.schema import PollBatch
-
-
-class SourceAdapter(Protocol):
-    """Jeder Adapter in `data_pipeline/sources/` implementiert dieses Minimum."""
-
-    source_id: str
-
-    def fetch(self) -> PollBatch:
-        """Rohdaten holen und als einheitliches PollBatch zurückgeben."""
-        ...
+__all__ = [
+    "PollSourceAdapter",
+    "DawumAdapter",
+    "WikipediaPollsAdapter",
+]

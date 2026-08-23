@@ -1,0 +1,62 @@
+# Historische Wahlergebnisse (Zweitstimmen-/Listenanteile in Prozent)
+# Quelle Bundestag: Die Bundeswahlleiterin, endgültiges Ergebnis BTW 2025
+# https://www.bundeswahlleiterin.de/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html
+#
+# party_id muss zu den IDs in surveys/survey_results passen (bzw. via Mapping).
+# CDU+CSU zusätzlich als Aggregat de:cdu_csu für Umfragen, die Union zusammenfassen.
+
+version: 1
+
+elections:
+  - parliament_id: de_bundestag
+    election_date: "2025-02-23"
+    label: Bundestagswahl 2025
+    source: "https://www.bundeswahlleiterin.de/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html"
+    results:
+      de:cdu: 22.6
+      de:csu: 6.0
+      de:cdu_csu: 28.52  # 22.6 + 6.0 (gerundet wie üblich in Umfragen)
+      de:afd: 20.8
+      de:spd: 16.4
+      de:gruene: 11.6
+      de:linke: 8.8
+      de:fdp: 4.3
+      de:bsw: 4.981
+      de:ssw: 0.2
+      de:sonstige: 13.7
+
+  - parliament_id: de_by_landtag
+    election_date: "2023-10-08"
+    label: Landtagswahl Bayern 2023
+    source: "https://www.statistik.bayern.de/wahlen/landtagswahlen/"
+    results:
+      de:csu: 37.2
+      de:fw: 15.8
+      de:afd: 14.6
+      de:gruene: 14.4
+      de:spd: 8.4
+      de:sonstige: 9.6
+
+  - parliament_id: de_he_landtag
+    election_date: "2023-10-08"
+    label: Landtagswahl Hessen 2023
+    source: "https://statistik.hessen.de/"
+    results:
+      de:cdu: 34.6
+      de:afd: 18.4
+      de:spd: 15.1
+      de:gruene: 14.8
+      de:fdp: 5.0
+      de:sonstige: 12.1
+
+  - parliament_id: at_nationalrat
+    election_date: "2024-09-29"
+    label: Nationalratswahl Österreich 2024
+    source: "https://www.bmi.gv.at/"
+    results:
+      at:fpo: 28.8
+      at:ovp: 26.3
+      at:spo: 21.1
+      at:neos: 9.1
+      at:grune: 8.3
+      at:others: 6.4

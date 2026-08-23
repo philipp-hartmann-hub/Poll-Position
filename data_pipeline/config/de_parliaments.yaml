@@ -31,6 +31,7 @@ election_systems:
     direct_seats: 299
     grundmandat_seats: 3  # BVerfG 30.07.2024: faktische Fortgeltung bis Neuregelung
     minority_exempt_party_ids: []  # nationale Minderheiten: Sperrklausel gilt nicht (BWG)
+    # Hinweis: SSW-Stimmen-Key in Rohdaten oft "SSW"; kanonisch de:ssw — Exemption beim Aufruf setzen
     notes: >
       Feste Bundestagsgröße 630 ab BTW 2025; Zweitstimmendeckung statt Überhang-/Ausgleich.
       5 %-Zweitstimmen-Hürde; nach BVerfG-Urteil vom 30.07.2024 gilt übergangsweise weiter,
