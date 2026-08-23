@@ -54,7 +54,7 @@ Standardquelle verdrahtet. Ein späterer Adapter (z. B. bezahlter Export) kann �
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-23 13:51:51 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-23 13:56:18 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -65,9 +65,9 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Repo:** [Poll-Position](https://github.com/philipp-hartmann-hub/Poll-Position)
 - **Remote:** `https://github.com/philipp-hartmann-hub/Poll-Position.git`
 - **Projektroot:** `Umfragen`
-- **Dateien (sichtbar):** 57
+- **Dateien (sichtbar):** 58
 - **Stack-Hinweise:** Python (pyproject)
-- **Git-Branch:** `main` · Commits: 3 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 4 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -99,6 +99,7 @@ data/raw/dawum/last_update.txt
 data/raw/wikipedia_polls/2026-08-23.parquet
 data/warehouse.duckdb
 data_pipeline/__init__.py
+data_pipeline/config/coalition_rules.yaml
 data_pipeline/config/de_parliaments.yaml
 data_pipeline/config/wikipedia_pages.yaml
 data_pipeline/reference/__init__.py
@@ -141,7 +142,7 @@ uv.lock
 | --- | ---: |
 | `.py` | 36 |
 | `(ohne Endung)` | 6 |
-| `.yaml` | 3 |
+| `.yaml` | 4 |
 | `.html` | 2 |
 | `.parquet` | 2 |
 | `.duckdb` | 1 |

@@ -1,0 +1,103 @@
+# Koalitionsregeln und heuristische Links-Rechts-Positionen
+#
+# exclusions: Pairweise Ausschlüsse — eine Koalition entfällt, wenn ein Mitglied
+#   laut Regel ein anderes Mitglied ausschließt (gerichtet, wird aber beidseitig geprüft).
+# party_positions.left_right: 0 = links, 10 = rechts (heuristisch, keine Faktendarstellung)
+
+version: 1
+
+party_positions:
+  de:linke:
+    left_right: 1.0
+    european_party_family: Left
+  de:gruene:
+    left_right: 3.0
+    european_party_family: Greens/EFA
+  de:spd:
+    left_right: 3.5
+    european_party_family: S&D
+  de:fdp:
+    left_right: 6.0
+    european_party_family: Renew
+  de:cdu:
+    left_right: 6.5
+    european_party_family: EPP
+  de:csu:
+    left_right: 7.0
+    european_party_family: EPP
+  de:cdu_csu:
+    left_right: 6.7
+    european_party_family: EPP
+  de:afd:
+    left_right: 9.5
+    european_party_family: Patriots/NI
+  de:bsw:
+    left_right: 2.5
+    european_party_family: Left/NI
+  de:ssw:
+    left_right: 4.0
+    european_party_family: Greens/EFA
+  de:sonstige:
+    left_right: 5.0
+    european_party_family: null
+
+  at:fpo:
+    left_right: 9.0
+    european_party_family: Patriots
+  at:ovp:
+    left_right: 6.5
+    european_party_family: EPP
+  at:spo:
+    left_right: 3.5
+    european_party_family: S&D
+  at:neos:
+    left_right: 5.5
+    european_party_family: Renew
+  at:grune:
+    left_right: 3.0
+    european_party_family: Greens/EFA
+
+exclusions:
+  - id: de_bundestag_default
+    parliament_id: de_bundestag
+    valid_from: null
+    valid_to: null
+    description: "Übliche kategorische Ausschlüsse auf Bundesebene (editierbar)"
+    rules:
+      - party: de:cdu_csu
+        excludes: [de:afd]
+        note: "Union schließt AfD-Koalition aus"
+      - party: de:cdu
+        excludes: [de:afd]
+        note: "CDU schließt AfD-Koalition aus"
+      - party: de:csu
+        excludes: [de:afd]
+        note: "CSU schließt AfD-Koalition aus"
+      - party: de:spd
+        excludes: [de:afd]
+        note: "SPD schließt AfD-Koalition aus"
+      - party: de:gruene
+        excludes: [de:afd]
+        note: "Grüne schließen AfD-Koalition aus"
+      - party: de:linke
+        excludes: [de:afd]
+        note: "Linke schließt AfD-Koalition aus"
+      - party: de:afd
+        excludes: [de:linke]
+        note: "Gegenseitige Unvereinbarkeit AfD–Linke"
+
+  - id: at_national_default
+    parliament_id: at_nationalrat
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Österreich"
+    rules:
+      - party: at:ovp
+        excludes: [at:fpo]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: at:spo
+        excludes: [at:fpo]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: at:grune
+        excludes: [at:fpo]
+        note: "Platzhalter — bei Bedarf anpassen"
