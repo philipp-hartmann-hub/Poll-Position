@@ -1,0 +1,23 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage/
+htmlcov/
+dist/
+build/
+node_modules/
+# DuckDB und Bronze-Snapshots sind lokal / regenerierbar
+data/warehouse.duckdb
+data/warehouse.duckdb.wal
+data/raw/**/*.parquet
+!data/raw/.gitkeep

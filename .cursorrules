@@ -1,0 +1,22 @@
+# Poll-Position — Cursor Rules
+
+Diese Regeln gelten für alle Agent- und Tab-Änderungen in diesem Repo. Details: `AGENTS.md`.
+
+## Architektur
+
+- `/analysis/`: reine Analyse-Funktionen, **keine** UI-Abhängigkeiten, immer mit pytest absichern.
+- `/data_pipeline/sources/`: **ein Modul pro Datenquelle**; Rückgabe nur als `PollBatch`/`PollObservation` (`analysis/schema.py`).
+- `/app/`: Streamlit Multi-Page; orchestriert Aufrufe, enthält keine Sitz-/Koalitionslogik.
+- `/tests/`: gespiegelt zu `/analysis/`.
+
+## Merge-Gates
+
+- Wahlrechts-Mathematik: **kein Merge ohne Unit-Test gegen bekanntes echtes Wahlergebnis**.
+- Analysis-Änderungen: Tests aktualisieren oder hinzufügen.
+- Neue Quelle: eigener Adapter + Schema-Konformität, kein Bypass in DuckDB.
+
+## Kommandos
+
+- Pipeline: `python -m data_pipeline.run`
+- App: `streamlit run app/Home.py`
+- Tests: `pytest`
