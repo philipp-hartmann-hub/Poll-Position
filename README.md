@@ -29,32 +29,66 @@ uv run python -m data_pipeline.run
 # Streamlit-App
 uv run streamlit run app/Home.py
 
-# Tests
+# Tests (inkl. Offline-E2E)
 uv run pytest
 ```
 
-## Datenquellen & Lizenzen
+### Automatisierte Pipeline
 
-Umfragedaten von [dawum.de](https://dawum.de/) werden unter der
-[Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/) genutzt.
-Attributionshinweis: *„Umfragedaten: dawum.de (Open Database License (ODbL))“*.
+| Weg | Datei | Hinweis |
+| --- | --- | --- |
+| **GitHub Actions** | `.github/workflows/daily-pipeline.yml` | Cron `15 5 * * *` UTC + manueller `workflow_dispatch`; bei Fehlern `::error::` und Artifact `warehouse-<run_id>` |
+| **CI** | `.github/workflows/ci.yml` | `pytest` auf Push/PR |
+| **Host-Cron** | `scripts/cron-pipeline.sh` | z. B. `15 6 * * * /pfad/scripts/cron-pipeline.sh >> /var/log/poll-position.log 2>&1` |
 
-Paneuropäische Umfragen kommen aus **Wikipedia**-Tabellen
-(*Opinion polling for the next … election*), Lizenz
-[CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/).
-Attributionshinweis: *„Quelle: Wikipedia-Mitwirkende, CC BY-SA“* — inklusive Permalink
-mit Revision-ID (`oldid=…`) je Abruf.
+Bei Pipeline-Fehlern schreibt `python -m data_pipeline.run` einen vollständigen Stacktrace und Exit-Code `1`.
 
-**Warum nicht Politico / Europe Elects?** [Politico Poll of Polls](https://www.politico.eu/europe-poll-of-polls/)
-bietet keine offene API. Die zugrunde liegende [Europe Elects](https://europeelects.eu/)-Datenbank
-ist kostenpflichtig bzw. nicht-kommerziell lizenziert und daher hier nicht als
-Standardquelle verdrahtet. Ein späterer Adapter (z. B. bezahlter Export) kann über
-`PollSourceAdapter` ergänzt werden, ohne bestehenden Code umzubauen.
+## Datenquellen & rechtliche Rahmenbedingungen
+
+Die App ist für **persönlichen / nicht-kommerziellen** Gebrauch gedacht, solange keine
+zusätzliche **kommerzielle Lizenz** für europäische Zusatzdaten (z. B. Europe Elects /
+ähnliche Anbieter) erworben wurde. Eine Weitergabe oder kommerzielle Nutzung der
+zusammengeführten Datenbank kann je nach Quelle **Share-Alike-** und
+**Attributionspflichten** auslösen — bitte Lizenzen selbst prüfen.
+
+### Dawum (Deutschland)
+
+| | |
+| --- | --- |
+| Quelle | [dawum.de](https://dawum.de/) |
+| Lizenz | [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/1-0/) |
+| Attribution | *„Umfragedaten: dawum.de (Open Database License (ODbL))“* |
+| Hinweise | Abgeleitete Datenbanken unterliegen ODbL-Share-Alike; Roh-JSON bleibt in Bronze erhalten. |
+
+### Wikipedia (paneuropäische Opinion-Polling-Tabellen)
+
+| | |
+| --- | --- |
+| Quelle | en.wikipedia.org — Seiten *Opinion polling for the next … election* |
+| Lizenz | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Attribution | *„Quelle: Wikipedia-Mitwirkende, CC BY-SA“* inkl. Permalink mit Revision-ID (`oldid=…`) |
+| Hinweise | Textänderungen müssen unter kompatibler Share-Alike-Lizenz weitergegeben werden. |
+
+### Nicht verdrahtet: Politico / Europe Elects (und ähnliche)
+
+| | |
+| --- | --- |
+| [Politico Poll of Polls](https://www.politico.eu/europe-poll-of-polls/) | Keine offene API |
+| [Europe Elects](https://europeelects.eu/) | Kostenpflichtig bzw. nicht-kommerziell lizenziert — **kein** Standard-Connector |
+| Nutzung | Ein Adapter über `PollSourceAdapter` ist erst sinnvoll, wenn eine **gültige Lizenz** vorliegt; ohne diese bleibt der Einsatz auf persönliche/nicht-kommerzielle Wikipedia-/Dawum-Pfade beschränkt. |
+
+### Wahlrechts- und Referenzdaten
+
+Konfiguration und Belegzahlen (z. B. `de_parliaments.yaml`, `election_results.yaml`)
+stützen sich auf öffentlich zugängliche Angaben der Bundeswahlleiterin,
+Landeswahlleitungen und Fachportale wie [wahlrecht.de](https://www.wahlrecht.de/).
+Das sind keine Umfrage-Rohdaten; bei Übernahme amtlicher Tabellen gelten die
+jeweiligen Nutzungsbedingungen der Herausgebenden.
 
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-23 14:00:29 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-23 14:10:21 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -65,9 +99,9 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Repo:** [Poll-Position](https://github.com/philipp-hartmann-hub/Poll-Position)
 - **Remote:** `https://github.com/philipp-hartmann-hub/Poll-Position.git`
 - **Projektroot:** `Umfragen`
-- **Dateien (sichtbar):** 67
+- **Dateien (sichtbar):** 80
 - **Stack-Hinweise:** Python (pyproject)
-- **Git-Branch:** `main` · Commits: 5 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 6 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -76,12 +110,15 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 ```text
 .cursorrules
 .env.example
+.github/workflows/ci.yml
+.github/workflows/daily-pipeline.yml
 .gitignore
 .pytest_cache/.gitignore
 .pytest_cache/CACHEDIR.TAG
 .pytest_cache/v/cache/lastfailed
 .pytest_cache/v/cache/nodeids
 AGENTS.md
+CHANGELOG.md
 analysis/__init__.py
 analysis/averages.py
 analysis/coalitions.py
@@ -95,8 +132,17 @@ analysis/seats/sainte_lague.py
 analysis/uncertainty.py
 app/Home.py
 app/__init__.py
-app/pages/1_Umfragen.py
-app/pages/2_Sitze_Koalitionen.py
+app/lib/__init__.py
+app/lib/analysis_bridge.py
+app/lib/charts.py
+app/lib/components.py
+app/lib/db.py
+app/lib/ui.py
+app/pages/1_Deutschland_Bund.py
+app/pages/2_Deutschland_Laender.py
+app/pages/3_Europa_Uebersicht.py
+app/pages/4_Institute_Vergleich.py
+app/pages/5_Was_waere_wenn.py
 data/raw/.gitkeep
 data/raw/dawum/2026-08-23.parquet
 data/raw/dawum/last_update.txt
@@ -120,6 +166,7 @@ data_pipeline/sources/wikipedia_parsers.py
 data_pipeline/sources/wikipedia_polls.py
 data_pipeline/warehouse.py
 pyproject.toml
+scripts/cron-pipeline.sh
 scripts/update-readme.py
 tests/__init__.py
 tests/analysis/__init__.py
@@ -135,12 +182,13 @@ tests/analysis/test_seat_allocation.py
 tests/analysis/test_uncertainty.py
 tests/data_pipeline/__init__.py
 tests/data_pipeline/fixtures/dawum_sample.json
+tests/data_pipeline/fixtures/pipeline_e2e_payload.py
 tests/data_pipeline/fixtures/wikipedia_austria.html
 tests/data_pipeline/fixtures/wikipedia_spain.html
 tests/data_pipeline/test_canonical_schema.py
 tests/data_pipeline/test_dawum.py
 tests/data_pipeline/test_wikipedia_polls.py
-uv.lock
+… (weitere Dateien ausgeblendet)
 ```
 <!-- AUTO:END:structure -->
 
@@ -149,16 +197,17 @@ uv.lock
 <!-- AUTO:START:languages -->
 | Endung | Anzahl |
 | --- | ---: |
-| `.py` | 44 |
+| `.py` | 54 |
 | `(ohne Endung)` | 6 |
 | `.yaml` | 5 |
 | `.html` | 2 |
+| `.md` | 2 |
 | `.parquet` | 2 |
+| `.yml` | 2 |
 | `.duckdb` | 1 |
 | `.example` | 1 |
 | `.json` | 1 |
-| `.lock` | 1 |
-| `.md` | 1 |
+| `.sh` | 1 |
 | `.tag` | 1 |
 | `.toml` | 1 |
 | `.txt` | 1 |

@@ -1,0 +1,84 @@
+# Tägliche Daten-Pipeline: Connectors + Gold-Analysen neu berechnen.
+name: Daily Pipeline
+
+on:
+  schedule:
+    # Täglich 05:15 UTC ≈ 06:15/07:15 MEZ/MESZ
+    - cron: "15 5 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: daily-pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    name: data_pipeline.run
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run ETL + Gold refresh
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -euo pipefail
+          echo "::group::Pipeline start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          uv run python -m data_pipeline.run
+          echo "::endgroup::"
+          echo "Pipeline erfolgreich beendet."
+
+      - name: Smoke-check warehouse
+        if: success()
+        run: |
+          uv run python - <<'PY'
+          from pathlib import Path
+          import duckdb
+          wh = Path("data/warehouse.duckdb")
+          if not wh.exists():
+              raise SystemExit("FEHLER: data/warehouse.duckdb fehlt nach Pipeline-Lauf")
+          con = duckdb.connect(str(wh), read_only=True)
+          surveys = con.execute("SELECT COUNT(*) FROM surveys").fetchone()[0]
+          results = con.execute("SELECT COUNT(*) FROM survey_results").fetchone()[0]
+          avgs = con.execute("SELECT COUNT(*) FROM party_averages").fetchone()[0]
+          con.close()
+          print(f"OK surveys={surveys} results={results} party_averages={avgs}")
+          if surveys < 1 or results < 1:
+              raise SystemExit("FEHLER: Silver-Tabellen leer — Connectoren ohne Daten?")
+          if avgs < 1:
+              raise SystemExit("FEHLER: Gold party_averages leer")
+          PY
+
+      - name: Upload warehouse artifact (Debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: warehouse-${{ github.run_id }}
+          path: |
+            data/warehouse.duckdb
+            data/raw/**/*
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Failure summary
+        if: failure()
+        run: |
+          echo "::error::Tägliche Pipeline fehlgeschlagen. Logs oben prüfen (Connector/Netzwerk/Schema)."
+          echo "Lokal reproduzieren: uv sync && uv run python -m data_pipeline.run"
+          exit 1
