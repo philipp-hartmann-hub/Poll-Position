@@ -1,0 +1,62 @@
+# Mapping nationaler Parteien → Europäische Parteienfamilien (EP-Fraktionen)
+# Familien: EPP, S&D, Renew, Greens/EFA, ECR, ID, Left, NI (fraktionslos)
+# Heuristisch / vereinfacht — bei Bedarf editieren.
+
+version: 1
+
+parties:
+  # Deutschland
+  - { party_id: de:cdu, country: DE, short_name: CDU, family: EPP }
+  - { party_id: de:csu, country: DE, short_name: CSU, family: EPP }
+  - { party_id: de:cdu_csu, country: DE, short_name: "CDU/CSU", family: EPP }
+  - { party_id: de:spd, country: DE, short_name: SPD, family: "S&D" }
+  - { party_id: de:gruene, country: DE, short_name: Grüne, family: "Greens/EFA" }
+  - { party_id: de:fdp, country: DE, short_name: FDP, family: Renew }
+  - { party_id: de:linke, country: DE, short_name: Linke, family: Left }
+  - { party_id: de:afd, country: DE, short_name: AfD, family: ID }
+  - { party_id: de:bsw, country: DE, short_name: BSW, family: NI }
+  - { party_id: de:ssw, country: DE, short_name: SSW, family: "Greens/EFA" }
+  - { party_id: de:sonstige, country: DE, short_name: Sonstige, family: NI }
+
+  # Österreich
+  - { party_id: at:ovp, country: AT, short_name: ÖVP, family: EPP }
+  - { party_id: at:spo, country: AT, short_name: SPÖ, family: "S&D" }
+  - { party_id: at:fpo, country: AT, short_name: FPÖ, family: ID }
+  - { party_id: at:grune, country: AT, short_name: Grüne, family: "Greens/EFA" }
+  - { party_id: at:neos, country: AT, short_name: NEOS, family: Renew }
+
+  # Frankreich (Beispiele)
+  - { party_id: fr:rn, country: FR, short_name: RN, family: ID }
+  - { party_id: fr:re, country: FR, short_name: RE, family: Renew }
+  - { party_id: fr:ps, country: FR, short_name: PS, family: "S&D" }
+  - { party_id: fr:lfi, country: FR, short_name: LFI, family: Left }
+  - { party_id: fr:lr, country: FR, short_name: LR, family: EPP }
+
+  # Italien
+  - { party_id: it:fdi, country: IT, short_name: FdI, family: ECR }
+  - { party_id: it:pd, country: IT, short_name: PD, family: "S&D" }
+  - { party_id: it:m5s, country: IT, short_name: M5S, family: NI }
+  - { party_id: it:lega, country: IT, short_name: Lega, family: ID }
+  - { party_id: it:fi, country: IT, short_name: FI, family: EPP }
+
+  # Spanien
+  - { party_id: es:pp, country: ES, short_name: PP, family: EPP }
+  - { party_id: es:psoe, country: ES, short_name: PSOE, family: "S&D" }
+  - { party_id: es:vox, country: ES, short_name: Vox, family: ECR }
+  - { party_id: es:sumar, country: ES, short_name: Sumar, family: Left }
+
+  # Niederlande
+  - { party_id: nl:pvv, country: NL, short_name: PVV, family: ID }
+  - { party_id: nl:vvd, country: NL, short_name: VVD, family: Renew }
+  - { party_id: nl:gl_pvda, country: NL, short_name: "GL-PvdA", family: "S&D" }
+  - { party_id: nl:cda, country: NL, short_name: CDA, family: EPP }
+
+  # Polen
+  - { party_id: pl:pis, country: PL, short_name: PiS, family: ECR }
+  - { party_id: pl:ko, country: PL, short_name: KO, family: EPP }
+  - { party_id: pl:konf, country: PL, short_name: Konfederacja, family: NI }
+
+  # Schweden
+  - { party_id: se:s, country: SE, short_name: S, family: "S&D" }
+  - { party_id: se:m, country: SE, short_name: M, family: EPP }
+  - { party_id: se:sd, country: SE, short_name: SD, family: ECR }

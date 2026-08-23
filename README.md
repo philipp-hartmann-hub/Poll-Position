@@ -54,7 +54,7 @@ Standardquelle verdrahtet. Ein späterer Adapter (z. B. bezahlter Export) kann �
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-23 13:56:18 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-23 14:00:29 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -65,9 +65,9 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Repo:** [Poll-Position](https://github.com/philipp-hartmann-hub/Poll-Position)
 - **Remote:** `https://github.com/philipp-hartmann-hub/Poll-Position.git`
 - **Projektroot:** `Umfragen`
-- **Dateien (sichtbar):** 58
+- **Dateien (sichtbar):** 67
 - **Stack-Hinweise:** Python (pyproject)
-- **Git-Branch:** `main` · Commits: 4 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 5 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -85,10 +85,14 @@ AGENTS.md
 analysis/__init__.py
 analysis/averages.py
 analysis/coalitions.py
+analysis/house_effects.py
+analysis/party_families.py
+analysis/scenario.py
 analysis/schema.py
 analysis/seat_allocation.py
 analysis/seats/__init__.py
 analysis/seats/sainte_lague.py
+analysis/uncertainty.py
 app/Home.py
 app/__init__.py
 app/pages/1_Umfragen.py
@@ -101,6 +105,7 @@ data/warehouse.duckdb
 data_pipeline/__init__.py
 data_pipeline/config/coalition_rules.yaml
 data_pipeline/config/de_parliaments.yaml
+data_pipeline/config/party_families.yaml
 data_pipeline/config/wikipedia_pages.yaml
 data_pipeline/reference/__init__.py
 data_pipeline/reference/election_results.py
@@ -122,8 +127,12 @@ tests/analysis/seats/__init__.py
 tests/analysis/seats/test_sainte_lague.py
 tests/analysis/test_averages.py
 tests/analysis/test_coalitions.py
+tests/analysis/test_house_effects.py
+tests/analysis/test_party_families.py
+tests/analysis/test_scenario.py
 tests/analysis/test_schema.py
 tests/analysis/test_seat_allocation.py
+tests/analysis/test_uncertainty.py
 tests/data_pipeline/__init__.py
 tests/data_pipeline/fixtures/dawum_sample.json
 tests/data_pipeline/fixtures/wikipedia_austria.html
@@ -140,9 +149,9 @@ uv.lock
 <!-- AUTO:START:languages -->
 | Endung | Anzahl |
 | --- | ---: |
-| `.py` | 36 |
+| `.py` | 44 |
 | `(ohne Endung)` | 6 |
-| `.yaml` | 4 |
+| `.yaml` | 5 |
 | `.html` | 2 |
 | `.parquet` | 2 |
 | `.duckdb` | 1 |
