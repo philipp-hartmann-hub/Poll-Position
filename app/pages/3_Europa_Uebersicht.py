@@ -91,7 +91,7 @@ detail["family"] = detail.apply(
 st.subheader(f"Detail: {selected}")
 st.dataframe(
     detail.rename(columns={"party_name": "Partei", "share": "%", "family": "Familie"})[
-        ["Partei", "%", "family"]
+        ["Partei", "%", "Familie"]
     ],
     use_container_width=True,
     hide_index=True,
