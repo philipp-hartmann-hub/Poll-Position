@@ -9,6 +9,11 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Hinzugefügt
 
+- Vercel Services-Deployment (`vercel.json`): ein Projekt mit Next.js (`web/`) + FastAPI (`backend/`)
+- FastAPI-Backend `backend/` (Vercel-Entrypoint `backend.main:app`) mit JSON-API
+- Next.js-Frontend `web/` (App Router, Tailwind, Recharts)
+- Deploy-Doku `docs/vercel-deploy.md` inkl. MotherDuck Marketplace (`MOTHERDUCK_TOKEN`)
+- MotherDuck-Unterstützung für Silver/Gold (`MOTHERDUCK_TOKEN` / `MOTHERDUCK_DATABASE`)
 - Streamlit-Multi-Page-App unter `app/` (Bund, Länder, Europa, Institute, Was-wäre-wenn)
 - Tägliche GitHub-Action `.github/workflows/daily-pipeline.yml` für `python -m data_pipeline.run`
 - CI-Workflow `.github/workflows/ci.yml` (pytest)

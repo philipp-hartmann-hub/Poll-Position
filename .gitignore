@@ -16,6 +16,8 @@ htmlcov/
 dist/
 build/
 node_modules/
+.vercel/
+web/.next/
 # DuckDB und Bronze-Snapshots sind lokal / regenerierbar
 data/warehouse.duckdb
 data/warehouse.duckdb.wal

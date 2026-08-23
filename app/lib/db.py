@@ -5,12 +5,17 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
-import duckdb
 import pandas as pd
 import streamlit as st
 
+from data_pipeline.warehouse import (
+    WAREHOUSE,
+    connect_warehouse,
+    uses_motherduck,
+    warehouse_connection_target,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-WAREHOUSE = ROOT / "data" / "warehouse.duckdb"
 
 
 def warehouse_path() -> Path:
@@ -18,6 +23,9 @@ def warehouse_path() -> Path:
 
 
 def warehouse_exists() -> bool:
+    """Lokal: Datei vorhanden. MotherDuck: Token gesetzt (Cloud gilt als verfügbar)."""
+    if uses_motherduck():
+        return True
     return WAREHOUSE.exists()
 
 
@@ -25,7 +33,7 @@ def warehouse_exists() -> bool:
 def load_parliaments() -> pd.DataFrame:
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         return con.execute(
             """
@@ -43,7 +51,7 @@ def load_parliaments() -> pd.DataFrame:
 def load_parties() -> pd.DataFrame:
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         return con.execute(
             "SELECT id, short_name, full_name, country, source FROM parties ORDER BY short_name"
@@ -56,7 +64,7 @@ def load_parties() -> pd.DataFrame:
 def load_institutes() -> pd.DataFrame:
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         return con.execute(
             "SELECT id, name, country, house_effect_score FROM institutes ORDER BY name"
@@ -70,7 +78,7 @@ def load_survey_series(parliament_id: str, since: date | None = None) -> pd.Data
     """Zeitreihe: eine Zeile je Survey×Partei mit Anteil."""
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         q = """
             SELECT
@@ -104,7 +112,7 @@ def load_survey_series(parliament_id: str, since: date | None = None) -> pd.Data
 def load_party_averages(parliament_id: str | None = None) -> pd.DataFrame:
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         tables = {r[0] for r in con.execute("SHOW TABLES").fetchall()}
         if "party_averages" not in tables:
@@ -123,7 +131,7 @@ def load_party_averages(parliament_id: str | None = None) -> pd.DataFrame:
 def load_party_trends(parliament_id: str) -> pd.DataFrame:
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         tables = {r[0] for r in con.execute("SHOW TABLES").fetchall()}
         if "party_trends" not in tables:
@@ -141,7 +149,7 @@ def load_all_latest_shares_by_country() -> pd.DataFrame:
     """Neueste Survey-Anteile je parliament (für Europa-Übersicht)."""
     if not warehouse_exists():
         return pd.DataFrame()
-    con = duckdb.connect(str(WAREHOUSE), read_only=True)
+    con = connect_warehouse(read_only=not uses_motherduck())
     try:
         return con.execute(
             """
@@ -168,3 +176,8 @@ def load_all_latest_shares_by_country() -> pd.DataFrame:
         ).df()
     finally:
         con.close()
+
+
+def warehouse_backend_label() -> str:
+    """Kurzer Hinweis für die UI (ohne Token)."""
+    return warehouse_connection_target()

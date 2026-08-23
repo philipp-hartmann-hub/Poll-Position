@@ -1,0 +1,12 @@
+web/node_modules
+web/.next
+.venv
+venv
+__pycache__
+.pytest_cache
+data/raw
+data/warehouse.duckdb
+data/warehouse.duckdb.wal
+.git
+.cursor
+terminals

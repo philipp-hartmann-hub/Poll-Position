@@ -1,4 +1,4 @@
-# Tägliche Daten-Pipeline: Connectors + Gold-Analysen neu berechnen.
+# Tägliche Daten-Pipeline: Connectors + Gold → MotherDuck (unabhängig vom Vercel-Deploy).
 name: Daily Pipeline
 
 on:
@@ -19,9 +19,28 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      PYTHONUNBUFFERED: "1"
+      # Secrets: Settings → Secrets and variables → Actions (nie im Repo committen)
+      MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+      MOTHERDUCK_DATABASE: ${{ secrets.MOTHERDUCK_DATABASE }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Require MotherDuck secrets
+        run: |
+          if [ -z "${MOTHERDUCK_TOKEN:-}" ]; then
+            echo "::error::Secret MOTHERDUCK_TOKEN fehlt. Anlegen unter Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          # Datenbankname: Secret oder Default poll_position
+          if [ -z "${MOTHERDUCK_DATABASE:-}" ]; then
+            echo "MOTHERDUCK_DATABASE nicht gesetzt — verwende Default poll_position"
+            echo "MOTHERDUCK_DATABASE=poll_position" >> "$GITHUB_ENV"
+          fi
+          echo "MotherDuck-Ziel konfiguriert (Token nicht geloggt)."
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -34,9 +53,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
-      - name: Run ETL + Gold refresh
-        env:
-          PYTHONUNBUFFERED: "1"
+      - name: Run ETL + Gold refresh (Silver/Gold → MotherDuck)
         run: |
           set -euo pipefail
           echo "::group::Pipeline start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -44,20 +61,28 @@ jobs:
           echo "::endgroup::"
           echo "Pipeline erfolgreich beendet."
 
-      - name: Smoke-check warehouse
+      - name: Smoke-check MotherDuck warehouse
         if: success()
         run: |
           uv run python - <<'PY'
-          from pathlib import Path
-          import duckdb
-          wh = Path("data/warehouse.duckdb")
-          if not wh.exists():
-              raise SystemExit("FEHLER: data/warehouse.duckdb fehlt nach Pipeline-Lauf")
-          con = duckdb.connect(str(wh), read_only=True)
-          surveys = con.execute("SELECT COUNT(*) FROM surveys").fetchone()[0]
-          results = con.execute("SELECT COUNT(*) FROM survey_results").fetchone()[0]
-          avgs = con.execute("SELECT COUNT(*) FROM party_averages").fetchone()[0]
-          con.close()
+          from data_pipeline.warehouse import (
+              connect_warehouse,
+              uses_motherduck,
+              warehouse_connection_target,
+          )
+
+          if not uses_motherduck():
+              raise SystemExit(
+                  "FEHLER: MOTHERDUCK_TOKEN nicht aktiv — Silver/Gold würden lokal landen"
+              )
+          print("Ziel:", warehouse_connection_target(), "| MotherDuck: True")
+          con = connect_warehouse()
+          try:
+              surveys = con.execute("SELECT COUNT(*) FROM surveys").fetchone()[0]
+              results = con.execute("SELECT COUNT(*) FROM survey_results").fetchone()[0]
+              avgs = con.execute("SELECT COUNT(*) FROM party_averages").fetchone()[0]
+          finally:
+              con.close()
           print(f"OK surveys={surveys} results={results} party_averages={avgs}")
           if surveys < 1 or results < 1:
               raise SystemExit("FEHLER: Silver-Tabellen leer — Connectoren ohne Daten?")
@@ -65,13 +90,12 @@ jobs:
               raise SystemExit("FEHLER: Gold party_averages leer")
           PY
 
-      - name: Upload warehouse artifact (Debug)
+      - name: Upload bronze artifacts only (Debug)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: warehouse-${{ github.run_id }}
+          name: bronze-${{ github.run_id }}
           path: |
-            data/warehouse.duckdb
             data/raw/**/*
           if-no-files-found: warn
           retention-days: 7
@@ -79,6 +103,6 @@ jobs:
       - name: Failure summary
         if: failure()
         run: |
-          echo "::error::Tägliche Pipeline fehlgeschlagen. Logs oben prüfen (Connector/Netzwerk/Schema)."
-          echo "Lokal reproduzieren: uv sync && uv run python -m data_pipeline.run"
+          echo "::error::Tägliche Pipeline fehlgeschlagen. Logs oben prüfen (Secrets/Connector/Netzwerk)."
+          echo "Lokal: MOTHERDUCK_TOKEN=… uv run python -m data_pipeline.run"
           exit 1

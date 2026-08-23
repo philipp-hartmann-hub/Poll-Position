@@ -27,7 +27,14 @@ def main() -> int:
     """Führt alle Connectoren und Gold-Refresh aus. Rückgabe: 0 ok, 1 Fehler."""
     today = date.today()
     try:
+        from data_pipeline.warehouse import uses_motherduck, warehouse_connection_target
+
         ensure_warehouse()
+        log.info(
+            "Warehouse-Ziel: %s (%s)",
+            warehouse_connection_target(),
+            "MotherDuck" if uses_motherduck() else "lokal",
+        )
         for adapter in ADAPTERS:
             log.info("Pipeline %s …", adapter.source_id)
             result = adapter.run(as_of=today)

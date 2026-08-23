@@ -1,11 +1,8 @@
 # Streamlit Multi-Page Einstieg: streamlit run app/Home.py
 
-from pathlib import Path
-
-import streamlit as st
-
-from app.lib.db import load_parliaments, warehouse_exists
+from app.lib.db import load_parliaments, warehouse_backend_label, warehouse_exists
 from app.lib.ui import render_footer
+from data_pipeline.warehouse import uses_motherduck
 
 st.set_page_config(
     page_title="Poll-Position",
@@ -45,9 +42,10 @@ else:
     st.page_link("pages/3_Europa_Uebersicht.py", label="Europa-Übersicht — Karte & Drilldown")
     st.caption("Länderdetail über die Auswahl auf der Übersichtsseite.")
 
-warehouse = Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"
-if warehouse.exists():
-    st.success("Warehouse verbunden (`data/warehouse.duckdb`).")
+if warehouse_exists():
+    backend = warehouse_backend_label()
+    label = "MotherDuck" if uses_motherduck() else "lokal"
+    st.success(f"Warehouse verbunden ({label}: `{backend}`).")
 else:
     st.warning("Warehouse fehlt — Pipeline starten: `python -m data_pipeline.run`")
 
