@@ -23,7 +23,24 @@ def main() -> None:
     ensure_warehouse()
     today = date.today()
     for adapter in ADAPTERS:
-        log.info("Fetch %s …", adapter.source_id)
+        log.info("Pipeline %s …", adapter.source_id)
+        if hasattr(adapter, "run"):
+            result = adapter.run(as_of=today)
+            log.info(
+                "%s: fetched=%s bronze=%s parliaments=%d parties=%d institutes=%d "
+                "new_surveys=%d new_results=%d last_update=%s",
+                adapter.source_id,
+                result.fetched,
+                result.bronze_path,
+                result.parliaments,
+                result.parties,
+                result.institutes,
+                result.surveys_new,
+                result.results_new,
+                result.last_update,
+            )
+            continue
+
         batch = adapter.fetch()
         frame = observations_to_frame(batch.observations)
         path = write_bronze(adapter.source_id, frame, as_of=today)

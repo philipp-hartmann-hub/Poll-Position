@@ -25,3 +25,8 @@ st.info(
     f"Warehouse: `{'vorhanden' if warehouse.exists() else 'fehlt — bitte Pipeline starten'}`  \n"
     f"`python -m data_pipeline.run`"
 )
+
+st.caption(
+    "Umfragedaten: [dawum.de](https://dawum.de/) "
+    "([Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/))"
+)

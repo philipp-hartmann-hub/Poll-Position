@@ -1,0 +1,104 @@
+{
+  "Database": {
+    "License": {
+      "Name": "ODC Open Database License",
+      "Shortcut": "ODC-ODbL",
+      "Link": "https://opendatacommons.org/licenses/odbl/1-0/"
+    },
+    "Publisher": "dawum.de",
+    "Author": "Dipl.-Jur. Philipp Guttmann",
+    "Last_Update": "2026-01-15T10:00:00+01:00"
+  },
+  "Parliaments": {
+    "0": {
+      "Shortcut": "Bundestag",
+      "Name": "Bundestag",
+      "Election": "Bundestagswahl"
+    },
+    "3": {
+      "Shortcut": "Berlin",
+      "Name": "Berliner Abgeordnetenhaus",
+      "Election": "Abgeordnetenhauswahl in Berlin"
+    }
+  },
+  "Institutes": {
+    "5": {
+      "Name": "INSA"
+    },
+    "2": {
+      "Name": "Forsa"
+    }
+  },
+  "Taskers": {
+    "3": {
+      "Name": "BILD am Sonntag"
+    },
+    "1": {
+      "Name": "RTL/n-tv"
+    }
+  },
+  "Methods": {
+    "4": {
+      "Name": "Telefon & Online"
+    },
+    "3": {
+      "Name": "Online"
+    }
+  },
+  "Parties": {
+    "0": {
+      "Shortcut": "Sonstige",
+      "Name": "sonstige Parteien"
+    },
+    "1": {
+      "Shortcut": "CDU/CSU",
+      "Name": "Christlich Demokratische Union / Christlich-Soziale Union"
+    },
+    "2": {
+      "Shortcut": "SPD",
+      "Name": "Sozialdemokratische Partei Deutschlands"
+    },
+    "7": {
+      "Shortcut": "AfD",
+      "Name": "Alternative für Deutschland"
+    }
+  },
+  "Surveys": {
+    "100": {
+      "Date": "2026-01-10",
+      "Survey_Period": {
+        "Date_Start": "2026-01-06",
+        "Date_End": "2026-01-09"
+      },
+      "Surveyed_Persons": "1203",
+      "Parliament_ID": "0",
+      "Institute_ID": "5",
+      "Tasker_ID": "3",
+      "Method_ID": "4",
+      "Results": {
+        "7": 29.0,
+        "1": 21.0,
+        "2": 16.0,
+        "0": 6.0
+      }
+    },
+    "101": {
+      "Date": "2026-01-12",
+      "Survey_Period": {
+        "Date_Start": "2026-01-08",
+        "Date_End": "2026-01-11"
+      },
+      "Surveyed_Persons": "1004",
+      "Parliament_ID": "3",
+      "Institute_ID": "2",
+      "Tasker_ID": "1",
+      "Method_ID": "3",
+      "Results": {
+        "2": 22.0,
+        "1": 18.0,
+        "7": 14.0,
+        "0": 4.0
+      }
+    }
+  }
+}

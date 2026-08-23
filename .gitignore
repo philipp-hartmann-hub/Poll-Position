@@ -20,4 +20,5 @@ node_modules/
 data/warehouse.duckdb
 data/warehouse.duckdb.wal
 data/raw/**/*.parquet
+data/raw/**/last_update.txt
 !data/raw/.gitkeep

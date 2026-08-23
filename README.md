@@ -13,8 +13,8 @@ UI-frei in `analysis/` und wird mit pytest abgesichert.
 
 | Layer | Ort | Inhalt |
 | --- | --- | --- |
-| **Bronze** | `data/raw/<quelle>/<YYYY-MM-DD>.parquet` | Roh-Snapshots je Quelle und Abrufdatum, bereits im einheitlichen Beobachtungsschema |
-| **Silver** | `data/warehouse.duckdb` → u. a. `polls_silver` | Vereinheitlichte, bereinigte Umfragezeilen |
+| **Bronze** | `data/raw/<quelle>/<YYYY-MM-DD>.parquet` | Roh-Snapshots je Quelle und Abrufdatum (Dawum: unveränderte JSON-Antwort) |
+| **Silver** | `data/warehouse.duckdb` → `parliaments`, `parties`, `institutes`, `surveys`, `survey_results` | Vereinheitlichte Entitäten im kanonischen Schema |
 | **Gold** | `data/warehouse.duckdb` (aggregierte Tabellen, folgen) | Auswertungsfertige Kennzahlen, Sitze, Koalitionen |
 
 ## Start
@@ -33,10 +33,16 @@ uv run streamlit run app/Home.py
 uv run pytest
 ```
 
+## Datenquellen & Lizenzen
+
+Umfragedaten von [dawum.de](https://dawum.de/) werden unter der
+[Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/) genutzt.
+Attributionshinweis: *„Umfragedaten: dawum.de (Open Database License (ODbL))“*.
+
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-23 12:26:00 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-23 12:32:27 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -47,9 +53,9 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Repo:** [Poll-Position](https://github.com/philipp-hartmann-hub/Poll-Position)
 - **Remote:** `https://github.com/philipp-hartmann-hub/Poll-Position.git`
 - **Projektroot:** `Umfragen`
-- **Dateien (sichtbar):** 41
+- **Dateien (sichtbar):** 44
 - **Stack-Hinweise:** Python (pyproject)
-- **Git-Branch:** `main` · Commits: 1 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 2 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -75,6 +81,7 @@ app/pages/1_Umfragen.py
 app/pages/2_Sitze_Koalitionen.py
 data/raw/.gitkeep
 data/raw/dawum/2026-08-23.parquet
+data/raw/dawum/last_update.txt
 data/raw/wikipedia_polls/2026-08-23.parquet
 data/warehouse.duckdb
 data_pipeline/__init__.py
@@ -95,7 +102,9 @@ tests/analysis/seats/test_sainte_lague.py
 tests/analysis/test_coalitions.py
 tests/analysis/test_schema.py
 tests/data_pipeline/__init__.py
+tests/data_pipeline/fixtures/dawum_sample.json
 tests/data_pipeline/test_canonical_schema.py
+tests/data_pipeline/test_dawum.py
 uv.lock
 ```
 <!-- AUTO:END:structure -->
@@ -105,15 +114,17 @@ uv.lock
 <!-- AUTO:START:languages -->
 | Endung | Anzahl |
 | --- | ---: |
-| `.py` | 26 |
+| `.py` | 27 |
 | `(ohne Endung)` | 6 |
 | `.parquet` | 2 |
 | `.duckdb` | 1 |
 | `.example` | 1 |
+| `.json` | 1 |
 | `.lock` | 1 |
 | `.md` | 1 |
 | `.tag` | 1 |
 | `.toml` | 1 |
+| `.txt` | 1 |
 | `.yaml` | 1 |
 <!-- AUTO:END:languages -->
 
