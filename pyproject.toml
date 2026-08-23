@@ -16,6 +16,7 @@ dependencies = [
     "pydeck>=0.9.0",
     "pydantic>=2.9.0",
     "python-dotenv>=1.0.0",
+    "pyyaml>=6.0.0",
 ]
 
 [dependency-groups]
@@ -29,6 +30,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["data_pipeline", "analysis", "app"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"data_pipeline/config" = "data_pipeline/config"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

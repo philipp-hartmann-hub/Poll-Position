@@ -36,7 +36,7 @@ uv run pytest
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-23 12:17:58 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-23 12:26:00 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -47,9 +47,9 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Repo:** [Poll-Position](https://github.com/philipp-hartmann-hub/Poll-Position)
 - **Remote:** `https://github.com/philipp-hartmann-hub/Poll-Position.git`
 - **Projektroot:** `Umfragen`
-- **Dateien (sichtbar):** 34
+- **Dateien (sichtbar):** 41
 - **Stack-Hinweise:** Python (pyproject)
-- **Git-Branch:** `main` · Commits: 0 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 1 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -78,7 +78,9 @@ data/raw/dawum/2026-08-23.parquet
 data/raw/wikipedia_polls/2026-08-23.parquet
 data/warehouse.duckdb
 data_pipeline/__init__.py
+data_pipeline/config/de_parliaments.yaml
 data_pipeline/run.py
+data_pipeline/schema.py
 data_pipeline/schema_bridge.py
 data_pipeline/sources/__init__.py
 data_pipeline/sources/dawum.py
@@ -86,9 +88,14 @@ data_pipeline/sources/wikipedia_polls.py
 data_pipeline/warehouse.py
 pyproject.toml
 scripts/update-readme.py
+tests/__init__.py
+tests/analysis/__init__.py
+tests/analysis/seats/__init__.py
 tests/analysis/seats/test_sainte_lague.py
 tests/analysis/test_coalitions.py
 tests/analysis/test_schema.py
+tests/data_pipeline/__init__.py
+tests/data_pipeline/test_canonical_schema.py
 uv.lock
 ```
 <!-- AUTO:END:structure -->
@@ -98,7 +105,7 @@ uv.lock
 <!-- AUTO:START:languages -->
 | Endung | Anzahl |
 | --- | ---: |
-| `.py` | 20 |
+| `.py` | 26 |
 | `(ohne Endung)` | 6 |
 | `.parquet` | 2 |
 | `.duckdb` | 1 |
@@ -107,6 +114,7 @@ uv.lock
 | `.md` | 1 |
 | `.tag` | 1 |
 | `.toml` | 1 |
+| `.yaml` | 1 |
 <!-- AUTO:END:languages -->
 
 ## README aktualisieren

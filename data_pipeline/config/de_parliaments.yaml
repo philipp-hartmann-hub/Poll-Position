@@ -1,0 +1,303 @@
+# Poll-Position — Wahlrechts- und Parlamentkonfiguration (Deutschland)
+# seats_total = gesetzliche Regel-/Mindestsitzzahl (ohne Überhang-/Ausgleichsmandate).
+# Stand der Recherche: 2026-08-23
+#
+# Quellen (siehe auch sources_bibliography):
+# - Die Bundeswahlleiterin: https://www.bundeswahlleiterin.de/
+# - Deutscher Bundestag, Wahlrecht nach Reform 2023:
+#   https://www.bundestag.de/parlament/wahlen/wahlrecht-inhalt-975000
+# - Übersicht Landtagswahlrecht (Zusammenfassung der Landeswahlgesetze / Landeswahlleitungen):
+#   https://www.wahlrecht.de/landtage/ (Aktualisierung laut Seite: 07.08.2026)
+
+version: 1
+as_of: "2026-08-23"
+
+sources_bibliography:
+  - "https://www.bundeswahlleiterin.de/ — Sitzverteilung, Glossar, BTW-Dokumentation"
+  - "https://www.bundestag.de/parlament/wahlen/wahlrecht-inhalt-975000 — geltendes BT-Wahlrecht (630 Sitze, Zweitstimmendeckung, 5 %-Klausel; BVerfG 30.07.2024 zur Grundmandatsklausel)"
+  - "https://www.wahlrecht.de/landtage/ — Übersicht Mandate, Sperrklauseln, Zuteilungsverfahren je Land (Primärquellen: jeweilige Landeswahlgesetze / Landeswahlleitungen)"
+  - "Landeswahlleitungen der 16 Länder (amtliche Texte zu Sitzzahl und Sperrklausel)"
+
+countries:
+  - iso_code: DE
+    name: Deutschland
+
+election_systems:
+  - key: de_bundestag_2023
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 630
+    zweitstimmendeckung: true
+    direct_seats: 299
+    grundmandat_seats: 3  # BVerfG 30.07.2024: faktische Fortgeltung bis Neuregelung
+    minority_exempt_party_ids: []  # nationale Minderheiten: Sperrklausel gilt nicht (BWG)
+    notes: >
+      Feste Bundestagsgröße 630 ab BTW 2025; Zweitstimmendeckung statt Überhang-/Ausgleich.
+      5 %-Zweitstimmen-Hürde; nach BVerfG-Urteil vom 30.07.2024 gilt übergangsweise weiter,
+      dass Parteien unter 5 % nur dann ausgeschlossen werden, wenn sie in weniger als drei
+      Wahlkreisen die meisten Erststimmen errungen haben.
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/glossar/s/sitzverteilung.html"
+      - "https://www.bundestag.de/parlament/wahlen/wahlrecht-inhalt-975000"
+
+  - key: de_bw_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 120
+    zweitstimmendeckung: false
+    direct_seats: 70
+    notes: "Mindestgröße 120; Überhang und Ausgleich möglich → Ist-Größe oft höher."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Baden-Württemberg"]
+
+  - key: de_by_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 180
+    zweitstimmendeckung: false
+    direct_seats: 91
+    notes: "Mindestgröße 180; Ausgleich getrennt nach Regierungsbezirken."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Bayern"]
+
+  - key: de_be_agH
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 130
+    zweitstimmendeckung: false
+    direct_seats: 78
+    grundmandat_seats: 1
+    threshold_includes_invalid: true
+    notes: "5 %-Hürde bezieht sich auf abgegebene Stimmen inkl. ungültige (effektiv etwas höher)."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Berlin"]
+
+  - key: de_bb_lt
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 88
+    zweitstimmendeckung: false
+    direct_seats: 44
+    grundmandat_seats: 1
+    notes: "Sorben-Parteien von der Sperrklausel ausgenommen (Landeswahlrecht)."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Brandenburg"]
+
+  - key: de_hb_bs
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 87
+    zweitstimmendeckung: false
+    direct_seats: 0
+    notes: "Reine Listenwahl; 5 %-Hürde getrennt in Wahlbereichen Bremen und Bremerhaven."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Bremen"]
+
+  - key: de_hh_bs
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 121
+    zweitstimmendeckung: false
+    direct_seats: 71
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Hamburg"]
+
+  - key: de_he_lt
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 110
+    zweitstimmendeckung: false
+    direct_seats: 55
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Hessen"]
+
+  - key: de_mv_lt
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 71
+    zweitstimmendeckung: false
+    direct_seats: 36
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Mecklenburg-Vorpommern"]
+
+  - key: de_ni_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 135
+    zweitstimmendeckung: false
+    direct_seats: 87
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Niedersachsen"]
+
+  - key: de_nw_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 181
+    zweitstimmendeckung: false
+    direct_seats: 128
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Nordrhein-Westfalen"]
+
+  - key: de_rp_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 101
+    zweitstimmendeckung: false
+    direct_seats: 51
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Rheinland-Pfalz"]
+
+  - key: de_sl_lt
+    allocation_method: dhondt
+    threshold_percent: 5.0
+    seats_total: 51
+    zweitstimmendeckung: false
+    direct_seats: 0
+    notes: "Reine Listenwahl; Zuteilung nach d’Hondt."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Saarland"]
+
+  - key: de_sn_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 120
+    zweitstimmendeckung: false
+    direct_seats: 60
+    grundmandat_seats: 2
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Sachsen"]
+
+  - key: de_st_lt
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 83
+    zweitstimmendeckung: false
+    direct_seats: 41
+    notes: "Regelgröße 83 ab 2021."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Sachsen-Anhalt"]
+
+  - key: de_sh_lt
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 5.0
+    seats_total: 69
+    zweitstimmendeckung: false
+    direct_seats: 35
+    grundmandat_seats: 1
+    minority_exempt_party_ids: ["de:ssw"]
+    notes: "SSW als Partei der dänischen Minderheit von der 5 %-Hürde ausgenommen."
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Schleswig-Holstein"]
+
+  - key: de_th_lt
+    allocation_method: hare_niemeyer
+    threshold_percent: 5.0
+    seats_total: 88
+    zweitstimmendeckung: false
+    direct_seats: 44
+    sources: ["https://www.wahlrecht.de/landtage/", "Landeswahlleiter Thüringen"]
+
+parliaments:
+  - id: de_bundestag
+    country: DE
+    level: { kind: national }
+    name: Deutscher Bundestag
+    seats_total: 630
+    election_system_key: de_bundestag_2023
+
+  - id: de_bw_landtag
+    country: DE
+    level: { kind: state, state_code: DE-BW }
+    name: Landtag von Baden-Württemberg
+    seats_total: 120
+    election_system_key: de_bw_lt
+
+  - id: de_by_landtag
+    country: DE
+    level: { kind: state, state_code: DE-BY }
+    name: Bayerischer Landtag
+    seats_total: 180
+    election_system_key: de_by_lt
+
+  - id: de_be_abgeordnetenhaus
+    country: DE
+    level: { kind: state, state_code: DE-BE }
+    name: Abgeordnetenhaus von Berlin
+    seats_total: 130
+    election_system_key: de_be_agH
+
+  - id: de_bb_landtag
+    country: DE
+    level: { kind: state, state_code: DE-BB }
+    name: Landtag Brandenburg
+    seats_total: 88
+    election_system_key: de_bb_lt
+
+  - id: de_hb_buergerschaft
+    country: DE
+    level: { kind: state, state_code: DE-HB }
+    name: Bremische Bürgerschaft
+    seats_total: 87
+    election_system_key: de_hb_bs
+
+  - id: de_hh_buergerschaft
+    country: DE
+    level: { kind: state, state_code: DE-HH }
+    name: Hamburgische Bürgerschaft
+    seats_total: 121
+    election_system_key: de_hh_bs
+
+  - id: de_he_landtag
+    country: DE
+    level: { kind: state, state_code: DE-HE }
+    name: Hessischer Landtag
+    seats_total: 110
+    election_system_key: de_he_lt
+
+  - id: de_mv_landtag
+    country: DE
+    level: { kind: state, state_code: DE-MV }
+    name: Landtag Mecklenburg-Vorpommern
+    seats_total: 71
+    election_system_key: de_mv_lt
+
+  - id: de_ni_landtag
+    country: DE
+    level: { kind: state, state_code: DE-NI }
+    name: Niedersächsischer Landtag
+    seats_total: 135
+    election_system_key: de_ni_lt
+
+  - id: de_nw_landtag
+    country: DE
+    level: { kind: state, state_code: DE-NW }
+    name: Landtag Nordrhein-Westfalen
+    seats_total: 181
+    election_system_key: de_nw_lt
+
+  - id: de_rp_landtag
+    country: DE
+    level: { kind: state, state_code: DE-RP }
+    name: Landtag Rheinland-Pfalz
+    seats_total: 101
+    election_system_key: de_rp_lt
+
+  - id: de_sl_landtag
+    country: DE
+    level: { kind: state, state_code: DE-SL }
+    name: Landtag des Saarlandes
+    seats_total: 51
+    election_system_key: de_sl_lt
+
+  - id: de_sn_landtag
+    country: DE
+    level: { kind: state, state_code: DE-SN }
+    name: Sächsischer Landtag
+    seats_total: 120
+    election_system_key: de_sn_lt
+
+  - id: de_st_landtag
+    country: DE
+    level: { kind: state, state_code: DE-ST }
+    name: Landtag von Sachsen-Anhalt
+    seats_total: 83
+    election_system_key: de_st_lt
+
+  - id: de_sh_landtag
+    country: DE
+    level: { kind: state, state_code: DE-SH }
+    name: Schleswig-Holsteinischer Landtag
+    seats_total: 69
+    election_system_key: de_sh_lt
+
+  - id: de_th_landtag
+    country: DE
+    level: { kind: state, state_code: DE-TH }
+    name: Thüringer Landtag
+    seats_total: 88
+    election_system_key: de_th_lt
