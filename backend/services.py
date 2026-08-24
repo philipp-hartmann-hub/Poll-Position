@@ -200,9 +200,19 @@ def coalitions_payload(
 ) -> dict[str, Any]:
     seats_data = seats_payload(parliament_id)
     seats = seats_data["seats"]
+    total = int(seats_data["total_seats"] or 0)
+    if not seats or total <= 0:
+        # Leeres Warehouse / keine Umfragen — Endpoint liefert 404, kein 500.
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": 0,
+            "majority_threshold": 0,
+            "excluded_by_rules": 0,
+            "coalitions": [],
+        }
     _, names = _votes_from_averages(parliament_id)
     canon = _seats_to_canonical(seats, names)
-    total = seats_data["total_seats"] or sum(canon.values())
+    total = total or sum(canon.values())
     result = possible_majorities(
         canon,
         total,
