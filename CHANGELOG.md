@@ -24,7 +24,8 @@ Versionierung: [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Geändert
 
-- `data_pipeline.run` beendet sich bei Fehlern mit Exit-Code 1 und klarer Exception-Logzeile
+- `pyproject.toml`: `[tool.uv] package = false` (Vercel-Build ohne Hatchling-Wheel);
+  Streamlit/Plotly/Pydeck als optionalem Extra `ui`
 
 ## [0.1.0] — 2026-08-23
 

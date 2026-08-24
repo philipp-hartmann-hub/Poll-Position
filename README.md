@@ -24,8 +24,8 @@ Siehe `.env.example`.
 ## Start
 
 ```bash
-# Abhängigkeiten (uv)
-uv sync
+# Abhängigkeiten (uv) — inkl. Streamlit-UI
+uv sync --extra ui --group dev
 
 # Pipeline (ETL → Parquet + DuckDB / MotherDuck)
 uv run python -m data_pipeline.run
@@ -122,7 +122,7 @@ jeweiligen Nutzungsbedingungen der Herausgebenden.
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-24 19:57:31 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-08-24 20:03:20 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -135,7 +135,7 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Projektroot:** `Umfragen`
 - **Dateien (sichtbar):** 80
 - **Stack-Hinweise:** Node.js / npm, Python (pip), Python (pyproject)
-- **Git-Branch:** `main` · Commits: 9 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 10 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur

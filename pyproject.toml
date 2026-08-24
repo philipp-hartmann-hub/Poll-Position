@@ -11,14 +11,19 @@ dependencies = [
     "requests>=2.32.0",
     "beautifulsoup4>=4.12.0",
     "lxml>=5.3.0",
-    "streamlit>=1.39.0",
-    "plotly>=5.24.0",
-    "pydeck>=0.9.0",
     "pydantic>=2.9.0",
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0.0",
     "fastapi>=0.115.0",
     "uvicorn>=0.32.0",
+]
+
+[project.optional-dependencies]
+# Streamlit-UI lokal: uv sync --extra ui
+ui = [
+    "streamlit>=1.39.0",
+    "plotly>=5.24.0",
+    "pydeck>=0.9.0",
 ]
 
 [dependency-groups]
@@ -31,8 +36,22 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# Vercel: `uv sync --no-editable` soll das Projekt NICHT als Wheel bauen
+# (sonst scheitert hatchling an Repo-Nebenordnern). Quellcode liegt im Bundle.
+[tool.uv]
+package = false
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "analysis",
+    "backend",
+    "data_pipeline",
+    "pyproject.toml",
+    "README.md",
+]
+
 [tool.hatch.build.targets.wheel]
-packages = ["data_pipeline", "analysis", "app", "backend"]
+packages = ["data_pipeline", "analysis", "backend"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "data_pipeline/config" = "data_pipeline/config"

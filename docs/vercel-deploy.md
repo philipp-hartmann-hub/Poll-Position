@@ -56,6 +56,12 @@ Config-YAMLs unter `data_pipeline/config/` und `data_pipeline/reference/` müsse
 Python-Bundle liegen → deshalb API-`root: "./"` (nicht nur `backend/`).
 `excludeFiles` entfernt Frontend/Tests aus dem Function-Bundle.
 
+In `pyproject.toml` steht `[tool.uv] package = false`, damit Vercel bei
+`uv sync --frozen --no-editable` **kein Hatchling-Wheel** des Monorepos bauen muss
+(das schlug fehl, sobald Nebenordner wie `.cursor` mitgepackt wurden). Imports laufen
+über den Quellbaum im Deployment. Streamlit/Plotly liegen unter optionalem Extra `ui`
+und werden auf Vercel nicht installiert.
+
 ## Verifizierung nach Deploy
 
 ```bash

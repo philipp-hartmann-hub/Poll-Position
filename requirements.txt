@@ -1,5 +1,5 @@
-# Vercel Python Runtime liest requirements.txt (nicht pyproject.toml).
-# Nur API-Abhängigkeiten — kein Streamlit/Plotly (Frontend ist Next.js in web/).
+# Runtime-Deps für Vercel Python / pip-Fallback (ohne Streamlit).
+# Primär nutzt Vercel uv + pyproject.toml/uv.lock (tool.uv.package = false).
 
 fastapi>=0.115.0
 uvicorn>=0.32.0
