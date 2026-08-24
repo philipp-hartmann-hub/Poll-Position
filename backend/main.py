@@ -39,8 +39,56 @@ if os.environ.get("ENABLE_CORS", "").strip().lower() in {"1", "true", "yes"}:
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+def health() -> dict:
+    """
+    Diagnose ohne Secrets: Token gesetzt? MotherDuck erreichbar? Daten vorhanden?
+
+    Nach Marketplace-Connect ist die DB oft noch leer — erst Daily Pipeline /
+    `python -m data_pipeline.run` mit Token füllt Silver/Gold.
+    """
+    from data_pipeline.warehouse import (
+        connect_warehouse,
+        motherduck_database,
+        uses_motherduck,
+        warehouse_connection_target,
+    )
+
+    info: dict = {
+        "status": "ok",
+        "motherduck_configured": uses_motherduck(),
+        "warehouse_target": warehouse_connection_target(),
+        "database": motherduck_database() if uses_motherduck() else None,
+        "vercel": bool(os.environ.get("VERCEL")),
+    }
+    try:
+        # Kein ensure_warehouse: Read-Only-Token darf kein CREATE.
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            tables = {r[0] for r in con.execute("SHOW TABLES").fetchall()}
+            info["tables"] = sorted(tables)
+            if "surveys" in tables:
+                info["surveys"] = int(con.execute("SELECT COUNT(*) FROM surveys").fetchone()[0])
+            if "survey_results" in tables:
+                info["survey_results"] = int(
+                    con.execute("SELECT COUNT(*) FROM survey_results").fetchone()[0]
+                )
+            if "party_averages" in tables:
+                info["party_averages"] = int(
+                    con.execute("SELECT COUNT(*) FROM party_averages").fetchone()[0]
+                )
+        finally:
+            con.close()
+        if uses_motherduck() and info.get("surveys", 0) == 0:
+            info["hint"] = (
+                "MotherDuck verbunden, aber noch keine Surveys. "
+                "GitHub Action Daily Pipeline einmal manuell starten "
+                "(Secret MOTHERDUCK_TOKEN setzen) oder lokal: "
+                "MOTHERDUCK_TOKEN=… uv run python -m data_pipeline.run"
+            )
+    except Exception as exc:  # noqa: BLE001 — Diagnose an Client
+        info["status"] = "degraded"
+        info["error"] = f"{type(exc).__name__}: {exc}"
+    return info
 
 
 @app.get("/api/parliaments", response_model=list[schemas.ParliamentOut])

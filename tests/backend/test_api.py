@@ -14,6 +14,10 @@ from tests.data_pipeline.fixtures.pipeline_e2e_payload import PAYLOAD
 
 @pytest.fixture
 def api_warehouse(tmp_path, monkeypatch):
+    monkeypatch.delenv("MOTHERDUCK_TOKEN", raising=False)
+    monkeypatch.delenv("MOTHERDUCK_READONLY_TOKEN", raising=False)
+    monkeypatch.delenv("VERCEL", raising=False)
+
     data = tmp_path / "data"
     raw = data / "raw" / "dawum"
     raw.mkdir(parents=True)
@@ -45,7 +49,10 @@ def client(api_warehouse):
 def test_health(client):
     r = client.get("/health")
     assert r.status_code == 200
-    assert r.json()["status"] == "ok"
+    body = r.json()
+    assert body["status"] == "ok"
+    assert body["motherduck_configured"] is False
+    assert body.get("surveys", 0) >= 1
 
 
 def test_parliaments(client):

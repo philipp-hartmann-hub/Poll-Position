@@ -47,8 +47,16 @@ npm run dev:web             # :3000, proxied /api → :8000
 ## MotherDuck
 
 1. [Marketplace → MotherDuck](https://vercel.com/marketplace/motherduck) installieren  
-2. Env: `MOTHERDUCK_TOKEN` (automatisch), optional `MOTHERDUCK_DATABASE=poll_position`  
-3. Daily Pipeline: dieselben Werte als **GitHub Actions Secrets** (siehe README)
+2. Env (automatisch): `MOTHERDUCK_TOKEN`, `MOTHERDUCK_READONLY_TOKEN`  
+3. Optional manuell: `MOTHERDUCK_DATABASE=poll_position` (Production + Preview)  
+4. **Daten füllen:** Marketplace allein legt nur Tokens an. Silver/Gold kommen erst nach
+   Pipeline-Lauf mit demselben Token:
+   - GitHub → Actions → *Daily Pipeline* → Run workflow  
+     (Secrets `MOTHERDUCK_TOKEN` + optional `MOTHERDUCK_DATABASE`)  
+   - oder lokal: `MOTHERDUCK_TOKEN=… uv run python -m data_pipeline.run`
+5. Diagnose: `GET /health` → `motherduck_configured`, `surveys`, ggf. `hint`/`error`
+
+Auf Vercel setzt der Code `saas_mode=true` und `HOME=/tmp` (DuckDB-Extensions).
 
 ## Bundle
 

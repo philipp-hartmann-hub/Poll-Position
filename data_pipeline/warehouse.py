@@ -136,10 +136,18 @@ def _maybe_load_dotenv() -> None:
 
 
 def motherduck_token() -> str | None:
-    """MOTHERDUCK_TOKEN aus der Umgebung; leerer String zählt als unset."""
+    """
+    Access-Token aus der Umgebung.
+
+    Primär `MOTHERDUCK_TOKEN` (Vercel Marketplace / Pipeline).
+    Fallback: `MOTHERDUCK_READONLY_TOKEN` (nur Lesen, Marketplace).
+    """
     _maybe_load_dotenv()
-    token = os.environ.get("MOTHERDUCK_TOKEN", "").strip()
-    return token or None
+    for key in ("MOTHERDUCK_TOKEN", "MOTHERDUCK_READONLY_TOKEN"):
+        token = os.environ.get(key, "").strip()
+        if token:
+            return token
+    return None
 
 
 def motherduck_database() -> str:
@@ -165,24 +173,52 @@ def warehouse_connection_target() -> str:
     return str(WAREHOUSE)
 
 
+def _prepare_vercel_duckdb_env() -> None:
+    """Auf Vercel: HOME/Extensions nach /tmp (Filesystem sonst oft read-only)."""
+    if not os.environ.get("VERCEL"):
+        return
+    tmp = os.environ.get("TMPDIR") or "/tmp"
+    os.environ.setdefault("HOME", tmp)
+    os.environ.setdefault("DUCKDB_EXTENSION_DIRECTORY", f"{tmp}/.duckdb/extensions")
+
+
 def connect_warehouse(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
     """
     Zentrale DuckDB-Verbindung: lokal oder MotherDuck.
 
     MotherDuck (DuckDB ≥1.1 / hier 1.5.x), laut motherduck.com/docs:
-    - `duckdb.connect("md:<db>", config={"motherduck_token": ...})` (bevorzugt)
-    - äquivalent: `duckdb.connect("md:<db>?motherduck_token=...")`
+    - `duckdb.connect("md:<db>?motherduck_token=…&saas_mode=true")` auf Vercel
+    - config={"motherduck_token": …} parallel
 
-    Token nur über Env `MOTHERDUCK_TOKEN` — nie hardcoden. Ohne Token:
-    `data/warehouse.duckdb` (bisheriges Verhalten für Dev/CI/Tests).
+    Token nur über Env — nie hardcoden. Ohne Token: `data/warehouse.duckdb`.
     """
     token = motherduck_token()
     if token:
+        _prepare_vercel_duckdb_env()
         database = motherduck_database()
-        # Query-Param-Form (ebenfalls dokumentiert); Token URL-encoden.
-        # config= parallel setzen, falls der Client eines der beiden ignoriert.
-        conn_str = f"md:{database}?motherduck_token={quote(token, safe='')}"
-        return duckdb.connect(conn_str, config={"motherduck_token": token})
+        # saas_mode auf Vercel: kein lokales FS / keine lokalen Extensions
+        on_vercel = bool(os.environ.get("VERCEL"))
+        params = [f"motherduck_token={quote(token, safe='')}"]
+        if on_vercel or os.environ.get("MOTHERDUCK_SAAS_MODE", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }:
+            params.append("saas_mode=true")
+        # attach_mode=single: nur die Ziel-DB, weniger Workspace-Overhead
+        params.append("attach_mode=single")
+        conn_str = f"md:{database}?{'&'.join(params)}"
+        config: dict[str, str] = {"motherduck_token": token}
+        try:
+            con = duckdb.connect(conn_str, config=config)
+        except Exception:
+            # DB existiert ggf. noch nicht → erst ohne DB-Namen verbinden und anlegen
+            bootstrap = f"md:?{'&'.join(params)}"
+            con = duckdb.connect(bootstrap, config=config)
+            safe_name = database.replace('"', "")
+            con.execute(f'CREATE DATABASE IF NOT EXISTS "{safe_name}"')
+            con.execute(f'USE "{safe_name}"')
+        return con
 
     if read_only and not WAREHOUSE.exists():
         raise FileNotFoundError(f"Warehouse fehlt: {WAREHOUSE}")

@@ -13,7 +13,10 @@ from data_pipeline import warehouse
 def _clear_motherduck_env(monkeypatch):
     """Tests laufen immer ohne echten MotherDuck-Zugriff."""
     monkeypatch.delenv("MOTHERDUCK_TOKEN", raising=False)
+    monkeypatch.delenv("MOTHERDUCK_READONLY_TOKEN", raising=False)
     monkeypatch.delenv("MOTHERDUCK_DATABASE", raising=False)
+    monkeypatch.delenv("MOTHERDUCK_SAAS_MODE", raising=False)
+    monkeypatch.delenv("VERCEL", raising=False)
     monkeypatch.setattr(warehouse, "_maybe_load_dotenv", lambda: None)
 
 
@@ -28,6 +31,12 @@ def test_uses_motherduck_true_with_token(monkeypatch):
     assert warehouse.uses_motherduck() is True
     assert warehouse.motherduck_database() == "poll_position"
     assert warehouse.warehouse_connection_target() == "md:poll_position"
+
+
+def test_uses_motherduck_true_with_readonly_token(monkeypatch):
+    monkeypatch.setenv("MOTHERDUCK_READONLY_TOKEN", "ro-token")
+    assert warehouse.uses_motherduck() is True
+    assert warehouse.motherduck_token() == "ro-token"
 
 
 def test_motherduck_database_default(monkeypatch):
@@ -64,7 +73,20 @@ def test_connect_warehouse_motherduck_uses_md_string(monkeypatch):
         assert args[0].startswith("md:poll_position?")
         assert "motherduck_token=" in args[0]
         assert "secret-token" in args[0]
+        assert "attach_mode=single" in args[0]
+        assert "saas_mode=true" not in args[0]
         assert kwargs.get("config", {}).get("motherduck_token") == "secret-token"
+
+
+def test_connect_warehouse_motherduck_saas_mode_on_vercel(monkeypatch):
+    monkeypatch.setenv("MOTHERDUCK_TOKEN", "secret-token")
+    monkeypatch.setenv("VERCEL", "1")
+    fake = MagicMock()
+
+    with patch("data_pipeline.warehouse.duckdb.connect", return_value=fake) as mocked:
+        warehouse.connect_warehouse()
+        args, _ = mocked.call_args
+        assert "saas_mode=true" in args[0]
 
 
 def test_ensure_warehouse_local_creates_tables(tmp_path, monkeypatch):
