@@ -2,11 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "web": {
-      "root": "web",
+      "root": "web/",
       "framework": "nextjs"
     },
     "api": {
-      "root": ".",
+      "root": "./",
       "framework": "fastapi",
       "entrypoint": "backend.main:app",
       "functions": {
@@ -18,10 +18,10 @@
     }
   },
   "rewrites": [
-    { "source": "/api/:path*", "destination": { "service": "api" } },
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
     { "source": "/health", "destination": { "service": "api" } },
     { "source": "/docs", "destination": { "service": "api" } },
-    { "source": "/docs/:path*", "destination": { "service": "api" } },
+    { "source": "/docs/(.*)", "destination": { "service": "api" } },
     { "source": "/openapi.json", "destination": { "service": "api" } },
     { "source": "/redoc", "destination": { "service": "api" } },
     { "source": "/(.*)", "destination": { "service": "web" } }
