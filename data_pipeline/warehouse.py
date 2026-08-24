@@ -270,15 +270,15 @@ def load_bronze_into_silver(parquet_path: Path) -> None:
 
 
 def _upsert_rows(con: duckdb.DuckDBPyConnection, table: str, rows: list[dict[str, Any]]) -> int:
+    """Bulk-Upsert via Arrow (kein executemany — zu langsam gegen MotherDuck)."""
     if not rows:
         return 0
-    columns = list(rows[0].keys())
-    placeholders = ", ".join(["?"] * len(columns))
-    col_list = ", ".join(columns)
-    con.executemany(
-        f"INSERT OR REPLACE INTO {table} ({col_list}) VALUES ({placeholders})",
-        [tuple(row[c] for c in columns) for row in rows],
-    )
+    staging = f"_staging_{table}"
+    con.register(staging, pl.DataFrame(rows).to_arrow())
+    try:
+        con.execute(f"INSERT OR REPLACE INTO {table} BY NAME SELECT * FROM {staging}")
+    finally:
+        con.unregister(staging)
     return len(rows)
 
 
@@ -333,10 +333,7 @@ def insert_surveys_incremental(
         if new_surveys:
             _upsert_rows(con, "surveys", new_surveys)
         if new_results:
-            con.executemany(
-                "INSERT OR REPLACE INTO survey_results (survey_id, party_id, share) VALUES (?, ?, ?)",
-                [(r["survey_id"], r["party_id"], r["share"]) for r in new_results],
-            )
+            _upsert_rows(con, "survey_results", new_results)
         return len(new_surveys), len(new_results)
     finally:
         con.close()
@@ -352,6 +349,51 @@ def existing_dawum_survey_ids() -> set[str]:
         return {row[0] for row in rows}
     finally:
         con.close()
+
+
+def copy_local_warehouse_to_motherduck(*, tables: list[str] | None = None) -> dict[str, int]:
+    """
+    Kopiert die lokale DuckDB nach MotherDuck (Bulk SELECT, kein Row-Insert).
+
+    Voraussetzung: MOTHERDUCK_TOKEN gesetzt und lokale `data/warehouse.duckdb` vorhanden.
+    """
+    if not uses_motherduck():
+        raise RuntimeError("MOTHERDUCK_TOKEN fehlt — kein MotherDuck-Ziel")
+    if not WAREHOUSE.exists():
+        raise FileNotFoundError(f"Lokales Warehouse fehlt: {WAREHOUSE}")
+
+    ensure_warehouse()
+    target_tables = tables or [
+        "parliaments",
+        "parties",
+        "institutes",
+        "surveys",
+        "survey_results",
+        "party_averages",
+        "party_trends",
+    ]
+    con = connect_warehouse()
+    counts: dict[str, int] = {}
+    try:
+        # Absolute Path — MotherDuck kann lokale Dateien ohne saas_mode lesen
+        local_path = str(WAREHOUSE.resolve()).replace("'", "''")
+        con.execute(f"ATTACH '{local_path}' AS local_wh (READ_ONLY)")
+        for table in target_tables:
+            exists = con.execute(
+                "SELECT COUNT(*) FROM information_schema.tables "
+                "WHERE table_catalog = 'local_wh' AND table_name = ?",
+                [table],
+            ).fetchone()[0]
+            if not exists:
+                counts[table] = 0
+                continue
+            con.execute(f"DELETE FROM {table}")
+            con.execute(f"INSERT INTO {table} BY NAME SELECT * FROM local_wh.{table}")
+            counts[table] = int(con.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0])
+        con.execute("DETACH local_wh")
+    finally:
+        con.close()
+    return counts
 
 
 def replace_party_averages(rows: list[dict[str, Any]]) -> int:
