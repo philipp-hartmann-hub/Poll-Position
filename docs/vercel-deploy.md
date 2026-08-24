@@ -57,6 +57,7 @@ npm run dev:web             # :3000, proxied /api → :8000
 5. Diagnose: `GET /health` → `motherduck_configured`, `surveys`, ggf. `hint`/`error`
 
 Auf Vercel setzt der Code `saas_mode=true` und `HOME=/tmp` (DuckDB-Extensions).
+Kein `attach_mode=single` — der verhindert den Workspace-Bootstrap (`md:`).
 
 ## Bundle
 

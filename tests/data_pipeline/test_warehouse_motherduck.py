@@ -73,7 +73,7 @@ def test_connect_warehouse_motherduck_uses_md_string(monkeypatch):
         assert args[0].startswith("md:poll_position?")
         assert "motherduck_token=" in args[0]
         assert "secret-token" in args[0]
-        assert "attach_mode=single" in args[0]
+        assert "attach_mode=single" not in args[0]
         assert "saas_mode=true" not in args[0]
         assert kwargs.get("config", {}).get("motherduck_token") == "secret-token"
 

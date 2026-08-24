@@ -205,14 +205,15 @@ def connect_warehouse(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
             "yes",
         }:
             params.append("saas_mode=true")
-        # attach_mode=single: nur die Ziel-DB, weniger Workspace-Overhead
-        params.append("attach_mode=single")
+        # Kein attach_mode=single: der Bootstrap `md:?…` (DB anlegen) braucht
+        # Workspace-Attach — single scheitert mit:
+        # "Cannot open 'md:' … in attach_mode=single."
         conn_str = f"md:{database}?{'&'.join(params)}"
         config: dict[str, str] = {"motherduck_token": token}
         try:
             con = duckdb.connect(conn_str, config=config)
         except Exception:
-            # DB existiert ggf. noch nicht → erst ohne DB-Namen verbinden und anlegen
+            # DB existiert ggf. noch nicht → Workspace öffnen und DB anlegen
             bootstrap = f"md:?{'&'.join(params)}"
             con = duckdb.connect(bootstrap, config=config)
             safe_name = database.replace('"', "")
