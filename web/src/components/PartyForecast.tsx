@@ -8,20 +8,46 @@ import {
 import { displayPartyName, partyColor } from "@/lib/colors";
 import { InfoTooltip } from "@/components/InfoTooltip";
 
-function PctBadge({ value, tone }: { value: number; tone?: "strong" | "ok" }) {
-  const pct = Math.round(value * 100);
-  const cls =
-    tone === "strong"
-      ? "bg-sea/15 text-sea"
-      : tone === "ok"
-        ? "bg-ink/8 text-ink/80"
-        : "bg-ink/5 text-ink/70";
+function ForecastTile({
+  party,
+  thresholdLabel,
+}: {
+  party: PartyForecastParty;
+  thresholdLabel: string;
+}) {
+  const name = displayPartyName(party.party_id, party.party_name);
+  const strongestPct = Math.round(party.probability_strongest * 100);
+  const abovePct = Math.round(party.probability_above_threshold * 100);
+
   return (
-    <span
-      className={`inline-block min-w-[3.25rem] rounded-md px-2 py-0.5 text-center text-xs font-medium tabular-nums ${cls}`}
-    >
-      {pct} %
-    </span>
+    <div className="rounded-2xl border border-accent/25 bg-accent/5 px-4 py-4 transition hover:border-accent/50">
+      <p className="flex items-center gap-2 text-sm font-medium text-ink">
+        <span
+          className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+          style={{ background: partyColor(name) }}
+        />
+        {name}
+      </p>
+      <p className="mt-1 text-xs text-ink/45">
+        Mittel {party.average_share.toFixed(1)} %
+      </p>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="font-display text-3xl tabular-nums text-accent">
+            {strongestPct} %
+          </p>
+          <p className="mt-1 text-sm text-ink/70">stärkste Kraft</p>
+        </div>
+        <div>
+          <p className="font-display text-3xl tabular-nums text-ink/80">
+            {abovePct} %
+          </p>
+          <p className="mt-1 text-sm text-ink/70">
+            über {thresholdLabel}&nbsp;%
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -55,56 +81,20 @@ export function PartyForecast({ parliamentId }: { parliamentId: string }) {
     <section className="space-y-3">
       <h2 className="font-display text-2xl text-ink">
         Prognose je Partei
-        <InfoTooltip text="P(stärkste Kraft) = Anteil der Simulationen, in denen diese Partei den höchsten Stimmenanteil hätte. P(über Hürde) = Anteil der Simulationen über der gesetzlichen Sperrklausel. Beides aus denselben 400 Monte-Carlo-Ziehungen wie beim Sperrklausel-Wächter." />
+        <InfoTooltip text="P(stärkste Kraft) = Anteil der Simulationen, in denen diese Partei den höchsten Stimmenanteil hätte. P(über Hürde) = Anteil der Simulationen über der gesetzlichen Sperrklausel. Beides aus denselben 400 Monte-Carlo-Ziehungen — keine Wahlprognose, sondern eine Unsicherheitsabschätzung um den aktuellen Umfragestand." />
       </h2>
       <p className="text-sm text-ink/55">
         Monte-Carlo aus dem Umfragemittel — Wahrscheinlichkeit, stärkste Kraft
-        zu sein bzw. die {thrLabel}-%-Hürde zu schaffen. Keine Wahlprognose.
+        zu sein bzw. die {thrLabel}-%-Hürde zu schaffen.
       </p>
-      <div className="overflow-x-auto rounded-lg border border-ink/10">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-ink/5 text-ink/60">
-            <tr>
-              <th className="px-3 py-2">Partei</th>
-              <th className="px-3 py-2">Ø %</th>
-              <th className="px-3 py-2">P(stärkste Kraft)</th>
-              <th className="px-3 py-2">P(über {thrLabel} %)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {parties.map((p) => {
-              const name = displayPartyName(p.party_id, p.party_name);
-              return (
-                <tr key={p.party_id} className="border-t border-ink/5">
-                  <td className="px-3 py-2">
-                    <span
-                      className="mr-2 inline-block h-2 w-2 rounded-full"
-                      style={{ background: partyColor(name) }}
-                    />
-                    {name}
-                  </td>
-                  <td className="px-3 py-2 tabular-nums">
-                    {p.average_share.toFixed(1)}
-                  </td>
-                  <td className="px-3 py-2">
-                    <PctBadge
-                      value={p.probability_strongest}
-                      tone={p.probability_strongest >= 0.5 ? "strong" : "ok"}
-                    />
-                  </td>
-                  <td className="px-3 py-2">
-                    <PctBadge
-                      value={p.probability_above_threshold}
-                      tone={
-                        p.probability_above_threshold >= 0.5 ? "strong" : "ok"
-                      }
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {parties.map((p) => (
+          <ForecastTile
+            key={p.party_id}
+            party={p}
+            thresholdLabel={thrLabel}
+          />
+        ))}
       </div>
     </section>
   );

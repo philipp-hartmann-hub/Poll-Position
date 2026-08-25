@@ -14,7 +14,6 @@ import {
 import { Hemicycle, TrendLineChart } from "@/components/charts";
 import { PartyForecast } from "@/components/PartyForecast";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
-import { ThresholdWatch } from "@/components/ThresholdWatch";
 import { partyColor } from "@/lib/colors";
 import {
   Bar,
@@ -32,7 +31,7 @@ export function OverviewSection({
   showThreshold = true,
 }: {
   parliamentId: string;
-  /** Sperrklausel-Wächter (Default an; aus z. B. für reine Poll-Länder). */
+  /** Parteien-Prognose (Default an; aus z. B. für reine Poll-Länder). */
   showThreshold?: boolean;
 }) {
   const [averages, setAverages] = useState<AveragesResponse | null>(null);
@@ -209,12 +208,7 @@ export function OverviewSection({
         </div>
       </section>
 
-      {showThreshold ? (
-        <>
-          <PartyForecast parliamentId={parliamentId} />
-          <ThresholdWatch parliamentId={parliamentId} />
-        </>
-      ) : null}
+      {showThreshold ? <PartyForecast parliamentId={parliamentId} /> : null}
     </div>
   );
 }
