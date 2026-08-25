@@ -182,16 +182,53 @@ def _prepare_vercel_duckdb_env() -> None:
     os.environ.setdefault("DUCKDB_EXTENSION_DIRECTORY", f"{tmp}/.duckdb/extensions")
 
 
-def connect_warehouse(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
-    """
-    Zentrale DuckDB-Verbindung: lokal oder MotherDuck.
+class _CachedConnection:
+    """Wrapper: close() ist No-Op — echte Verbindung gehört dem Modul-Cache."""
 
-    MotherDuck (DuckDB ≥1.1 / hier 1.5.x), laut motherduck.com/docs:
-    - `duckdb.connect("md:<db>?motherduck_token=…&saas_mode=true")` auf Vercel
-    - config={"motherduck_token": …} parallel
+    __slots__ = ("_con",)
 
-    Token nur über Env — nie hardcoden. Ohne Token: `data/warehouse.duckdb`.
-    """
+    def __init__(self, con: duckdb.DuckDBPyConnection) -> None:
+        self._con = con
+
+    def close(self) -> None:
+        return
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._con, name)
+
+
+# Getrennt für read_only=True vs False (Pipeline-Schreibzugriff vs. API-Reads).
+_cached_raw: dict[bool, duckdb.DuckDBPyConnection | None] = {False: None, True: None}
+_cached_target: dict[bool, str | None] = {False: None, True: None}
+
+
+def clear_warehouse_connection_cache() -> None:
+    """Schließt gecachte Verbindungen (Tests / Zielwechsel)."""
+    for read_only in (False, True):
+        raw = _cached_raw[read_only]
+        if raw is not None:
+            try:
+                raw.close()
+            except Exception:
+                pass
+        _cached_raw[read_only] = None
+        _cached_target[read_only] = None
+
+
+def _connection_cache_key(*, read_only: bool) -> str:
+    return f"{warehouse_connection_target()}|ro={int(read_only)}"
+
+
+def _ping_connection(con: duckdb.DuckDBPyConnection) -> bool:
+    try:
+        con.execute("SELECT 1").fetchone()
+        return True
+    except Exception:
+        return False
+
+
+def _open_warehouse_connection(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
+    """Neue DuckDB-/MotherDuck-Verbindung (ohne Cache)."""
     token = motherduck_token()
     if token:
         _prepare_vercel_duckdb_env()
@@ -228,6 +265,46 @@ def connect_warehouse(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     return duckdb.connect(str(WAREHOUSE))
+
+
+def connect_warehouse(*, read_only: bool = False) -> duckdb.DuckDBPyConnection:
+    """
+    Zentrale DuckDB-Verbindung: lokal oder MotherDuck.
+
+    MotherDuck: Verbindung wird pro Prozess wiederverwendet (warme Serverless-
+    Instanz), getrennt für read_only=True und False. Aufrufer-.close() ist ein
+    No-Op auf dem Wrapper; echte Schließung nur bei Cache-Reset oder
+    fehlgeschlagenem Health-Check.
+
+    Lokal (Datei): kein Cache — DuckDB erlaubt keine parallelen RO/RW-Handles
+    auf derselben Datei; jeder Aufruf öffnet/schließt wie bisher.
+
+    MotherDuck (DuckDB ≥1.1 / hier 1.5.x), laut motherduck.com/docs:
+    - `duckdb.connect("md:<db>?motherduck_token=…&saas_mode=true")` auf Vercel
+    - config={"motherduck_token": …} parallel
+
+    Token nur über Env — nie hardcoden. Ohne Token: `data/warehouse.duckdb`.
+    """
+    if not uses_motherduck():
+        return _open_warehouse_connection(read_only=read_only)
+
+    key = _connection_cache_key(read_only=read_only)
+    raw = _cached_raw[read_only]
+    if raw is not None and _cached_target[read_only] == key and _ping_connection(raw):
+        return _CachedConnection(raw)  # type: ignore[return-value]
+
+    if raw is not None:
+        try:
+            raw.close()
+        except Exception:
+            pass
+        _cached_raw[read_only] = None
+        _cached_target[read_only] = None
+
+    con = _open_warehouse_connection(read_only=read_only)
+    _cached_raw[read_only] = con
+    _cached_target[read_only] = key
+    return _CachedConnection(con)  # type: ignore[return-value]
 
 
 def write_bronze(source: str, frame: pl.DataFrame, *, as_of: date | None = None) -> Path:

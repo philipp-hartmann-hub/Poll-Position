@@ -204,16 +204,31 @@ function apiBase(): string {
   return "";
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+/** Next.js Data-Cache: 10 min — passend zur täglichen Pipeline. */
+const REVALIDATE_SECONDS = 600;
+
+type ApiFetchInit = RequestInit & {
+  next?: { revalidate?: number | false };
+  /** Erzwingt cache: "no-store" (Nutzerinteraktion / POST). */
+  noStore?: boolean;
+};
+
+async function apiFetch<T>(path: string, init?: ApiFetchInit): Promise<T> {
   const url = `${apiBase()}${path}`;
+  const { noStore, next: _next, cache: _cache, headers, ...rest } = init ?? {};
+  const method = (rest.method ?? "GET").toUpperCase();
+  const useNoStore = Boolean(noStore) || method !== "GET";
+
   const res = await fetch(url, {
-    ...init,
+    ...rest,
     headers: {
       Accept: "application/json",
-      ...(init?.body ? { "Content-Type": "application/json" } : {}),
-      ...init?.headers,
+      ...(rest.body ? { "Content-Type": "application/json" } : {}),
+      ...headers,
     },
-    cache: "no-store",
+    ...(useNoStore
+      ? { cache: "no-store" as const }
+      : { next: { revalidate: REVALIDATE_SECONDS } }),
   });
   if (!res.ok) {
     const detail = await res.text().catch(() => res.statusText);
@@ -280,10 +295,14 @@ export function fetchCoalitions(
   if (opts?.max_parties !== undefined) {
     q.set("max_parties", String(opts.max_parties));
   }
-  for (const id of opts?.disabled_rule_ids ?? []) {
+  const disabled = opts?.disabled_rule_ids ?? [];
+  for (const id of disabled) {
     q.append("disabled_rule_ids", id);
   }
-  return apiFetch(`/api/coalitions?${q}`);
+  // Individuelle Regel-Auswahl = Nutzerinteraktion → nicht cachen
+  return apiFetch(`/api/coalitions?${q}`, {
+    noStore: disabled.length > 0,
+  });
 }
 
 export function fetchCoalitionRules(
@@ -397,8 +416,35 @@ export type BundesratSimulateResponse = {
   by_land: BundesratLandVote[];
 };
 
+export type BundesratMajorityCheckItem = {
+  parties: string[];
+  bundestag_seats: number;
+  is_minimal_winning: boolean;
+  choices: Record<string, string>;
+  yes_votes: number;
+  no_votes: number;
+  abstain_votes: number;
+  has_majority: boolean;
+  has_two_thirds: boolean;
+};
+
+export type BundesratMajorityCheckResponse = {
+  as_of: string;
+  total_votes: number;
+  majority_threshold: number;
+  two_thirds_threshold: number;
+  coalitions: BundesratMajorityCheckItem[];
+};
+
 export function fetchBundesratStatus(): Promise<BundesratStatusResponse> {
   return apiFetch("/api/bundesrat/status");
+}
+
+export function fetchBundesratMajorityCheck(
+  limit = 8,
+): Promise<BundesratMajorityCheckResponse> {
+  const q = new URLSearchParams({ limit: String(limit) });
+  return apiFetch(`/api/bundesrat/majority-check?${q}`);
 }
 
 export function postBundesratSimulate(

@@ -60,3 +60,35 @@ def test_coalition_override_key():
     assert set(hh.parties) == {"de:spd", "de:gruene"}
     assert hh.stance == "yes"
     assert "Umfrage" in hh.government_label
+
+
+def test_choices_for_coalition_all_partial_none():
+    from analysis.bundesrat import choices_for_coalition
+
+    cfg = load_bundesrat_config()
+    # Große schwarz-rote Bundeskoalition inkl. Union-Kürzel
+    choices = choices_for_coalition(
+        cfg, ["de:cdu_csu", "de:spd"]
+    )
+    # HH = SPD+Grüne → nur SPD in Koalition → Enthaltung
+    assert choices["de_hh_buergerschaft"] == "abstain"
+    # HE = CDU+SPD → beide abgedeckt (cdu via cdu_csu) → Ja/Default
+    assert choices["de_he_landtag"] == "default"
+    # BY = CSU+FW → CSU in Union, FW nicht → Enthaltung
+    assert choices["de_by_landtag"] == "abstain"
+    # Nur AfD-Bundeskoalition (unrealistisch) → viele Rejects
+    afd_only = choices_for_coalition(cfg, ["de:afd"])
+    assert afd_only["de_he_landtag"] == "reject"
+    assert all(v in {"default", "abstain", "reject"} for v in afd_only.values())
+
+
+def test_choices_for_coalition_feeds_simulate():
+    from analysis.bundesrat import choices_for_coalition
+
+    cfg = load_bundesrat_config()
+    choices = choices_for_coalition(cfg, ["de:cdu_csu", "de:spd"])
+    tally = simulate_bundesrat(cfg, choices=choices)
+    assert tally.yes + tally.no + tally.abstain == 69
+    assert tally.yes == sum(
+        s.votes for s in cfg.states if choices[s.parliament_id] == "default"
+    )

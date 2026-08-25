@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+import time
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -12,6 +14,7 @@ from analysis.averages import (
     party_trends_for_parliament,
 )
 from analysis.bundesrat import (
+    choices_for_coalition,
     coalition_key,
     load_bundesrat_config,
     parse_coalition_key,
@@ -61,6 +64,42 @@ SHORT_TO_CANONICAL: dict[str, str] = {
     "Sonstige": "de:sonstige",
     "Freie Wähler": "de:fw",
 }
+
+# Prozess-lokaler TTL-Cache (warme Serverless-Instanzen; Daily-Pipeline ~1×/Tag).
+_PAYLOAD_TTL_SECONDS = 300.0
+_averages_cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]] = {}
+_coalitions_cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]] = {}
+
+
+def clear_payload_caches() -> None:
+    """Leert Averages-/Coalitions-Caches (Tests / nach Pipeline-Write)."""
+    _averages_cache.clear()
+    _coalitions_cache.clear()
+
+
+def _ttl_get(
+    cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]],
+    key: tuple[Any, ...],
+) -> dict[str, Any] | None:
+    entry = cache.get(key)
+    if entry is None:
+        return None
+    expires_at, value = entry
+    if time.monotonic() >= expires_at:
+        del cache[key]
+        return None
+    return copy.deepcopy(value)
+
+
+def _ttl_set(
+    cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]],
+    key: tuple[Any, ...],
+    value: dict[str, Any],
+    *,
+    ttl: float = _PAYLOAD_TTL_SECONDS,
+) -> dict[str, Any]:
+    cache[key] = (time.monotonic() + ttl, copy.deepcopy(value))
+    return copy.deepcopy(value)
 
 
 def _as_date(value: Any) -> date:
@@ -123,9 +162,18 @@ def _load_points(parliament_id: str | None = None) -> list[PollObservationPoint]
 
 
 def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, Any]:
+    cache_key = (parliament_id, days)
+    cached = _ttl_get(_averages_cache, cache_key)
+    if cached is not None:
+        return cached
+
     points = _load_points(parliament_id)
     if not points:
-        return {"parliament_id": parliament_id, "as_of": date.today(), "parties": []}
+        return _ttl_set(
+            _averages_cache,
+            cache_key,
+            {"parliament_id": parliament_id, "as_of": date.today(), "parties": []},
+        )
 
     since = date.today() - timedelta(days=days)
     points = [p for p in points if p.as_of >= since]
@@ -162,7 +210,11 @@ def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, 
             -x["average_share"],
         )
     )
-    return {"parliament_id": parliament_id, "as_of": date.today(), "parties": parties}
+    return _ttl_set(
+        _averages_cache,
+        cache_key,
+        {"parliament_id": parliament_id, "as_of": date.today(), "parties": parties},
+    )
 
 
 def party_trend_series_payload(parliament_id: str, *, days: int = 365) -> dict[str, Any]:
@@ -363,28 +415,42 @@ def coalitions_payload(
     max_parties: int = 4,
     disabled_rule_ids: list[str] | None = None,
 ) -> dict[str, Any]:
+    disabled = tuple(sorted(disabled_rule_ids or []))
+    cache_key = (parliament_id, apply_exclusions, max_parties, disabled)
+    cached = _ttl_get(_coalitions_cache, cache_key)
+    if cached is not None:
+        return cached
+
     seats_data = seats_payload(parliament_id)
     seats = seats_data["seats"]
     total = int(seats_data["total_seats"] or 0)
     if not seats or total <= 0:
         # Leeres Warehouse / keine Umfragen — Endpoint liefert 404, kein 500.
-        return {
-            "parliament_id": parliament_id,
-            "total_seats": 0,
-            "majority_threshold": 0,
-            "excluded_by_rules": 0,
-            "coalitions": [],
-        }
+        return _ttl_set(
+            _coalitions_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "total_seats": 0,
+                "majority_threshold": 0,
+                "excluded_by_rules": 0,
+                "coalitions": [],
+            },
+        )
     _, names = _votes_from_averages(parliament_id)
     canon = _seats_to_canonical(seats, names)
     if not canon:
-        return {
-            "parliament_id": parliament_id,
-            "total_seats": total,
-            "majority_threshold": 0,
-            "excluded_by_rules": 0,
-            "coalitions": [],
-        }
+        return _ttl_set(
+            _coalitions_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "total_seats": total,
+                "majority_threshold": 0,
+                "excluded_by_rules": 0,
+                "coalitions": [],
+            },
+        )
     total = total or sum(canon.values())
     result = possible_majorities(
         canon,
@@ -392,7 +458,7 @@ def coalitions_payload(
         max_parties=max_parties,
         parliament_id=parliament_id,
         apply_exclusions=apply_exclusions,
-        disabled_rule_ids=disabled_rule_ids,
+        disabled_rule_ids=list(disabled) if disabled else None,
     )
     coalitions_out = []
     for c in result.coalitions:
@@ -407,13 +473,17 @@ def coalitions_payload(
                 "compatibility_span": c.compatibility_span,
             }
         )
-    return {
-        "parliament_id": parliament_id,
-        "total_seats": result.total_seats,
-        "majority_threshold": result.majority_threshold,
-        "excluded_by_rules": result.excluded_by_rules,
-        "coalitions": coalitions_out,
-    }
+    return _ttl_set(
+        _coalitions_cache,
+        cache_key,
+        {
+            "parliament_id": parliament_id,
+            "total_seats": result.total_seats,
+            "majority_threshold": result.majority_threshold,
+            "excluded_by_rules": result.excluded_by_rules,
+            "coalitions": coalitions_out,
+        },
+    )
 
 
 def coalition_rules_payload(parliament_id: str) -> dict[str, Any]:
@@ -932,6 +1002,39 @@ def bundesrat_simulate_payload(choices: dict[str, str]) -> dict[str, Any]:
         "majority_threshold": cfg.majority_simple,
         "two_thirds_threshold": cfg.majority_two_thirds,
         **_tally_to_dict(sim),
+    }
+
+
+def bundesrat_majority_check_payload(*, limit: int = 8) -> dict[str, Any]:
+    """Top-Bundestags-Koalitionen × automatische Bundesrats-Stimmen (Art. 51 Abs. 3)."""
+    cfg = load_bundesrat_config()
+    coal = coalitions_payload("de_bundestag", apply_exclusions=True, max_parties=4)
+    rows: list[dict[str, Any]] = []
+    for c in (coal.get("coalitions") or [])[:limit]:
+        parties = [p for p in (c.get("parties") or []) if not is_residual_party_id(p)]
+        if not parties:
+            continue
+        choices = choices_for_coalition(cfg, parties)
+        sim = simulate_bundesrat(cfg, choices=choices)
+        rows.append(
+            {
+                "parties": parties,
+                "bundestag_seats": int(c.get("seats") or 0),
+                "is_minimal_winning": bool(c.get("is_minimal_winning")),
+                "choices": choices,
+                "yes_votes": sim.yes,
+                "no_votes": sim.no,
+                "abstain_votes": sim.abstain,
+                "has_majority": sim.has_simple_majority,
+                "has_two_thirds": sim.has_two_thirds_majority,
+            }
+        )
+    return {
+        "as_of": cfg.stand,
+        "total_votes": cfg.votes_total,
+        "majority_threshold": cfg.majority_simple,
+        "two_thirds_threshold": cfg.majority_two_thirds,
+        "coalitions": rows,
     }
 
 

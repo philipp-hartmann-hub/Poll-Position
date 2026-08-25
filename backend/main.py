@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import os
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from backend import schemas, services
 
@@ -18,6 +19,59 @@ app = FastAPI(
     version="0.1.0",
     description="JSON-API über analysis/ (Sitzverteilung, Koalitionen, Unsicherheit, …).",
 )
+
+# Edge-/CDN-Cache (Vercel): täglich aktualisierte GET-Antworten.
+_CACHE_CONTROL_PUBLIC = "public, max-age=300, stale-while-revalidate=3600"
+_PUBLIC_CACHE_PATHS = frozenset(
+    {
+        "/api/parliaments",
+        "/api/parties/averages",
+        "/api/parties/trend-series",
+        "/api/seats",
+        "/api/institutes/house-effects",
+        "/api/institutes/leaderboard",
+        "/api/europe/overview",
+    }
+)
+# Query steuert die Antwort — Cache-Key = volle URL; personalisierte
+# disabled_rule_ids bewusst ohne öffentlichen Cache.
+_PUBLIC_CACHE_QUERY_PATHS = frozenset(
+    {
+        "/api/uncertainty",
+        "/api/coalitions",
+    }
+)
+
+
+class PublicGetCacheMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next) -> Response:
+        response = await call_next(request)
+        if request.method != "GET":
+            return response
+        path = request.url.path
+        if path != "/" and path.endswith("/"):
+            path = path[:-1]
+
+        if path in _PUBLIC_CACHE_PATHS:
+            response.headers["Cache-Control"] = _CACHE_CONTROL_PUBLIC
+            return response
+
+        if path in _PUBLIC_CACHE_QUERY_PATHS:
+            if path == "/api/coalitions" and request.query_params.getlist(
+                "disabled_rule_ids"
+            ):
+                response.headers["Cache-Control"] = "private, no-store"
+                return response
+            response.headers["Cache-Control"] = _CACHE_CONTROL_PUBLIC
+            # Volle URL inkl. Query ist Cache-Key; Vary schützt vor
+            # falsch geteilten Varianten über Accept.
+            response.headers.setdefault("Vary", "Accept")
+            return response
+
+        return response
+
+
+app.add_middleware(PublicGetCacheMiddleware)
 
 # CORS nur bei explizitem Opt-in (separates Frontend-Origin).
 # Empfohlen: Next.js + API im selben Vercel-Projekt → kein CORS nötig.
@@ -36,7 +90,6 @@ if os.environ.get("ENABLE_CORS", "").strip().lower() in {"1", "true", "yes"}:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
 
 @app.get("/health")
 def health() -> dict:
@@ -222,6 +275,18 @@ def get_europe_overview() -> schemas.EuropeOverviewResponse:
 def get_bundesrat_status() -> schemas.BundesratStatusResponse:
     return schemas.BundesratStatusResponse.model_validate(
         services.bundesrat_status_payload()
+    )
+
+
+@app.get(
+    "/api/bundesrat/majority-check",
+    response_model=schemas.BundesratMajorityCheckResponse,
+)
+def get_bundesrat_majority_check(
+    limit: int = Query(8, ge=1, le=20),
+) -> schemas.BundesratMajorityCheckResponse:
+    return schemas.BundesratMajorityCheckResponse.model_validate(
+        services.bundesrat_majority_check_payload(limit=limit)
     )
 
 

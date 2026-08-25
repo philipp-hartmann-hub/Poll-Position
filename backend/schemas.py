@@ -292,3 +292,23 @@ class BundesratSimulateResponse(BaseModel):
     has_majority: bool
     has_two_thirds: bool
     by_land: list[BundesratLandVoteOut]
+
+
+class BundesratMajorityCheckItem(BaseModel):
+    parties: list[str]
+    bundestag_seats: int
+    is_minimal_winning: bool = False
+    choices: dict[str, str]
+    yes_votes: int
+    no_votes: int
+    abstain_votes: int
+    has_majority: bool
+    has_two_thirds: bool
+
+
+class BundesratMajorityCheckResponse(BaseModel):
+    as_of: str
+    total_votes: int
+    majority_threshold: int
+    two_thirds_threshold: int
+    coalitions: list[BundesratMajorityCheckItem]

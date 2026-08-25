@@ -31,6 +31,12 @@ def api_warehouse(tmp_path, monkeypatch):
         "data_pipeline.sources.dawum.LAST_UPDATE_FILE", raw / "last_update.txt"
     )
 
+    from backend import services
+    from data_pipeline.warehouse import clear_warehouse_connection_cache
+
+    clear_warehouse_connection_cache()
+    services.clear_payload_caches()
+
     write_bronze_raw(PAYLOAD, as_of=date(2026, 8, 1))
     ensure_warehouse()
     load_silver(parse_dawum_payload(PAYLOAD))
@@ -63,6 +69,58 @@ def test_parliaments(client):
     assert any(p["id"] == "de_bundestag" for p in data)
 
 
+def test_public_get_cache_control_headers(client):
+    """CDN-freundliche Cache-Control auf stabilen GETs; personalisierte Coalitions ausgenommen."""
+    expected = "public, max-age=300, stale-while-revalidate=3600"
+
+    r = client.get("/api/parliaments")
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == expected
+
+    r = client.get(
+        "/api/parties/averages", params={"parliament_id": "de_bundestag"}
+    )
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == expected
+
+    r = client.get("/api/seats", params={"parliament_id": "de_bundestag"})
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == expected
+
+    r = client.get(
+        "/api/uncertainty",
+        params={"parliament_id": "de_bundestag", "n_simulations": 80},
+    )
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == expected
+    assert "accept" in (r.headers.get("vary") or "").lower()
+
+    r = client.get(
+        "/api/coalitions",
+        params={"parliament_id": "de_bundestag"},
+    )
+    assert r.status_code == 200
+    assert r.headers.get("cache-control") == expected
+
+    rules = client.get(
+        "/api/coalitions/rules", params={"parliament_id": "de_bundestag"}
+    ).json()["rules"]
+    if rules:
+        r = client.get(
+            "/api/coalitions",
+            params=[
+                ("parliament_id", "de_bundestag"),
+                ("disabled_rule_ids", rules[0]["id"]),
+            ],
+        )
+        assert r.status_code == 200
+        assert r.headers.get("cache-control") == "private, no-store"
+
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert "max-age=300" not in (r.headers.get("cache-control") or "")
+
+
 def test_party_averages(client):
     r = client.get("/api/parties/averages", params={"parliament_id": "de_bundestag"})
     assert r.status_code == 200
@@ -70,6 +128,30 @@ def test_party_averages(client):
     assert body["parliament_id"] == "de_bundestag"
     assert len(body["parties"]) >= 5
     assert body["parties"][0]["average_share"] > 0
+
+
+def test_party_averages_payload_ttl_reuses_warehouse(api_warehouse, monkeypatch):
+    """Zweiter Aufruf innerhalb der TTL öffnet keine neue Warehouse-Query-Kette."""
+    from backend import services
+
+    services.clear_payload_caches()
+    calls = {"n": 0}
+    real_connect = services.connect_warehouse
+
+    def counting_connect(**kwargs):
+        calls["n"] += 1
+        return real_connect(**kwargs)
+
+    monkeypatch.setattr(services, "connect_warehouse", counting_connect)
+
+    first = services.party_averages_payload("de_bundestag")
+    after_first = calls["n"]
+    assert after_first >= 1
+
+    second = services.party_averages_payload("de_bundestag")
+    assert calls["n"] == after_first
+    assert second["parliament_id"] == first["parliament_id"]
+    assert len(second["parties"]) == len(first["parties"])
 
 
 def test_party_averages_sonstige_always_last(api_warehouse, monkeypatch):
@@ -546,6 +628,20 @@ def test_bundesrat_simulate_unknown_land(client):
         json={"choices": {"de_bundestag": "abstain"}},
     )
     assert r.status_code == 400
+
+
+def test_bundesrat_majority_check(client):
+    r = client.get("/api/bundesrat/majority-check", params={"limit": 5})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total_votes"] == 69
+    assert body["majority_threshold"] == 35
+    assert len(body["coalitions"]) >= 1
+    row = body["coalitions"][0]
+    assert row["parties"]
+    assert len(row["choices"]) == 16
+    assert row["yes_votes"] + row["no_votes"] + row["abstain_votes"] == 69
+    assert set(row["choices"].values()) <= {"default", "abstain", "reject"}
 
 
 def test_scenario(client):

@@ -17,3 +17,13 @@ def _disable_motherduck_for_tests(monkeypatch):
         "data_pipeline.warehouse._maybe_load_dotenv",
         lambda: None,
     )
+
+
+@pytest.fixture(autouse=True)
+def _clear_warehouse_connection_cache():
+    """Keine stale Connection über Testgrenzen / geänderte WAREHOUSE-Pfade."""
+    from data_pipeline.warehouse import clear_warehouse_connection_cache
+
+    clear_warehouse_connection_cache()
+    yield
+    clear_warehouse_connection_cache()

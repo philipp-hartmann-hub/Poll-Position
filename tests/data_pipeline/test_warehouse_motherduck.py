@@ -18,6 +18,9 @@ def _clear_motherduck_env(monkeypatch):
     monkeypatch.delenv("MOTHERDUCK_SAAS_MODE", raising=False)
     monkeypatch.delenv("VERCEL", raising=False)
     monkeypatch.setattr(warehouse, "_maybe_load_dotenv", lambda: None)
+    warehouse.clear_warehouse_connection_cache()
+    yield
+    warehouse.clear_warehouse_connection_cache()
 
 
 def test_uses_motherduck_false_without_token():
@@ -64,10 +67,11 @@ def test_connect_warehouse_motherduck_uses_md_string(monkeypatch):
     monkeypatch.setenv("MOTHERDUCK_TOKEN", "secret-token")
     monkeypatch.setenv("MOTHERDUCK_DATABASE", "poll_position")
     fake = MagicMock()
+    fake.execute.return_value.fetchone.return_value = (1,)
 
     with patch("data_pipeline.warehouse.duckdb.connect", return_value=fake) as mocked:
         con = warehouse.connect_warehouse()
-        assert con is fake
+        assert con.execute is not None
         mocked.assert_called_once()
         args, kwargs = mocked.call_args
         assert args[0].startswith("md:poll_position?")
@@ -78,10 +82,29 @@ def test_connect_warehouse_motherduck_uses_md_string(monkeypatch):
         assert kwargs.get("config", {}).get("motherduck_token") == "secret-token"
 
 
+def test_connect_warehouse_reuses_motherduck_connection(monkeypatch):
+    monkeypatch.setenv("MOTHERDUCK_TOKEN", "secret-token")
+    monkeypatch.setenv("MOTHERDUCK_DATABASE", "poll_position")
+    fake = MagicMock()
+    fake.execute.return_value.fetchone.return_value = (1,)
+
+    with patch("data_pipeline.warehouse.duckdb.connect", return_value=fake) as mocked:
+        a = warehouse.connect_warehouse(read_only=False)
+        b = warehouse.connect_warehouse(read_only=False)
+        a.close()
+        c = warehouse.connect_warehouse(read_only=False)
+        assert mocked.call_count == 1
+        assert a._con is b._con is c._con
+        # RO und RW sind getrennte Cache-Slots
+        warehouse.connect_warehouse(read_only=True)
+        assert mocked.call_count == 2
+
+
 def test_connect_warehouse_motherduck_saas_mode_on_vercel(monkeypatch):
     monkeypatch.setenv("MOTHERDUCK_TOKEN", "secret-token")
     monkeypatch.setenv("VERCEL", "1")
     fake = MagicMock()
+    fake.execute.return_value.fetchone.return_value = (1,)
 
     with patch("data_pipeline.warehouse.duckdb.connect", return_value=fake) as mocked:
         warehouse.connect_warehouse()

@@ -79,6 +79,41 @@ def parse_coalition_key(key: str) -> tuple[str, ...]:
     return tuple(sorted(parts))
 
 
+def _expand_party_ids(parties: Sequence[str]) -> set[str]:
+    """Union (de:cdu_csu) deckt Landes-CDU/CSU ab."""
+    out = set(parties)
+    if "de:cdu_csu" in out:
+        out.update({"de:cdu", "de:csu"})
+    return out
+
+
+def choices_for_coalition(
+    config: BundesratConfig,
+    coalition_parties: Sequence[str],
+) -> dict[str, str]:
+    """
+    Pro Land automatische Bundesrats-Stimme für eine Bundes-Koalition.
+
+    - Alle Regierungsparteien ⊆ Koalition → ``default`` (Ja mit amtierender Regierung)
+    - Teilüberschneidung → ``abstain`` (Art. 51 Abs. 3 GG)
+    - Keine Überschneidung → ``reject``
+    """
+    coal = _expand_party_ids(coalition_parties)
+    choices: dict[str, str] = {}
+    for state in config.states:
+        gov = set(state.government_parties)
+        if not gov:
+            choices[state.parliament_id] = "abstain"
+            continue
+        if gov <= coal:
+            choices[state.parliament_id] = "default"
+        elif gov & coal:
+            choices[state.parliament_id] = "abstain"
+        else:
+            choices[state.parliament_id] = "reject"
+    return choices
+
+
 def simulate_bundesrat(
     config: BundesratConfig,
     *,
