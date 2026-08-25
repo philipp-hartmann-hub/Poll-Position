@@ -14,6 +14,7 @@ function ruleLabel(rule: ExclusionRule): string {
 export function CoalitionPanel({
   parliamentId,
   initial,
+  onHighlightParties,
 }: {
   parliamentId: string;
   initial: {
@@ -21,6 +22,8 @@ export function CoalitionPanel({
     excluded_by_rules: number;
     coalitions: Coalition[];
   };
+  /** Hover: Anzeigenamen der Koalitionsparteien (für Hemicycle-Highlight). */
+  onHighlightParties?: (parties: string[] | null) => void;
 }) {
   const [applyExclusions, setApplyExclusions] = useState(true);
   const [rules, setRules] = useState<ExclusionRule[]>([]);
@@ -138,7 +141,14 @@ export function CoalitionPanel({
             .filter((c) => !c.parties.some((p) => /sonstige$|:others$|:other$/i.test(p)))
             .slice(0, 20)
             .map((c, i) => (
-              <tr key={i} className="border-t border-ink/5">
+              <tr
+                key={i}
+                className="border-t border-ink/5 transition hover:bg-mist/40"
+                onMouseEnter={() =>
+                  onHighlightParties?.(c.parties.map(labelPartyId))
+                }
+                onMouseLeave={() => onHighlightParties?.(null)}
+              >
                 <td className="px-3 py-2">
                   {c.parties.map(labelPartyId).join(" + ")}
                 </td>

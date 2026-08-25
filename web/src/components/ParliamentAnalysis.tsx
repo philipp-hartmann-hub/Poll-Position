@@ -47,6 +47,9 @@ export function ParliamentAnalysis({
   const [uncertainty, setUncertainty] = useState<UncertaintyResponse | null>(
     null,
   );
+  const [highlightParties, setHighlightParties] = useState<string[] | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -121,8 +124,6 @@ export function ParliamentAnalysis({
         </p>
       ) : null}
 
-      {includeSeats ? <ThresholdWatch parliamentId={parliamentId} /> : null}
-
       <section>
         <h2 className="mb-3 font-display text-2xl text-ink">
           Umfragemittelwert & Trend
@@ -190,12 +191,17 @@ export function ParliamentAnalysis({
         </div>
       </section>
 
+      {includeSeats ? <ThresholdWatch parliamentId={parliamentId} /> : null}
+
       {includeSeats && seats ? (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">Sitzprojektion</h2>
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
-              <Hemicycle seats={seats.seats_by_name} />
+              <Hemicycle
+                seats={seats.seats_by_name}
+                highlightParties={highlightParties ?? undefined}
+              />
             </div>
             <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
               <SeatsBarChart seats={seats.seats_by_name} />
@@ -215,6 +221,7 @@ export function ParliamentAnalysis({
             excluded_by_rules: coalitions.excluded_by_rules,
             coalitions: coalitions.coalitions,
           }}
+          onHighlightParties={setHighlightParties}
         />
       ) : null}
 

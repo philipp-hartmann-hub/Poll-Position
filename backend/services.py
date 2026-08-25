@@ -154,8 +154,14 @@ def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, 
             "swing": a.swing,
             "trend_share": latest_trend.get(a.party_id),
         }
-        for a in sorted(avgs, key=lambda x: -x.average_share)
+        for a in avgs
     ]
+    parties.sort(
+        key=lambda x: (
+            x["party_name"] == "Sonstige" or x["party_id"] == "de:sonstige",
+            -x["average_share"],
+        )
+    )
     return {"parliament_id": parliament_id, "as_of": date.today(), "parties": parties}
 
 

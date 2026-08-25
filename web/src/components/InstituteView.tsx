@@ -1,17 +1,57 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { fetchHouseEffects, type HouseEffectsResponse } from "@/lib/api";
+import {
+  fetchHouseEffects,
+  fetchParliaments,
+  type HouseEffectsResponse,
+  type Parliament,
+} from "@/lib/api";
+
+function sortDeParliaments(list: Parliament[]): Parliament[] {
+  return [...list]
+    .filter((p) => p.country === "DE")
+    .sort((a, b) => {
+      const aNat = a.level_kind === "national" ? 0 : 1;
+      const bNat = b.level_kind === "national" ? 0 : 1;
+      if (aNat !== bNat) return aNat - bNat;
+      return a.name.localeCompare(b.name, "de");
+    });
+}
+
+/** Dezente divergierende Tints; Intensität proportional zu |pp|, Cap ±5. */
+function houseEffectCellStyle(value: number): { backgroundColor: string } | undefined {
+  const capped = Math.max(-5, Math.min(5, value));
+  if (capped === 0) return undefined;
+  const t = Math.abs(capped) / 5;
+  const alpha = 0.07 + t * 0.2;
+  if (capped < 0) {
+    // Unterschätzung vs. Peers — gedämpftes Grün
+    return { backgroundColor: `rgba(70, 120, 85, ${alpha})` };
+  }
+  // Überschätzung — gedämpftes Rot / Accent-Ton
+  return { backgroundColor: `rgba(180, 75, 55, ${alpha})` };
+}
 
 export function InstituteView() {
+  const [parliaments, setParliaments] = useState<Parliament[]>([]);
   const [parliamentId, setParliamentId] = useState("de_bundestag");
   const [data, setData] = useState<HouseEffectsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    void fetchParliaments()
+      .then((list) => setParliaments(sortDeParliaments(list)))
+      .catch((e) =>
+        setError(e instanceof Error ? e.message : "Parlamente laden fehlgeschlagen"),
+      );
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setError(null);
     void fetchHouseEffects(parliamentId, 14)
       .then((d) => {
         if (!cancelled) setData(d);
@@ -28,7 +68,12 @@ export function InstituteView() {
   }, [parliamentId]);
 
   const pivot = useMemo(() => {
-    if (!data) return { institutes: [] as string[], parties: [] as string[], cells: new Map<string, number>() };
+    if (!data)
+      return {
+        institutes: [] as string[],
+        parties: [] as string[],
+        cells: new Map<string, number>(),
+      };
     const latest = new Map<string, (typeof data.effects)[0]>();
     for (const e of data.effects) {
       const key = `${e.institute_name ?? e.institute_id}|${e.party_name ?? e.party_id}`;
@@ -64,10 +109,11 @@ export function InstituteView() {
           value={parliamentId}
           onChange={(e) => setParliamentId(e.target.value)}
         >
-          <option value="de_bundestag">Bundestag</option>
-          <option value="de_by_landtag">Bayern</option>
-          <option value="de_th_landtag">Thüringen</option>
-          <option value="de_nw_landtag">NRW</option>
+          {parliaments.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
         </select>
       </label>
 
@@ -80,6 +126,10 @@ export function InstituteView() {
             <h2 className="mb-3 font-display text-xl text-ink">
               House Effects (pp)
             </h2>
+            <p className="mb-3 text-xs text-ink/45">
+              Grün: Institut unter dem Peer-Schnitt · Rot: darüber (Farbstärke
+              bis ±5 pp).
+            </p>
             {pivot.institutes.length === 0 ? (
               <p className="text-sm text-ink/50">
                 Keine House Effects (zu wenige Peer-Institute im Fenster).
@@ -104,7 +154,13 @@ export function InstituteView() {
                         {pivot.parties.map((p) => {
                           const v = pivot.cells.get(`${inst}|${p}`);
                           return (
-                            <td key={p} className="px-3 py-2 tabular-nums">
+                            <td
+                              key={p}
+                              className="px-3 py-2 tabular-nums"
+                              style={
+                                v != null ? houseEffectCellStyle(v) : undefined
+                              }
+                            >
                               {v != null ? v.toFixed(1) : "—"}
                             </td>
                           );

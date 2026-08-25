@@ -20,6 +20,9 @@ export function ScenarioWorkbench() {
   const [applyExclusions, setApplyExclusions] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [highlightParties, setHighlightParties] = useState<string[] | null>(
+    null,
+  );
 
   useEffect(() => {
     void fetchParliaments().then((list) => {
@@ -147,7 +150,10 @@ export function ScenarioWorkbench() {
         <>
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
-              <Hemicycle seats={namedSeats} />
+              <Hemicycle
+                seats={namedSeats}
+                highlightParties={highlightParties ?? undefined}
+              />
             </div>
             <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
               <SeatsBarChart seats={namedSeats} />
@@ -170,7 +176,16 @@ export function ScenarioWorkbench() {
                   .filter((c) => !c.parties.some((p) => /sonstige$|:others$|:other$/i.test(p)))
                   .slice(0, 15)
                   .map((c, i) => (
-                  <tr key={i} className="border-t border-ink/5">
+                  <tr
+                    key={i}
+                    className="border-t border-ink/5 transition hover:bg-mist/40"
+                    onMouseEnter={() =>
+                      setHighlightParties(
+                        c.parties.map((p) => names[p] ?? labelPartyId(p)),
+                      )
+                    }
+                    onMouseLeave={() => setHighlightParties(null)}
+                  >
                     <td className="px-3 py-2">
                       {c.parties.map((p) => names[p] ?? labelPartyId(p)).join(" + ")}
                     </td>

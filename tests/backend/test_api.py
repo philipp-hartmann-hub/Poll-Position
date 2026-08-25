@@ -72,6 +72,95 @@ def test_party_averages(client):
     assert body["parties"][0]["average_share"] > 0
 
 
+def test_party_averages_sonstige_always_last(api_warehouse, monkeypatch):
+    """Sonstige bleibt letzter Eintrag, auch bei höherem average_share als andere."""
+    from datetime import date
+
+    from analysis.averages import PartyAverage, PollObservationPoint
+    from backend import services
+
+    fake_avgs = [
+        PartyAverage(
+            parliament_id="de_bundestag",
+            party_id="de:sonstige",
+            as_of=date(2026, 8, 1),
+            average_share=45.0,
+            n_surveys=2,
+            total_weight=1.0,
+            swing=None,
+            election_share=None,
+            election_date=None,
+            election_label=None,
+        ),
+        PartyAverage(
+            parliament_id="de_bundestag",
+            party_id="dawum:party:1",
+            as_of=date(2026, 8, 1),
+            average_share=25.0,
+            n_surveys=2,
+            total_weight=1.0,
+            swing=None,
+            election_share=None,
+            election_date=None,
+            election_label=None,
+        ),
+        PartyAverage(
+            parliament_id="de_bundestag",
+            party_id="dawum:party:2",
+            as_of=date(2026, 8, 1),
+            average_share=20.0,
+            n_surveys=2,
+            total_weight=1.0,
+            swing=None,
+            election_share=None,
+            election_date=None,
+            election_label=None,
+        ),
+    ]
+    monkeypatch.setattr(
+        services,
+        "_load_points",
+        lambda _pid: [
+            PollObservationPoint(
+                parliament_id="de_bundestag",
+                party_id="dawum:party:1",
+                share=25.0,
+                as_of=date.today(),
+            )
+        ],
+    )
+    monkeypatch.setattr(
+        services,
+        "party_averages_for_parliament",
+        lambda *a, **k: fake_avgs,
+    )
+    monkeypatch.setattr(services, "party_trends_for_parliament", lambda *a, **k: [])
+    monkeypatch.setattr(
+        services,
+        "_party_name_map",
+        lambda _con: {
+            "de:sonstige": "Sonstige",
+            "dawum:party:1": "CDU/CSU",
+            "dawum:party:2": "SPD",
+        },
+    )
+
+    from fastapi.testclient import TestClient
+    from backend.main import app
+
+    with TestClient(app) as client:
+        r = client.get(
+            "/api/parties/averages", params={"parliament_id": "de_bundestag"}
+        )
+    assert r.status_code == 200
+    parties = r.json()["parties"]
+    assert parties[-1]["party_name"] == "Sonstige"
+    assert parties[-1]["party_id"] == "de:sonstige"
+    assert parties[-1]["average_share"] == 45.0
+    assert parties[-1]["average_share"] > parties[0]["average_share"]
+    assert [p["party_name"] for p in parties[:-1]] == ["CDU/CSU", "SPD"]
+
+
 def test_party_trend_series_chrono_and_days_filter(api_warehouse):
     from datetime import date, datetime
 

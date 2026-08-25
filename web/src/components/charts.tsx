@@ -14,6 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import { partyColor } from "@/lib/colors";
+import { leftRightPosition } from "@/lib/partyPositions";
 
 type TrendPoint = { as_of: string; [party: string]: string | number };
 
@@ -100,34 +101,71 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
   );
 }
 
-/** Halbkreis-/Hemicycle aus Sitzzahlen (SVG). */
-export function Hemicycle({ seats }: { seats: Record<string, number> }) {
+/** Halbkreis: Winkelkeile proportional zu Sitzen, Reihenfolge links→rechts. */
+export function Hemicycle({
+  seats,
+  highlightParties,
+}: {
+  seats: Record<string, number>;
+  /** Wenn gesetzt: nur diese Parteien voll sichtbar, übrige mit Opacity 0.25 */
+  highlightParties?: string[];
+}) {
   const items = Object.entries(seats)
     .filter(([, n]) => n > 0)
-    .sort((a, b) => b[1] - a[1]);
+    .sort((a, b) => {
+      const lr = leftRightPosition(a[0]) - leftRightPosition(b[0]);
+      if (lr !== 0) return lr;
+      return a[0].localeCompare(b[0], "de");
+    });
   const total = items.reduce((s, [, n]) => s + n, 0) || 1;
-  const seatList: string[] = [];
-  for (const [name, n] of items) {
-    for (let i = 0; i < n; i++) seatList.push(name);
-  }
-  const rows = Math.max(4, Math.ceil(Math.sqrt(total / 2)));
-  const points: { x: number; y: number; party: string }[] = [];
-  let idx = 0;
-  for (let row = 0; row < rows; row++) {
-    let nInRow = Math.max(1, Math.floor(((row + 1) / rows) * ((total * 2) / rows)));
-    nInRow = Math.min(nInRow, total - idx);
-    if (nInRow <= 0) break;
-    const radius = 0.45 + (0.55 * row) / Math.max(rows - 1, 1);
-    for (let i = 0; i < nInRow; i++) {
-      if (idx >= seatList.length) break;
-      const angle = (Math.PI * (i + 0.5)) / nInRow;
-      points.push({
-        x: radius * Math.cos(angle),
-        y: radius * Math.sin(angle),
-        party: seatList[idx],
-      });
-      idx++;
+  const highlightSet =
+    highlightParties && highlightParties.length > 0
+      ? new Set(highlightParties)
+      : null;
+
+  const points: { x: number; y: number; party: string; opacity: number }[] = [];
+
+  // Winkel von π (links) nach 0 (rechts)
+  let angleStart = Math.PI;
+  for (const [party, n] of items) {
+    const wedge = (n / total) * Math.PI;
+    const angleEnd = angleStart - wedge;
+    const opacity =
+      highlightSet && !highlightSet.has(party) ? 0.25 : 1;
+
+    const rows = Math.max(3, Math.ceil(Math.sqrt(n)));
+    let remaining = n;
+    let placed = 0;
+    for (let row = 0; row < rows && remaining > 0; row++) {
+      const rowsLeft = rows - row;
+      const nInRow = Math.max(1, Math.ceil(remaining / rowsLeft));
+      const take = Math.min(nInRow, remaining);
+      const radius = 0.42 + (0.52 * row) / Math.max(rows - 1, 1);
+      for (let i = 0; i < take; i++) {
+        const t = (i + 0.5) / take;
+        const angle = angleStart - t * wedge;
+        points.push({
+          x: radius * Math.cos(angle),
+          y: radius * Math.sin(angle),
+          party,
+          opacity,
+        });
+        placed += 1;
+      }
+      remaining -= take;
     }
+    // Sicherheitsnetz falls Rundung Sitze übrig lässt
+    while (placed < n) {
+      const angle = (angleStart + angleEnd) / 2;
+      points.push({
+        x: 0.95 * Math.cos(angle),
+        y: 0.95 * Math.sin(angle),
+        party,
+        opacity,
+      });
+      placed += 1;
+    }
+    angleStart = angleEnd;
   }
 
   return (
@@ -140,22 +178,30 @@ export function Hemicycle({ seats }: { seats: Record<string, number> }) {
             cy={p.y}
             r={0.028}
             fill={partyColor(p.party)}
+            opacity={p.opacity}
           >
             <title>{p.party}</title>
           </circle>
         ))}
       </svg>
       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/80">
-        {items.map(([name, n]) => (
-          <li key={name} className="flex items-center gap-1.5">
-            <span
-              className="inline-block h-2.5 w-2.5 rounded-full"
-              style={{ background: partyColor(name) }}
-            />
-            <span className="font-medium">{name}</span>
-            <span className="text-ink/50">{n}</span>
-          </li>
-        ))}
+        {items.map(([name, n]) => {
+          const dimmed = highlightSet && !highlightSet.has(name);
+          return (
+            <li
+              key={name}
+              className="flex items-center gap-1.5"
+              style={{ opacity: dimmed ? 0.35 : 1 }}
+            >
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full"
+                style={{ background: partyColor(name) }}
+              />
+              <span className="font-medium">{name}</span>
+              <span className="text-ink/50">{n}</span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
