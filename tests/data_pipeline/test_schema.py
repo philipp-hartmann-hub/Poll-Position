@@ -23,6 +23,12 @@ def test_load_de_parliaments_config():
     assert len([s for s in bundle.election_systems if s.key.startswith("de_")]) == 17
     assert any(p.id == "at_nationalrat" for p in bundle.parliaments)
     assert any(p.id == "fr_assemblee" for p in bundle.parliaments)
+    st = next(p for p in de_parliaments if p.id == "de_st_landtag")
+    assert st.next_election_date == date(2026, 9, 6)
+    assert st.sources
+    bw = next(p for p in de_parliaments if p.id == "de_bw_landtag")
+    assert bw.next_election_date is None
+    assert bw.next_election_note
 
     bt = next(p for p in bundle.parliaments if p.id == "de_bundestag")
     assert bt.seats_total == 630

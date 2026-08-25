@@ -25,6 +25,7 @@ _CACHE_CONTROL_PUBLIC = "public, max-age=300, stale-while-revalidate=3600"
 _PUBLIC_CACHE_PATHS = frozenset(
     {
         "/api/parliaments",
+        "/api/parliaments/last-election",
         "/api/parties/averages",
         "/api/parties/trend-series",
         "/api/seats",
@@ -151,6 +152,25 @@ def health() -> dict:
 @app.get("/api/parliaments", response_model=list[schemas.ParliamentOut])
 def get_parliaments() -> list[schemas.ParliamentOut]:
     return [schemas.ParliamentOut.model_validate(r) for r in services.list_parliaments()]
+
+
+@app.get(
+    "/api/parliaments/last-election",
+    response_model=schemas.LastElectionResponse,
+)
+def get_last_election(
+    parliament_id: str = Query(..., description="z. B. de_bundestag"),
+) -> schemas.LastElectionResponse:
+    data = services.last_election_payload(parliament_id)
+    if data is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Kein Wahlergebnis in election_results.yaml für Parlament "
+                f"'{parliament_id}' hinterlegt"
+            ),
+        )
+    return schemas.LastElectionResponse.model_validate(data)
 
 
 @app.get("/api/parties/averages", response_model=schemas.AveragesResponse)

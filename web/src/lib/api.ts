@@ -9,6 +9,8 @@ export type Parliament = {
   seats_total: number | null;
   election_system_key: string | null;
   shortcut: string | null;
+  next_election_date?: string | null;
+  next_election_note?: string | null;
 };
 
 export type PartyAverage = {
@@ -62,6 +64,16 @@ export type SeatsResponse = {
   seats_by_name: Record<string, number>;
 };
 
+export type LastElectionResponse = {
+  parliament_id: string;
+  election_date: string;
+  label: string;
+  source: string | null;
+  seats: Record<string, number>;
+  seats_by_name: Record<string, number>;
+  total_seats: number;
+};
+
 export type Coalition = {
   parties: string[];
   seats: number;
@@ -81,6 +93,7 @@ export type ExclusionRule = {
   id: string;
   party: string;
   excludes: string[];
+  parties: [string, string] | string[];
   note: string | null;
 };
 
@@ -318,6 +331,13 @@ export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
     `/data/${encodeURIComponent(parliamentId)}/seats.json`,
     `/api/seats?${q}`,
   );
+}
+
+export function fetchLastElection(
+  parliamentId: string,
+): Promise<LastElectionResponse> {
+  const q = new URLSearchParams({ parliament_id: parliamentId });
+  return apiFetch(`/api/parliaments/last-election?${q}`);
 }
 
 export function fetchCoalitions(

@@ -107,10 +107,13 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
 export function Hemicycle({
   seats,
   highlightParties,
+  size = "md",
 }: {
   seats: Record<string, number>;
   /** Wenn gesetzt: nur diese Parteien voll sichtbar, übrige mit Opacity 0.25 */
   highlightParties?: string[];
+  /** Kompakte Variante für Nebeneinander-Vergleiche */
+  size?: "sm" | "md";
 }) {
   const labeled = relabelSeatMap(seats);
   const highlightLabeled = highlightParties?.map((p) =>
@@ -135,9 +138,15 @@ export function Hemicycle({
     pct: (value / total) * 100,
   }));
 
+  const chartH = size === "sm" ? "h-40" : "h-72";
+  const legendCls =
+    size === "sm"
+      ? "mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-ink/80"
+      : "mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/80";
+
   return (
     <div className="w-full">
-      <div className="h-72 w-full">
+      <div className={`${chartH} w-full`}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
             <Pie
@@ -177,7 +186,7 @@ export function Hemicycle({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/80">
+      <ul className={legendCls}>
         {items.map(([name, n]) => {
           const dimmed = highlightSet && !highlightSet.has(name);
           return (

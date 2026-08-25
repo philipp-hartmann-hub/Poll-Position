@@ -1,6 +1,6 @@
 # Poll-Position — Wahlrechts- und Parlamentkonfiguration (Deutschland)
 # seats_total = gesetzliche Regel-/Mindestsitzzahl (ohne Überhang-/Ausgleichsmandate).
-# Stand der Recherche: 2026-08-23
+# Stand der Recherche: 2026-08-25
 #
 # Quellen (siehe auch sources_bibliography):
 # - Die Bundeswahlleiterin: https://www.bundeswahlleiterin.de/
@@ -8,15 +8,21 @@
 #   https://www.bundestag.de/parlament/wahlen/wahlrecht-inhalt-975000
 # - Übersicht Landtagswahlrecht (Zusammenfassung der Landeswahlgesetze / Landeswahlleitungen):
 #   https://www.wahlrecht.de/landtage/ (Aktualisierung laut Seite: 07.08.2026)
+# - Wahltermine: https://www.bundeswahlleiterin.de/service/wahltermine.html
+#   https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html
+#   https://www.wahlrecht.de/termine.htm
 
 version: 1
-as_of: "2026-08-23"
+as_of: "2026-08-25"
 
 sources_bibliography:
   - "https://www.bundeswahlleiterin.de/ — Sitzverteilung, Glossar, BTW-Dokumentation"
   - "https://www.bundestag.de/parlament/wahlen/wahlrecht-inhalt-975000 — geltendes BT-Wahlrecht (630 Sitze, Zweitstimmendeckung, 5 %-Klausel; BVerfG 30.07.2024 zur Grundmandatsklausel)"
   - "https://www.wahlrecht.de/landtage/ — Übersicht Mandate, Sperrklauseln, Zuteilungsverfahren je Land (Primärquellen: jeweilige Landeswahlgesetze / Landeswahlleitungen)"
   - "Landeswahlleitungen der 16 Länder (amtliche Texte zu Sitzzahl und Sperrklausel)"
+  - "https://www.bundeswahlleiterin.de/service/wahltermine.html — kommende Wahltermine"
+  - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html — Bundesrat-Übersicht Wahltermine"
+  - "https://www.wahlrecht.de/termine.htm — dokumentierte Kabinetts-/Parlamentsbeschlüsse zu Wahltagen"
 
 countries:
   - iso_code: DE
@@ -190,6 +196,11 @@ parliaments:
     name: Deutscher Bundestag
     seats_total: 630
     election_system_key: de_bundestag_2023
+    next_election_date: null
+    next_election_note: "voraussichtlich Frühjahr 2029 (regulärer Turnus 4 Jahre nach BTW 2025; Termin noch nicht festgesetzt)"
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.bundestag.de/parlament/wahlen/wahltermine/wahltermine-473070"
 
   - id: de_bw_landtag
     country: DE
@@ -197,6 +208,12 @@ parliaments:
     name: Landtag von Baden-Württemberg
     seats_total: 120
     election_system_key: de_bw_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Frühjahr 2031 (nach Landtagswahl 8. März 2026; Termin noch nicht festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.wahlrecht.de/termine.htm"
 
   - id: de_by_landtag
     country: DE
@@ -204,6 +221,11 @@ parliaments:
     name: Bayerischer Landtag
     seats_total: 180
     election_system_key: de_by_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2028 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
 
   - id: de_be_abgeordnetenhaus
     country: DE
@@ -211,6 +233,11 @@ parliaments:
     name: Abgeordnetenhaus von Berlin
     seats_total: 130
     election_system_key: de_be_agH
+    next_election_date: "2026-09-20"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
 
   - id: de_bb_landtag
     country: DE
@@ -218,6 +245,11 @@ parliaments:
     name: Landtag Brandenburg
     seats_total: 88
     election_system_key: de_bb_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
 
   - id: de_hb_buergerschaft
     country: DE
@@ -225,6 +257,11 @@ parliaments:
     name: Bremische Bürgerschaft
     seats_total: 87
     election_system_key: de_hb_bs
+    next_election_date: "2027-05-30"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.wahlrecht.de/termine.htm (Beschluss Bürgerschaft 22.04.2026)"
 
   - id: de_hh_buergerschaft
     country: DE
@@ -232,6 +269,11 @@ parliaments:
     name: Hamburgische Bürgerschaft
     seats_total: 121
     election_system_key: de_hh_bs
+    next_election_date: null
+    next_election_note: "voraussichtlich Frühjahr/Winter 2030 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.wahlrecht.de/termine.htm"
 
   - id: de_he_landtag
     country: DE
@@ -239,6 +281,11 @@ parliaments:
     name: Hessischer Landtag
     seats_total: 110
     election_system_key: de_he_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2028 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
 
   - id: de_mv_landtag
     country: DE
@@ -246,6 +293,11 @@ parliaments:
     name: Landtag Mecklenburg-Vorpommern
     seats_total: 71
     election_system_key: de_mv_lt
+    next_election_date: "2026-09-20"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
 
   - id: de_ni_landtag
     country: DE
@@ -253,6 +305,11 @@ parliaments:
     name: Niedersächsischer Landtag
     seats_total: 135
     election_system_key: de_ni_lt
+    next_election_date: "2027-09-26"
+    next_election_note: null
+    sources:
+      - "https://www.wahlrecht.de/termine.htm (Kabinettsbeschluss 11.08.2026)"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
 
   - id: de_nw_landtag
     country: DE
@@ -260,6 +317,11 @@ parliaments:
     name: Landtag Nordrhein-Westfalen
     seats_total: 181
     election_system_key: de_nw_lt
+    next_election_date: "2027-04-25"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.wahlrecht.de/termine.htm (Kabinettsbeschluss 24.02.2026)"
 
   - id: de_rp_landtag
     country: DE
@@ -267,6 +329,11 @@ parliaments:
     name: Landtag Rheinland-Pfalz
     seats_total: 101
     election_system_key: de_rp_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Frühjahr 2031 (nach Landtagswahl 22. März 2026; Termin noch nicht festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.wahlrecht.de/termine.htm"
 
   - id: de_sl_landtag
     country: DE
@@ -274,6 +341,11 @@ parliaments:
     name: Landtag des Saarlandes
     seats_total: 51
     election_system_key: de_sl_lt
+    next_election_date: "2027-04-18"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.wahlrecht.de/termine.htm (Ministerratsbeschluss 03.03.2026)"
 
   - id: de_sn_landtag
     country: DE
@@ -281,6 +353,11 @@ parliaments:
     name: Sächsischer Landtag
     seats_total: 120
     election_system_key: de_sn_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
 
   - id: de_st_landtag
     country: DE
@@ -288,6 +365,11 @@ parliaments:
     name: Landtag von Sachsen-Anhalt
     seats_total: 83
     election_system_key: de_st_lt
+    next_election_date: "2026-09-06"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
 
   - id: de_sh_landtag
     country: DE
@@ -295,6 +377,11 @@ parliaments:
     name: Schleswig-Holsteinischer Landtag
     seats_total: 69
     election_system_key: de_sh_lt
+    next_election_date: "2027-04-18"
+    next_election_note: null
+    sources:
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+      - "https://www.wahlrecht.de/termine.htm (Kabinettsbeschluss 24.03.2026)"
 
   - id: de_th_landtag
     country: DE
@@ -302,3 +389,8 @@ parliaments:
     name: Thüringer Landtag
     seats_total: 88
     election_system_key: de_th_lt
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)"
+    sources:
+      - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
+      - "https://www.bundeswahlleiterin.de/service/wahltermine.html"

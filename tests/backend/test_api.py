@@ -66,7 +66,38 @@ def test_parliaments(client):
     assert r.status_code == 200
     data = r.json()
     assert isinstance(data, list)
-    assert any(p["id"] == "de_bundestag" for p in data)
+    bund = next(p for p in data if p["id"] == "de_bundestag")
+    assert bund["next_election_date"] is None
+    assert "2029" in (bund["next_election_note"] or "")
+
+
+def test_last_election_bundestag(client):
+    r = client.get(
+        "/api/parliaments/last-election",
+        params={"parliament_id": "de_bundestag"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["label"] == "Bundestagswahl 2025"
+    assert body["election_date"] == "2025-02-23"
+    assert body["total_seats"] == 630
+    seats = body["seats"]
+    assert sum(seats.values()) == 630
+    assert "de:sonstige" not in seats
+    assert "de:cdu_csu" not in seats
+    assert seats.get("de:cdu", 0) > 0
+    assert seats.get("de:afd", 0) > 0
+    assert body["seats_by_name"]
+
+
+def test_last_election_missing_returns_404(client):
+    r = client.get(
+        "/api/parliaments/last-election",
+        params={"parliament_id": "de_nw_landtag"},
+    )
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert "election_results" in detail.lower() or "nicht" in detail.lower()
 
 
 def test_public_get_cache_control_headers(client):
@@ -455,8 +486,15 @@ def test_coalition_rules_endpoint(client):
     body = r.json()
     assert body["parliament_id"] == "de_bundestag"
     assert len(body["rules"]) >= 1
-    assert all(rule["id"] and rule["party"] and rule["excludes"] for rule in body["rules"])
-    assert any(rule["id"].startswith("de_bundestag_default:") for rule in body["rules"])
+    assert all(
+        rule["id"]
+        and "|" in rule["id"]
+        and len(rule["parties"]) == 2
+        and rule["party"]
+        and rule["excludes"]
+        for rule in body["rules"]
+    )
+    assert any(set(rule["parties"]) == {"de:afd", "de:cdu_csu"} for rule in body["rules"])
 
 
 def test_coalition_rules_endpoint_landtag(client):
@@ -464,13 +502,76 @@ def test_coalition_rules_endpoint_landtag(client):
     assert r.status_code == 200
     body = r.json()
     assert body["parliament_id"] == "de_by_landtag"
-    assert len(body["rules"]) >= 1
-    assert any(rule["id"].startswith("de_laender_default:") for rule in body["rules"])
-    assert any(rule["party"] == "de:cdu" and "de:afd" in rule["excludes"] for rule in body["rules"])
+    # Fixture hat nur Bundestag-Umfragen → ohne Sitze/Averages keine gefilterten Regeln
+    # Landtag-Regeln existieren in der Config; Endpoint darf nicht 500.
+    assert isinstance(body["rules"], list)
+
+
+def test_coalition_rules_bremen_excludes_csu(api_warehouse, monkeypatch):
+    """Bremen ohne CSU-Sitze: keine CSU-Paare in den UI-Regeln."""
+    from backend import services
+
+    services.clear_payload_caches()
+
+    def fake_seats(_pid: str):
+        return {
+            "parliament_id": "de_hb_buergerschaft",
+            "total_seats": 87,
+            "seats": {
+                "de:cdu": 28,
+                "de:spd": 20,
+                "de:gruene": 15,
+                "de:afd": 12,
+                "de:linke": 8,
+                "de:fdp": 4,
+            },
+            "seats_by_name": {
+                "CDU": 28,
+                "SPD": 20,
+                "Grüne": 15,
+                "AfD": 12,
+                "Linke": 8,
+                "FDP": 4,
+            },
+            "reason": None,
+        }
+
+    monkeypatch.setattr(
+        services,
+        "_votes_from_averages",
+        lambda _pid: (
+            {
+                "de:cdu": 28.0,
+                "de:spd": 20.0,
+                "de:gruene": 15.0,
+                "de:afd": 12.0,
+                "de:linke": 8.0,
+                "de:fdp": 4.0,
+            },
+            {
+                "de:cdu": "CDU",
+                "de:spd": "SPD",
+                "de:gruene": "Grüne",
+                "de:afd": "AfD",
+                "de:linke": "Linke",
+                "de:fdp": "FDP",
+            },
+        ),
+    )
+    monkeypatch.setattr(services, "seats_payload", fake_seats)
+
+    payload = services.coalition_rules_payload("de_hb_buergerschaft")
+    assert payload["rules"], "erwartete CDU/AfD-Paare für Bremen"
+    for rule in payload["rules"]:
+        assert "de:csu" not in rule["parties"]
+        assert rule["party"] != "de:csu"
+        assert "de:csu" not in rule["excludes"]
+    assert any(set(r["parties"]) == {"de:afd", "de:cdu"} for r in payload["rules"])
+    assert not any(set(r["parties"]) == {"de:afd", "de:csu"} for r in payload["rules"])
 
 
 def test_disabled_rule_ids_via_api(client):
-    """E2E: abgewählte Union–AfD-Regel lässt CDU/CSU+AfD wieder in /api/coalitions erscheinen."""
+    """E2E: abgewähltes Union–AfD-Paar lässt CDU/CSU+AfD wieder in /api/coalitions erscheinen."""
     seats = client.get("/api/seats", params={"parliament_id": "de_bundestag"}).json()
     # Fixture muss rechnerisch Mehrheit Union+AfD erlauben (kanonische Sitze via Namen)
     by_name = seats["seats_by_name"]
@@ -480,7 +581,7 @@ def test_disabled_rule_ids_via_api(client):
         "/api/coalitions/rules", params={"parliament_id": "de_bundestag"}
     ).json()["rules"]
     union_rule = next(
-        r for r in rules if r["party"] == "de:cdu_csu" and "de:afd" in r["excludes"]
+        r for r in rules if set(r["parties"]) == {"de:afd", "de:cdu_csu"}
     )
 
     blocked = client.get(

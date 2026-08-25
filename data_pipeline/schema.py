@@ -110,6 +110,9 @@ class Parliament(BaseModel):
     name: str
     seats_total: int = Field(..., gt=0)
     election_system_key: str
+    next_election_date: date | None = None
+    next_election_note: str | None = None
+    sources: list[str] = Field(default_factory=list)
 
 
 class Party(BaseModel):

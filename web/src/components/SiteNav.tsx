@@ -9,7 +9,12 @@ const links = [
   {
     href: "/parlament/de_bundestag",
     label: "Deutschland",
-    match: "deutschland" as const,
+    match: "parlament" as const,
+  },
+  {
+    href: "/deutschland/laender",
+    label: "Länder",
+    match: "laender" as const,
   },
   { href: "/bundesrat", label: "Bundesrat", match: "prefix" as const },
   ...(features.europe
@@ -21,10 +26,13 @@ const links = [
 function isActive(
   pathname: string,
   href: string,
-  match: "exact" | "prefix" | "deutschland",
+  match: "exact" | "prefix" | "parlament" | "laender",
 ): boolean {
   if (match === "exact") return pathname === href;
-  if (match === "deutschland") {
+  if (match === "laender") {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+  if (match === "parlament") {
     return pathname === "/parlament" || pathname.startsWith("/parlament/");
   }
   return pathname === href || pathname.startsWith(`${href}/`);

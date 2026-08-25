@@ -16,6 +16,18 @@ class ParliamentOut(BaseModel):
     seats_total: int | None = None
     election_system_key: str | None = None
     shortcut: str | None = None
+    next_election_date: date | None = None
+    next_election_note: str | None = None
+
+
+class LastElectionResponse(BaseModel):
+    parliament_id: str
+    election_date: date
+    label: str
+    source: str | None = None
+    seats: dict[str, int] = Field(description="party_id → Sitze")
+    seats_by_name: dict[str, int] = Field(default_factory=dict)
+    total_seats: int
 
 
 class PartyAverageOut(BaseModel):
@@ -108,6 +120,7 @@ class ExclusionRuleOut(BaseModel):
     party: str
     excludes: list[str]
     note: str | None = None
+    parties: list[str]
 
 
 class CoalitionRulesResponse(BaseModel):

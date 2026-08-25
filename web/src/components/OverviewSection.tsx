@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import {
   fetchAverages,
+  fetchLastElection,
+  fetchSeats,
   fetchTrendSeries,
   type AveragesResponse,
+  type LastElectionResponse,
+  type SeatsResponse,
   type TrendSeriesResponse,
 } from "@/lib/api";
-import { TrendLineChart } from "@/components/charts";
+import { Hemicycle, TrendLineChart } from "@/components/charts";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
 import { ThresholdWatch } from "@/components/ThresholdWatch";
 import { partyColor } from "@/lib/colors";
@@ -32,6 +36,10 @@ export function OverviewSection({
 }) {
   const [averages, setAverages] = useState<AveragesResponse | null>(null);
   const [trends, setTrends] = useState<TrendSeriesResponse | null>(null);
+  const [lastElection, setLastElection] = useState<LastElectionResponse | null>(
+    null,
+  );
+  const [pollSeats, setPollSeats] = useState<SeatsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,13 +49,17 @@ export function OverviewSection({
     setError(null);
     (async () => {
       try {
-        const [a, t] = await Promise.all([
+        const [a, t, election, seats] = await Promise.all([
           fetchAverages(parliamentId),
           fetchTrendSeries(parliamentId).catch(() => null),
+          fetchLastElection(parliamentId).catch(() => null),
+          fetchSeats(parliamentId).catch(() => null),
         ]);
         if (cancelled) return;
         setAverages(a);
         setTrends(t);
+        setLastElection(election);
+        setPollSeats(seats);
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
@@ -83,8 +95,52 @@ export function OverviewSection({
     Trend: p.trend_share != null ? Number(p.trend_share.toFixed(1)) : null,
   }));
 
+  const showSeatCompare = Boolean(lastElection || pollSeats);
+
   return (
     <div className="space-y-10">
+      {showSeatCompare ? (
+        <section>
+          <h2 className="mb-3 font-display text-2xl text-ink">
+            Sitze: letzte Wahl vs. Umfrage-Projektion
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {lastElection ? (
+              <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+                <h3 className="text-sm font-semibold text-ink">
+                  Ergebnis der letzten Wahl
+                </h3>
+                <p className="mb-3 text-xs text-ink/55">
+                  Stand: {lastElection.label} ({lastElection.election_date}) ·{" "}
+                  {lastElection.total_seats} Sitze
+                </p>
+                <Hemicycle seats={lastElection.seats_by_name} size="sm" />
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
+                Kein hinterlegtes Wahlergebnis für dieses Parlament.
+              </div>
+            )}
+            {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
+              <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+                <h3 className="text-sm font-semibold text-ink">
+                  Sitzprojektion nach aktuellen Umfragen
+                </h3>
+                <p className="mb-3 text-xs text-ink/55">
+                  Hochrechnung · {pollSeats.total_seats} Sitze (gesetzliche
+                  Größe)
+                </p>
+                <Hemicycle seats={pollSeats.seats_by_name} size="sm" />
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
+                Keine Umfrage-Sitzprojektion verfügbar.
+              </div>
+            )}
+          </div>
+        </section>
+      ) : null}
+
       <section>
         <h2 className="mb-3 font-display text-2xl text-ink">
           Umfragemittelwert & Trend

@@ -46,7 +46,10 @@ from analysis.uncertainty import (
     simulate_threshold_watch,
     simulate_uncertainty,
 )
-from data_pipeline.reference.election_results import load_election_results
+from data_pipeline.reference.election_results import (
+    latest_election_for,
+    load_election_results,
+)
 from data_pipeline.schema import load_parliament_config
 from data_pipeline.warehouse import connect_warehouse, ensure_warehouse, uses_motherduck
 
@@ -188,9 +191,16 @@ def list_parliaments() -> list[dict[str, Any]]:
             "election_system_key",
             "shortcut",
         ]
-        return [dict(zip(cols, r)) for r in rows]
+        out = [dict(zip(cols, r)) for r in rows]
     finally:
         con.close()
+
+    cfg_by_id = {p.id: p for p in load_parliament_config().parliaments}
+    for row in out:
+        cfg = cfg_by_id.get(str(row["id"]))
+        row["next_election_date"] = cfg.next_election_date if cfg else None
+        row["next_election_note"] = cfg.next_election_note if cfg else None
+    return out
 
 
 def _load_points(parliament_id: str | None = None) -> list[PollObservationPoint]:
@@ -486,6 +496,53 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     }
 
 
+def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
+    """
+    Sitzzuteilung aus dem letzten amtlichen Wahlergebnis (election_results.yaml).
+
+    Nutzt dieselbe Allokationspipeline wie ``seats_payload`` (inkl. Sonstige-Ausschluss).
+    ``None``, wenn für das Parlament kein Wahlergebnis hinterlegt ist.
+    """
+    election = latest_election_for(parliament_id)
+    if election is None:
+        return None
+
+    votes = dict(election.results)
+    # Aggregat Union nur nutzen, wenn keine getrennten CDU/CSU-Anteile vorliegen
+    if "de:cdu_csu" in votes and ("de:cdu" in votes or "de:csu" in votes):
+        votes.pop("de:cdu_csu")
+
+    names: dict[str, str] = {canon: short for short, canon in SHORT_TO_CANONICAL.items()}
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        pass
+
+    seats, total = _allocate_for_parliament(parliament_id, votes)
+    seats = {
+        pid: n
+        for pid, n in seats.items()
+        if n > 0 and not _is_residual_party(pid, names.get(pid))
+    }
+    by_name = {
+        resolve_party_display_name(k, names): v for k, v in seats.items()
+    }
+    return {
+        "parliament_id": parliament_id,
+        "election_date": election.election_date,
+        "label": election.label,
+        "source": election.source,
+        "seats": seats,
+        "seats_by_name": by_name,
+        "total_seats": sum(seats.values()) if seats else total,
+    }
+
+
 def _is_residual_party(party_id: str, name: str | None = None) -> bool:
     if is_residual_party_id(party_id):
         return True
@@ -593,21 +650,58 @@ def coalitions_payload(
 
 
 def coalition_rules_payload(parliament_id: str) -> dict[str, Any]:
-    """Aktive Ausschlussregeln für ein Parlament (UI-Checkboxen)."""
+    """Aktive Ausschlussregeln für ein Parlament (UI-Checkboxen, Paar-Gruppierung)."""
     rules = list_active_exclusion_rules(parliament_id)
-    return {
-        "parliament_id": parliament_id,
-        "rules": [
+    present = _present_parties_for_exclusion_ui(parliament_id)
+    filtered: list[dict[str, Any]] = []
+    for r in rules:
+        if not r.id:
+            continue
+        parties = list(r.parties) if r.parties and len(r.parties) >= 2 else [r.party, *r.excludes]
+        if len(parties) < 2:
+            continue
+        a, b = parties[0], parties[1]
+        # party und mindestens eine excludes-Partei müssen in Sitzen/Umfragen sein
+        if a not in present:
+            continue
+        if b not in present:
+            continue
+        filtered.append(
             {
-                "id": r.id or "",
-                "party": r.party,
-                "excludes": list(r.excludes),
+                "id": r.id,
+                "party": a,
+                "excludes": [b],
+                "parties": [a, b],
                 "note": r.note,
             }
-            for r in rules
-            if r.id
-        ],
-    }
+        )
+    return {"parliament_id": parliament_id, "rules": filtered}
+
+
+def _present_parties_for_exclusion_ui(parliament_id: str) -> set[str]:
+    """Warehouse-IDs + kanonische IDs aus Sitzen und Umfrage-Mittelwerten."""
+    present: set[str] = set()
+    votes, names = _votes_from_averages(parliament_id)
+    seats_data = seats_payload(parliament_id)
+    seats = seats_data.get("seats") or {}
+
+    def _add(pid: str) -> None:
+        if not pid:
+            return
+        present.add(pid)
+        label = resolve_party_display_name(pid, names)
+        present.add(SHORT_TO_CANONICAL.get(label, pid))
+        raw_name = names.get(pid)
+        if raw_name:
+            present.add(SHORT_TO_CANONICAL.get(raw_name, raw_name))
+
+    for pid, share in votes.items():
+        if float(share) > 0:
+            _add(str(pid))
+    for pid, n in seats.items():
+        if int(n) > 0:
+            _add(str(pid))
+    return present
 
 
 def uncertainty_payload(

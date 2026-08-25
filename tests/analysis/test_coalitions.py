@@ -159,7 +159,8 @@ def test_disabled_rule_ids_restores_excluded_coalition():
     union_rule = next(
         r
         for r in list_active_exclusion_rules("de_bundestag", rules_config=config)
-        if r.party == "de:cdu_csu" and "de:afd" in r.excludes
+        if set(r.parties or []) == {"de:afd", "de:cdu_csu"}
+        or r.id == "de:afd|de:cdu_csu"
     )
     relaxed = possible_majorities(
         seats,
@@ -252,6 +253,7 @@ def test_europe_placeholder_exclusion_sets_load():
     ):
         rules = list_active_exclusion_rules(parliament_id, rules_config=cfg)
         assert rules, f"erwartete Platzhalter-Regeln für {parliament_id}"
+        assert all(r.id and "|" in r.id for r in rules)
         assert all("Platzhalter" in (r.note or "") for r in rules)
 
 
@@ -278,13 +280,14 @@ def test_laender_exclusion_rules_apply_to_all_landtage():
     for pid in landtage:
         rules = list_active_exclusion_rules(pid, rules_config=cfg)
         assert rules, f"erwartete Länder-Ausschlüsse für {pid}"
-        assert all(r.id and r.id.startswith("de_laender_default:") for r in rules)
-        assert any(r.party == "de:cdu" and "de:afd" in r.excludes for r in rules)
+        assert all(r.id and "|" in r.id and r.parties and len(r.parties) == 2 for r in rules)
+        assert any(set(r.parties or []) == {"de:afd", "de:cdu"} for r in rules)
 
-    # Bundestag behält eigene Set-IDs, nicht die Länder-Liste
+    # Bundestag behält Union-Paar (cdu_csu), nicht nur Länder-CDU
     bund = list_active_exclusion_rules("de_bundestag", rules_config=cfg)
     assert bund
-    assert all(r.id and r.id.startswith("de_bundestag_default:") for r in bund)
+    assert any(set(r.parties or []) == {"de:afd", "de:cdu_csu"} for r in bund)
+    assert all(r.id and "|" in r.id for r in bund)
 
 
 def test_laender_cdu_afd_excluded_by_default():

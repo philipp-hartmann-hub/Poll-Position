@@ -18,12 +18,16 @@ CONFIG_PATH = (
 
 
 class ExclusionRule(BaseModel):
-    """Einzelne Ausschlussregel; `id` wird beim Laden gesetzt, falls im YAML fehlt."""
+    """Ausschlussregel; `id` wird beim Laden gesetzt, falls im YAML fehlt.
+
+    Nach Gruppierung: ``parties`` = undirected Paar, ``id`` = ``a|b``.
+    """
 
     id: str | None = None
     party: str
     excludes: list[str] = Field(default_factory=list)
     note: str | None = None
+    parties: list[str] | None = None
 
 
 class ExclusionSet(BaseModel):
@@ -178,11 +182,93 @@ def coalition_violates_exclusions(
     """True, wenn ein Koalitionsmitglied ein anderes laut Regel ausschließt."""
     members = set(parties)
     for rule in rules:
+        pair = list(rule.parties) if rule.parties and len(rule.parties) >= 2 else None
+        if pair is not None:
+            if set(pair[:2]).issubset(members):
+                return True
+            continue
         if rule.party not in members:
             continue
         if members.intersection(rule.excludes):
             return True
     return False
+
+
+def exclusion_pair_id(party_a: str, party_b: str) -> str:
+    """Kanonische, sortierte Paar-ID (z. B. ``de:afd|de:cdu_csu``)."""
+    a, b = sorted((party_a, party_b))
+    return f"{a}|{b}"
+
+
+def group_exclusion_rules_as_pairs(rules: Sequence[ExclusionRule]) -> list[ExclusionRule]:
+    """
+    Fasst gerichtete Einzelregeln zu undirected Paaren zusammen.
+
+    ``(A excludes B)`` und ``(B excludes A)`` → eine Regel mit id ``A|B``
+    (lexikographisch sortiert) und ``parties=[A, B]``.
+    """
+    buckets: dict[str, ExclusionRule] = {}
+    for rule in rules:
+        targets = list(rule.excludes)
+        if rule.parties and len(rule.parties) >= 2 and not targets:
+            targets = [rule.parties[1]]
+            party = rule.parties[0]
+        else:
+            party = rule.party
+        for excl in targets:
+            if not excl or excl == party:
+                continue
+            pid = exclusion_pair_id(party, excl)
+            a, b = sorted((party, excl))
+            existing = buckets.get(pid)
+            if existing is None:
+                buckets[pid] = ExclusionRule(
+                    id=pid,
+                    party=a,
+                    excludes=[b],
+                    parties=[a, b],
+                    note=rule.note,
+                )
+            elif rule.note and not existing.note:
+                existing.note = rule.note
+    return [buckets[k] for k in sorted(buckets)]
+
+
+def expand_disabled_exclusion_ids(
+    rules: Sequence[ExclusionRule],
+    disabled_rule_ids: Sequence[str] | None,
+) -> set[str]:
+    """
+    Erweitert UI-Paar-IDs und Legacy-Rule-IDs auf alle betroffenen Regel-IDs.
+
+    Damit deaktiviert ein Klick auf ``de:afd|de:cdu`` alle gerichteten
+    YAML-Regeln dieses Paars (und die Paar-ID selbst).
+    """
+    disabled = set(disabled_rule_ids or ())
+    if not disabled:
+        return set()
+    expanded = set(disabled)
+    changed = True
+    while changed:
+        changed = False
+        for rule in rules:
+            rid = rule.id
+            pair_ids: list[str] = []
+            if rule.parties and len(rule.parties) >= 2:
+                pair_ids.append(exclusion_pair_id(rule.parties[0], rule.parties[1]))
+            for excl in rule.excludes:
+                pair_ids.append(exclusion_pair_id(rule.party, excl))
+            hit = (rid and rid in expanded) or any(p in expanded for p in pair_ids)
+            if not hit:
+                continue
+            for p in pair_ids:
+                if p not in expanded:
+                    expanded.add(p)
+                    changed = True
+            if rid and rid not in expanded:
+                expanded.add(rid)
+                changed = True
+    return expanded
 
 
 def collect_exclusion_rules(
@@ -192,21 +278,27 @@ def collect_exclusion_rules(
     as_of: date | None = None,
     exclusion_set_ids: Sequence[str] | None = None,
     disabled_rule_ids: Sequence[str] | None = None,
+    as_pairs: bool = True,
 ) -> list[ExclusionRule]:
-    """Sammelt aktive Einzelregeln; `disabled_rule_ids` filtert trotz apply_exclusions."""
-    disabled = set(disabled_rule_ids or ())
-    rules: list[ExclusionRule] = []
+    """Sammelt aktive Regeln; optional als undirected Paare (UI + Mehrheitslogik)."""
+    directed: list[ExclusionRule] = []
     for excl in config.exclusions:
         if exclusion_set_ids is not None and excl.id not in exclusion_set_ids:
             continue
         if not _exclusion_active(excl, parliament_id=parliament_id, as_of=as_of):
             continue
         for rule in excl.rules:
-            rid = rule.id
-            if rid and rid in disabled:
-                continue
-            rules.append(rule)
-    return rules
+            directed.append(rule)
+
+    rules = group_exclusion_rules_as_pairs(directed) if as_pairs else list(directed)
+    if not disabled_rule_ids:
+        return rules
+    # Expansion gegen gerichtete + Paar-IDs, damit Legacy- und UI-IDs greifen
+    expanded = expand_disabled_exclusion_ids(
+        [*directed, *group_exclusion_rules_as_pairs(directed)],
+        disabled_rule_ids,
+    )
+    return [r for r in rules if not (r.id and r.id in expanded)]
 
 
 def list_active_exclusion_rules(
@@ -214,13 +306,19 @@ def list_active_exclusion_rules(
     *,
     as_of: date | None = None,
     rules_config: CoalitionRulesConfig | None = None,
+    as_pairs: bool = True,
 ) -> list[ExclusionRule]:
     """
     Öffentliche Loader-API: für ein Parlament gültige Ausschlussregeln
-    (mit stabilen IDs nach `assign_exclusion_rule_ids`).
+    (mit stabilen IDs nach `assign_exclusion_rule_ids`, gruppiert als Paare).
     """
     config = rules_config if rules_config is not None else load_coalition_rules()
-    return collect_exclusion_rules(config, parliament_id=parliament_id, as_of=as_of)
+    return collect_exclusion_rules(
+        config,
+        parliament_id=parliament_id,
+        as_of=as_of,
+        as_pairs=as_pairs,
+    )
 
 
 def ideological_span(

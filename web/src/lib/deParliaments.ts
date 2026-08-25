@@ -11,6 +11,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 630,
     election_system_key: "de_bundestag_2023",
     shortcut: "Bundestag",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Frühjahr 2029 (regulärer Turnus 4 Jahre nach BTW 2025; Termin noch nicht festgesetzt)",
   },
   {
     id: "de_bw_landtag",
@@ -21,6 +24,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 120,
     election_system_key: "de_bw_lt",
     shortcut: "BW",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Frühjahr 2031 (nach Landtagswahl 8. März 2026; Termin noch nicht festgesetzt)",
   },
   {
     id: "de_by_landtag",
@@ -31,6 +37,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 180,
     election_system_key: "de_by_lt",
     shortcut: "BY",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Herbst 2028 (Termin noch nicht offiziell festgesetzt)",
   },
   {
     id: "de_be_abgeordnetenhaus",
@@ -41,6 +50,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 130,
     election_system_key: "de_be_agH",
     shortcut: "BE",
+    next_election_date: "2026-09-20",
+    next_election_note: null,
   },
   {
     id: "de_bb_landtag",
@@ -51,6 +62,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 88,
     election_system_key: "de_bb_lt",
     shortcut: "BB",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)",
   },
   {
     id: "de_hb_buergerschaft",
@@ -61,6 +75,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 87,
     election_system_key: "de_hb_bs",
     shortcut: "HB",
+    next_election_date: "2027-05-30",
+    next_election_note: null,
   },
   {
     id: "de_hh_buergerschaft",
@@ -71,6 +87,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 121,
     election_system_key: "de_hh_bs",
     shortcut: "HH",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Frühjahr/Winter 2030 (Termin noch nicht offiziell festgesetzt)",
   },
   {
     id: "de_he_landtag",
@@ -81,6 +100,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 110,
     election_system_key: "de_he_lt",
     shortcut: "HE",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Herbst 2028 (Termin noch nicht offiziell festgesetzt)",
   },
   {
     id: "de_mv_landtag",
@@ -91,6 +113,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 71,
     election_system_key: "de_mv_lt",
     shortcut: "MV",
+    next_election_date: "2026-09-20",
+    next_election_note: null,
   },
   {
     id: "de_ni_landtag",
@@ -101,6 +125,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 135,
     election_system_key: "de_ni_lt",
     shortcut: "NI",
+    next_election_date: "2027-09-26",
+    next_election_note: null,
   },
   {
     id: "de_nw_landtag",
@@ -111,6 +137,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 181,
     election_system_key: "de_nw_lt",
     shortcut: "NW",
+    next_election_date: "2027-04-25",
+    next_election_note: null,
   },
   {
     id: "de_rp_landtag",
@@ -121,6 +149,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 101,
     election_system_key: "de_rp_lt",
     shortcut: "RP",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Frühjahr 2031 (nach Landtagswahl 22. März 2026; Termin noch nicht festgesetzt)",
   },
   {
     id: "de_sl_landtag",
@@ -131,6 +162,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 51,
     election_system_key: "de_sl_lt",
     shortcut: "SL",
+    next_election_date: "2027-04-18",
+    next_election_note: null,
   },
   {
     id: "de_sn_landtag",
@@ -141,6 +174,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 120,
     election_system_key: "de_sn_lt",
     shortcut: "SN",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)",
   },
   {
     id: "de_st_landtag",
@@ -151,6 +187,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 83,
     election_system_key: "de_st_lt",
     shortcut: "ST",
+    next_election_date: "2026-09-06",
+    next_election_note: null,
   },
   {
     id: "de_sh_landtag",
@@ -161,6 +199,8 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 69,
     election_system_key: "de_sh_lt",
     shortcut: "SH",
+    next_election_date: "2027-04-18",
+    next_election_note: null,
   },
   {
     id: "de_th_landtag",
@@ -171,6 +211,9 @@ export const DE_PARLIAMENTS: Parliament[] = [
     seats_total: 88,
     election_system_key: "de_th_lt",
     shortcut: "TH",
+    next_election_date: null,
+    next_election_note:
+      "voraussichtlich Herbst 2029 (Termin noch nicht offiziell festgesetzt)",
   },
 ];
 

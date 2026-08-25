@@ -11,10 +11,16 @@ export type ExclusionUiState = {
   disabledRuleIds: string[];
 };
 
-function ruleLabel(rule: ExclusionRule): string {
-  if (rule.note?.trim()) return rule.note;
-  const excl = rule.excludes.map(labelPartyId).join(", ");
-  return `${labelPartyId(rule.party)} schließt ${excl} aus`;
+function pairParties(rule: ExclusionRule): [string, string] {
+  if (rule.parties && rule.parties.length >= 2) {
+    return [rule.parties[0], rule.parties[1]];
+  }
+  return [rule.party, rule.excludes[0] ?? rule.party];
+}
+
+function pairLabel(rule: ExclusionRule): string {
+  const [a, b] = pairParties(rule);
+  return `${labelPartyId(a)} + ${labelPartyId(b)}`;
 }
 
 export function CoalitionPanel({
@@ -96,8 +102,8 @@ export function CoalitionPanel({
     }
   }
 
-  function toggleRule(id: string, checked: boolean) {
-    const nextEnabled = { ...enabled, [id]: checked };
+  function togglePair(pairId: string, checked: boolean) {
+    const nextEnabled = { ...enabled, [pairId]: checked };
     setEnabled(nextEnabled);
     const nextDisabled = rules
       .filter((r) => nextEnabled[r.id] === false)
@@ -138,16 +144,16 @@ export function CoalitionPanel({
                 className="mt-0.5"
                 checked={enabled[r.id] !== false}
                 disabled={!applyExclusions}
-                onChange={(e) => toggleRule(r.id, e.target.checked)}
+                onChange={(e) => togglePair(r.id, e.target.checked)}
               />
-              <span>{ruleLabel(r)}</span>
+              <span>{pairLabel(r)}</span>
             </label>
           ))
         )}
       </div>
       <p className="text-xs text-ink/50">
         Mehrheit ab {data.majority_threshold} · {data.excluded_by_rules} Kombinationen
-        ausgeschlossen · {activeCount}/{rules.length} Regeln aktiv
+        ausgeschlossen · {activeCount}/{rules.length} Paare aktiv
         {loading ? " · lädt…" : ""}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}

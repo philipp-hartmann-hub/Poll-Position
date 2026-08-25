@@ -48,6 +48,26 @@ export function AttributionFooter() {
           >
             wahlrecht.de
           </a>
+          {" · "}
+          Grenzdaten:{" "}
+          <a
+            className="underline decoration-ink/20 hover:text-ink"
+            href="https://github.com/isellsoap/deutschlandGeoJSON"
+            target="_blank"
+            rel="noreferrer"
+          >
+            deutschlandGeoJSON
+          </a>{" "}
+          (
+          <a
+            className="underline decoration-ink/20 hover:text-ink"
+            href="https://opensource.org/licenses/MIT"
+            target="_blank"
+            rel="noreferrer"
+          >
+            MIT
+          </a>
+          )
         </p>
         <p className="text-xs text-ink/45">
           Persönlicher / nicht-kommerzieller Gebrauch, sofern keine kommerzielle
