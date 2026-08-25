@@ -51,7 +51,7 @@ jobs:
         run: uv python install 3.12
 
       - name: Install dependencies
-        run: uv sync --frozen
+        run: uv sync --frozen --extra pipeline
 
       - name: Run ETL + Gold refresh (Silver/Gold → MotherDuck)
         run: |
