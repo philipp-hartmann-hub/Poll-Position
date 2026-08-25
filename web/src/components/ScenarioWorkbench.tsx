@@ -166,7 +166,10 @@ export function ScenarioWorkbench() {
                 </tr>
               </thead>
               <tbody>
-                {result.coalitions.slice(0, 15).map((c, i) => (
+                {result.coalitions
+                  .filter((c) => !c.parties.some((p) => /sonstige$|:others$|:other$/i.test(p)))
+                  .slice(0, 15)
+                  .map((c, i) => (
                   <tr key={i} className="border-t border-ink/5">
                     <td className="px-3 py-2">
                       {c.parties.map((p) => names[p] ?? labelPartyId(p)).join(" + ")}

@@ -178,7 +178,20 @@ def test_coalitions(client):
     assert isinstance(body["coalitions"], list)
     assert len(body["coalitions"]) >= 1
     assert all(c["seats"] >= body["majority_threshold"] for c in body["coalitions"])
+    for c in body["coalitions"]:
+        assert not any(
+            p.endswith(":sonstige") or p.endswith(":others") for p in c["parties"]
+        ), c["parties"]
 
+
+def test_seats_exclude_sonstige(client):
+    r = client.get("/api/seats", params={"parliament_id": "de_bundestag"})
+    assert r.status_code == 200
+    body = r.json()
+    assert "Sonstige" not in body["seats_by_name"]
+    assert not any(
+        pid.endswith(":sonstige") or pid.endswith(":others") for pid in body["seats"]
+    )
 
 def test_coalition_rules_endpoint(client):
     r = client.get("/api/coalitions/rules", params={"parliament_id": "de_bundestag"})

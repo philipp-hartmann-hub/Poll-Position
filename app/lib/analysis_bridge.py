@@ -194,12 +194,23 @@ def build_exclusion_config(
 
 
 def seats_for_coalitions(seats: dict[str, int], avg_df: pd.DataFrame) -> dict[str, int]:
-    """Mappt Warehouse-IDs auf kanonische IDs, falls bekannt."""
+    """Mappt Warehouse-IDs auf kanonische IDs, falls bekannt; Sonstige/Others entfallen."""
+    from analysis.seat_allocation import is_residual_party_id
+
     id_to_name = dict(zip(avg_df["party_id"], avg_df["party_name"])) if not avg_df.empty else {}
     out: dict[str, int] = {}
     for pid, n in seats.items():
-        name = id_to_name.get(pid, pid)
-        canon = SHORT_TO_CANONICAL.get(str(name), pid)
+        if n <= 0:
+            continue
+        name = str(id_to_name.get(pid, pid))
+        if is_residual_party_id(pid) or "sonstige" in name.lower() or name.lower() in {
+            "others",
+            "other",
+        }:
+            continue
+        canon = SHORT_TO_CANONICAL.get(name, pid)
+        if is_residual_party_id(canon):
+            continue
         out[canon] = out.get(canon, 0) + n
     return out
 

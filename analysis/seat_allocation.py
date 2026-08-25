@@ -32,6 +32,29 @@ from typing import Mapping, Sequence
 
 from data_pipeline.schema import AllocationMethod, ElectionSystem, Parliament
 
+# Restkategorien (kein koalitionsfähiges Subjekt) — nur Buchhaltung der Umfrageanteile
+_RESIDUAL_SUFFIXES = frozenset({"sonstige", "others", "other", "oth"})
+
+
+def is_residual_party_id(party_id: str) -> bool:
+    """True für Sonstige/Others — Restkategorie, keine echte Partei."""
+    suffix = party_id.rsplit(":", 1)[-1].lower().replace(" ", "_").replace("-", "_")
+    return suffix in _RESIDUAL_SUFFIXES
+
+
+def split_residual_votes(
+    votes: Mapping[str, float],
+) -> tuple[dict[str, float], float]:
+    """Trennt echte Parteien von der Restkategorie; Residual-Summe separat."""
+    eligible: dict[str, float] = {}
+    residual = 0.0
+    for party, weight in votes.items():
+        if is_residual_party_id(party):
+            residual += float(weight)
+        else:
+            eligible[party] = float(weight)
+    return eligible, residual
+
 
 def _validate_inputs(votes: Mapping[str, float], seats: int) -> None:
     if seats < 0:
@@ -113,10 +136,13 @@ def sainte_lague_schepers(
     if seats == 0:
         return _empty_allocation(votes)
 
+    eligible_votes, _residual = split_residual_votes(votes)
+    total = float(total_votes) if total_votes is not None else float(sum(votes.values()))
+
     eligible = _eligible_parties(
-        votes,
+        eligible_votes,
         threshold,
-        total_votes=total_votes,
+        total_votes=total,
         exempt_party_ids=exempt_party_ids,
         constituency_wins=constituency_wins,
         grundmandat_seats=grundmandat_seats,
@@ -144,10 +170,13 @@ def dhondt(
     if seats == 0:
         return _empty_allocation(votes)
 
+    eligible_votes, _residual = split_residual_votes(votes)
+    total = float(total_votes) if total_votes is not None else float(sum(votes.values()))
+
     eligible = _eligible_parties(
-        votes,
+        eligible_votes,
         threshold,
-        total_votes=total_votes,
+        total_votes=total,
         exempt_party_ids=exempt_party_ids,
     )
     allocation = _empty_allocation(votes)
@@ -177,10 +206,13 @@ def hare_niemeyer(
     if seats == 0:
         return _empty_allocation(votes)
 
+    eligible_votes, _residual = split_residual_votes(votes)
+    total = float(total_votes) if total_votes is not None else float(sum(votes.values()))
+
     eligible = _eligible_parties(
-        votes,
+        eligible_votes,
         threshold,
-        total_votes=total_votes,
+        total_votes=total,
         exempt_party_ids=exempt_party_ids,
     )
     allocation = _empty_allocation(votes)

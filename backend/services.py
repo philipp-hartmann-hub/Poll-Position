@@ -31,7 +31,11 @@ from analysis.party_families import (
     map_party_to_family,
 )
 from analysis.scenario import ScenarioInput, run_scenario
-from analysis.seat_allocation import allocate_seats, sainte_lague_schepers
+from analysis.seat_allocation import (
+    allocate_seats,
+    is_residual_party_id,
+    sainte_lague_schepers,
+)
 from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
@@ -303,6 +307,12 @@ def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tup
 def seats_payload(parliament_id: str) -> dict[str, Any]:
     votes, names = _votes_from_averages(parliament_id)
     seats, total = _allocate_for_parliament(parliament_id, votes)
+    # Restkategorie nie in der Sitz-/Koalitions-UI
+    seats = {
+        pid: n
+        for pid, n in seats.items()
+        if n > 0 and not _is_residual_party(pid, names.get(pid))
+    }
     by_name = {names.get(k, k): v for k, v in seats.items()}
     return {
         "parliament_id": parliament_id,
@@ -312,13 +322,30 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     }
 
 
+def _is_residual_party(party_id: str, name: str | None = None) -> bool:
+    if is_residual_party_id(party_id):
+        return True
+    if name:
+        low = name.strip().lower()
+        if low in {"sonstige", "others", "other", "oth", "oth."}:
+            return True
+        if "sonstige" in low:
+            return True
+    canon = SHORT_TO_CANONICAL.get(name or "", "")
+    return is_residual_party_id(canon)
+
+
 def _seats_to_canonical(seats: dict[str, int], names: dict[str, str]) -> dict[str, int]:
     out: dict[str, int] = {}
     for pid, n in seats.items():
         if n <= 0:
             continue
         name = names.get(pid, pid)
+        if _is_residual_party(pid, name):
+            continue
         canon = SHORT_TO_CANONICAL.get(name, pid)
+        if is_residual_party_id(canon):
+            continue
         out[canon] = out.get(canon, 0) + n
     return out
 
@@ -344,6 +371,14 @@ def coalitions_payload(
         }
     _, names = _votes_from_averages(parliament_id)
     canon = _seats_to_canonical(seats, names)
+    if not canon:
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": total,
+            "majority_threshold": 0,
+            "excluded_by_rules": 0,
+            "coalitions": [],
+        }
     total = total or sum(canon.values())
     result = possible_majorities(
         canon,
@@ -353,20 +388,25 @@ def coalitions_payload(
         apply_exclusions=apply_exclusions,
         disabled_rule_ids=disabled_rule_ids,
     )
+    coalitions_out = []
+    for c in result.coalitions:
+        parties = [p for p in c.parties if not is_residual_party_id(p)]
+        if len(parties) != len(c.parties):
+            continue
+        coalitions_out.append(
+            {
+                "parties": parties,
+                "seats": c.seats,
+                "is_minimal_winning": c.is_minimal_winning,
+                "compatibility_span": c.compatibility_span,
+            }
+        )
     return {
         "parliament_id": parliament_id,
         "total_seats": result.total_seats,
         "majority_threshold": result.majority_threshold,
         "excluded_by_rules": result.excluded_by_rules,
-        "coalitions": [
-            {
-                "parties": list(c.parties),
-                "seats": c.seats,
-                "is_minimal_winning": c.is_minimal_winning,
-                "compatibility_span": c.compatibility_span,
-            }
-            for c in result.coalitions
-        ],
+        "coalitions": coalitions_out,
     }
 
 

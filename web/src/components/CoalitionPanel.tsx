@@ -134,7 +134,10 @@ export function CoalitionPanel({
             </tr>
           </thead>
           <tbody>
-            {data.coalitions.slice(0, 20).map((c, i) => (
+            {data.coalitions
+            .filter((c) => !c.parties.some((p) => /sonstige$|:others$|:other$/i.test(p)))
+            .slice(0, 20)
+            .map((c, i) => (
               <tr key={i} className="border-t border-ink/5">
                 <td className="px-3 py-2">
                   {c.parties.map(labelPartyId).join(" + ")}

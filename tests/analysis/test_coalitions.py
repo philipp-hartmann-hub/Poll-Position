@@ -190,6 +190,48 @@ def test_compatibility_heuristic_marked_as_estimate():
     assert any("heuristisch" in n.lower() or "Heuristik" in n or "kein empirischer" in n for n in rg.notes)
 
 
+def test_residual_sonstige_never_gets_seats():
+    """Sonstige/Others ist Restkategorie — auch über der Hürde keine Sitze."""
+    from analysis.seat_allocation import is_residual_party_id, sainte_lague_schepers
+
+    assert is_residual_party_id("de:sonstige")
+    assert is_residual_party_id("at:others")
+    assert not is_residual_party_id("de:spd")
+    votes = {"de:cdu_csu": 35.0, "de:spd": 25.0, "de:sonstige": 12.0, "de:gruene": 15.0}
+    seats = sainte_lague_schepers(votes, 100, threshold=0.05)
+    assert seats["de:sonstige"] == 0
+    assert sum(seats.values()) == 100
+
+
+def test_union_linke_exclusion_in_default_rules():
+    seats = {
+        "de:cdu_csu": 280,
+        "de:linke": 50,
+        "de:spd": 100,
+        "de:gruene": 80,
+        "de:afd": 120,
+    }
+    config = load_coalition_rules()
+    with_rules = possible_majorities(
+        seats,
+        630,
+        max_parties=2,
+        parliament_id="de_bundestag",
+        apply_exclusions=True,
+        rules_config=config,
+    )
+    assert not any(set(c.parties) == {"de:cdu_csu", "de:linke"} for c in with_rules.coalitions)
+    without = possible_majorities(
+        seats,
+        630,
+        max_parties=2,
+        parliament_id="de_bundestag",
+        apply_exclusions=False,
+        rules_config=config,
+    )
+    assert any(set(c.parties) == {"de:cdu_csu", "de:linke"} for c in without.coalitions)
+
+
 def test_majority_coalitions_compat_wrapper():
     seats = {"A": 40, "B": 35, "C": 25}
     combos = majority_coalitions(seats, max_parties=2)

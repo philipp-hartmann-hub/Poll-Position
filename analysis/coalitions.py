@@ -10,6 +10,8 @@ from typing import Iterable, Sequence
 
 from pydantic import BaseModel, Field
 
+from analysis.seat_allocation import is_residual_party_id
+
 CONFIG_PATH = (
     Path(__file__).resolve().parents[1] / "data_pipeline" / "config" / "coalition_rules.yaml"
 )
@@ -316,7 +318,9 @@ def possible_majorities(
     )
     positions = config.party_positions
 
-    parties = sorted(p for p, s in seats.items() if s > 0)
+    parties = sorted(
+        p for p, s in seats.items() if s > 0 and not is_residual_party_id(p)
+    )
     thr = majority_threshold(total_seats)
     known_minimal: list[tuple[str, ...]] = []
     excluded_count = 0

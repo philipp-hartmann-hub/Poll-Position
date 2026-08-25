@@ -13,6 +13,7 @@ from analysis.coalitions import (
 )
 from analysis.seat_allocation import (
     allocate_seats,
+    is_residual_party_id,
     sainte_lague_schepers,
 )
 from data_pipeline.schema import ElectionSystem, Parliament
