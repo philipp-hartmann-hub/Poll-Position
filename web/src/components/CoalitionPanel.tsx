@@ -111,21 +111,27 @@ export function CoalitionPanel({
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {rules.map((r) => (
-          <label
-            key={r.id}
-            className="flex items-start gap-2 rounded-lg border border-ink/10 bg-white/50 px-3 py-2 text-sm"
-          >
-            <input
-              type="checkbox"
-              className="mt-0.5"
-              checked={enabled[r.id] !== false}
-              disabled={!applyExclusions}
-              onChange={(e) => toggleRule(r.id, e.target.checked)}
-            />
-            <span>{ruleLabel(r)}</span>
-          </label>
-        ))}
+        {rules.length === 0 ? (
+          <p className="text-sm text-ink/50 sm:col-span-2 lg:col-span-3">
+            Keine Ausschlussregeln für dieses Parlament konfiguriert.
+          </p>
+        ) : (
+          rules.map((r) => (
+            <label
+              key={r.id}
+              className="flex items-start gap-2 rounded-lg border border-ink/10 bg-white/50 px-3 py-2 text-sm"
+            >
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={enabled[r.id] !== false}
+                disabled={!applyExclusions}
+                onChange={(e) => toggleRule(r.id, e.target.checked)}
+              />
+              <span>{ruleLabel(r)}</span>
+            </label>
+          ))
+        )}
       </div>
       <p className="text-xs text-ink/50">
         Mehrheit ab {data.majority_threshold} · {data.excluded_by_rules} Kombinationen

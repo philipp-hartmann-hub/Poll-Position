@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/deutschland/laender",
+        destination: "/parlament/de_bundestag",
+        permanent: true,
+      },
+      {
         source: "/szenario",
         destination: "/parlament/de_bundestag/szenario",
         permanent: true,

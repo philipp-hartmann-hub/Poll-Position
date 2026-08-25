@@ -68,6 +68,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   return (
     <div className="space-y-10">
       <CoalitionPanel
+        key={parliamentId}
         parliamentId={parliamentId}
         seatsByName={seats.seats_by_name}
         initial={{

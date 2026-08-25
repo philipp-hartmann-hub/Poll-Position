@@ -43,12 +43,7 @@ export default function HomePage() {
           <ul className="mt-4 space-y-2 text-ink/75">
             <li>
               <Link className="hover:text-sea" href="/parlament/de_bundestag">
-                Bundestag — Trends & Koalitionen
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-sea" href="/deutschland/laender">
-                Länder — Landtag wählen
+                Deutschland — Bund und Länder
               </Link>
             </li>
             <li>

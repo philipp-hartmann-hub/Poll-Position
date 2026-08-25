@@ -459,6 +459,16 @@ def test_coalition_rules_endpoint(client):
     assert any(rule["id"].startswith("de_bundestag_default:") for rule in body["rules"])
 
 
+def test_coalition_rules_endpoint_landtag(client):
+    r = client.get("/api/coalitions/rules", params={"parliament_id": "de_by_landtag"})
+    assert r.status_code == 200
+    body = r.json()
+    assert body["parliament_id"] == "de_by_landtag"
+    assert len(body["rules"]) >= 1
+    assert any(rule["id"].startswith("de_laender_default:") for rule in body["rules"])
+    assert any(rule["party"] == "de:cdu" and "de:afd" in rule["excludes"] for rule in body["rules"])
+
+
 def test_disabled_rule_ids_via_api(client):
     """E2E: abgewählte Union–AfD-Regel lässt CDU/CSU+AfD wieder in /api/coalitions erscheinen."""
     seats = client.get("/api/seats", params={"parliament_id": "de_bundestag"}).json()

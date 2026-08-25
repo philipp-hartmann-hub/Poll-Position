@@ -29,6 +29,9 @@ class ExclusionRule(BaseModel):
 class ExclusionSet(BaseModel):
     id: str
     parliament_id: str | None = None
+    """Einzelnes Parlament; alternativ ``parliament_ids`` für mehrere (z. B. alle Landtage)."""
+
+    parliament_ids: list[str] | None = None
     valid_from: date | None = None
     valid_to: date | None = None
     description: str | None = None
@@ -154,8 +157,12 @@ def is_minimal_winning(
 
 
 def _exclusion_active(excl: ExclusionSet, *, parliament_id: str | None, as_of: date | None) -> bool:
-    if parliament_id is not None and excl.parliament_id and excl.parliament_id != parliament_id:
-        return False
+    if parliament_id is not None:
+        if excl.parliament_ids:
+            if parliament_id not in excl.parliament_ids:
+                return False
+        elif excl.parliament_id and excl.parliament_id != parliament_id:
+            return False
     if as_of is not None:
         if excl.valid_from and as_of < excl.valid_from:
             return False

@@ -253,3 +253,64 @@ def test_europe_placeholder_exclusion_sets_load():
         rules = list_active_exclusion_rules(parliament_id, rules_config=cfg)
         assert rules, f"erwartete Platzhalter-Regeln für {parliament_id}"
         assert all("Platzhalter" in (r.note or "") for r in rules)
+
+
+def test_laender_exclusion_rules_apply_to_all_landtage():
+    cfg = load_coalition_rules()
+    landtage = [
+        "de_bw_landtag",
+        "de_by_landtag",
+        "de_be_abgeordnetenhaus",
+        "de_bb_landtag",
+        "de_hb_buergerschaft",
+        "de_hh_buergerschaft",
+        "de_he_landtag",
+        "de_mv_landtag",
+        "de_ni_landtag",
+        "de_nw_landtag",
+        "de_rp_landtag",
+        "de_sl_landtag",
+        "de_sn_landtag",
+        "de_st_landtag",
+        "de_sh_landtag",
+        "de_th_landtag",
+    ]
+    for pid in landtage:
+        rules = list_active_exclusion_rules(pid, rules_config=cfg)
+        assert rules, f"erwartete Länder-Ausschlüsse für {pid}"
+        assert all(r.id and r.id.startswith("de_laender_default:") for r in rules)
+        assert any(r.party == "de:cdu" and "de:afd" in r.excludes for r in rules)
+
+    # Bundestag behält eigene Set-IDs, nicht die Länder-Liste
+    bund = list_active_exclusion_rules("de_bundestag", rules_config=cfg)
+    assert bund
+    assert all(r.id and r.id.startswith("de_bundestag_default:") for r in bund)
+
+
+def test_laender_cdu_afd_excluded_by_default():
+    seats = {
+        "de:cdu": 50,
+        "de:afd": 40,
+        "de:spd": 30,
+        "de:gruene": 20,
+    }
+    cfg = load_coalition_rules()
+    with_rules = possible_majorities(
+        seats,
+        140,
+        max_parties=2,
+        parliament_id="de_by_landtag",
+        apply_exclusions=True,
+        rules_config=cfg,
+    )
+    without = possible_majorities(
+        seats,
+        140,
+        max_parties=2,
+        parliament_id="de_by_landtag",
+        apply_exclusions=False,
+        rules_config=cfg,
+    )
+    assert with_rules.excluded_by_rules >= 1
+    assert not any(set(c.parties) == {"de:cdu", "de:afd"} for c in with_rules.coalitions)
+    assert any(set(c.parties) == {"de:cdu", "de:afd"} for c in without.coalitions)

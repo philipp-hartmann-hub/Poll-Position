@@ -2,6 +2,7 @@
 #
 # exclusions: Pairweise Ausschlüsse — eine Koalition entfällt, wenn ein Mitglied
 #   laut Regel ein anderes Mitglied ausschließt (gerichtet, wird beidseitig geprüft).
+#   Geltung: `parliament_id` (eins) oder `parliament_ids` (Liste, z. B. alle Landtage).
 #   Einzelregeln bekommen beim Laden stabile IDs "{set_id}:{index}" (z. B.
 #   de_bundestag_default:0), falls im YAML keine explizite `id` steht.
 # party_positions.left_right: 0 = links, 10 = rechts (heuristisch, keine Faktendarstellung)
@@ -239,6 +240,59 @@ exclusions:
         note: "CSU schließt Linke-Koalition aus"
       - party: de:linke
         excludes: [de:cdu_csu, de:cdu, de:csu]
+        note: "Linke schließt Union-Koalition aus"
+
+  - id: de_laender_default
+    parliament_ids:
+      - de_bw_landtag
+      - de_by_landtag
+      - de_be_abgeordnetenhaus
+      - de_bb_landtag
+      - de_hb_buergerschaft
+      - de_hh_buergerschaft
+      - de_he_landtag
+      - de_mv_landtag
+      - de_ni_landtag
+      - de_nw_landtag
+      - de_rp_landtag
+      - de_sl_landtag
+      - de_sn_landtag
+      - de_st_landtag
+      - de_sh_landtag
+      - de_th_landtag
+    valid_from: null
+    valid_to: null
+    description: "Übliche kategorische Ausschlüsse in den Ländern (editierbar)"
+    rules:
+      - party: de:cdu
+        excludes: [de:afd]
+        note: "CDU schließt AfD-Koalition aus"
+      - party: de:csu
+        excludes: [de:afd]
+        note: "CSU schließt AfD-Koalition aus"
+      - party: de:spd
+        excludes: [de:afd]
+        note: "SPD schließt AfD-Koalition aus"
+      - party: de:gruene
+        excludes: [de:afd]
+        note: "Grüne schließen AfD-Koalition aus"
+      - party: de:linke
+        excludes: [de:afd]
+        note: "Linke schließt AfD-Koalition aus"
+      - party: de:fdp
+        excludes: [de:afd]
+        note: "FDP schließt AfD-Koalition aus"
+      - party: de:afd
+        excludes: [de:linke]
+        note: "Gegenseitige Unvereinbarkeit AfD–Linke"
+      - party: de:cdu
+        excludes: [de:linke]
+        note: "CDU schließt Linke-Koalition aus"
+      - party: de:csu
+        excludes: [de:linke]
+        note: "CSU schließt Linke-Koalition aus"
+      - party: de:linke
+        excludes: [de:cdu, de:csu]
         note: "Linke schließt Union-Koalition aus"
 
   - id: at_national_default
