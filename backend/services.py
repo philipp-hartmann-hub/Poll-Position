@@ -43,6 +43,7 @@ from analysis.seat_allocation import (
 from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
+    simulate_party_forecast,
     simulate_threshold_watch,
     simulate_uncertainty,
 )
@@ -67,6 +68,10 @@ SHORT_TO_CANONICAL: dict[str, str] = {
     "SSW": "de:ssw",
     "Sonstige": "de:sonstige",
     "Freie Wähler": "de:fw",
+    "BIW": "de:biw",
+    "BVB/FW": "de:bvb_freie_waehler",
+    "Freie Sachsen": "de:freie_sachsen",
+    "Volt": "de:volt",
 }
 
 # Stabile Dawum-Party-IDs → Shortcut (Fallback, wenn Warehouse-Join fehlt)
@@ -857,6 +862,73 @@ def threshold_watch_payload(
                 "average_share": r.mean_share,
                 "threshold_percent": r.threshold_percent,
                 "probability_below_threshold": r.probability_below_threshold,
+            }
+            for r in rows
+        ],
+    }
+
+
+def party_forecast_payload(
+    parliament_id: str,
+    *,
+    n_simulations: int = 400,
+) -> dict[str, Any]:
+    """Monte-Carlo: P(stärkste Kraft) und P(über Sperrklausel) für alle Parteien."""
+    votes, names = _votes_from_averages(parliament_id)
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        pass
+
+    _parliament, system = _election_system_for(parliament_id)
+    threshold = float(system.threshold_percent) if system else 5.0
+    minority = list(system.minority_exempt_party_ids) if system else []
+    empty = {
+        "parliament_id": parliament_id,
+        "threshold_percent": threshold,
+        "n_simulations": 0,
+        "parties": [],
+    }
+    if not votes:
+        return empty
+
+    residual_ids = [
+        pid
+        for pid in votes
+        if is_residual_party_id(pid) or _is_residual_party(pid, names.get(pid))
+    ]
+    filtered = {pid: share for pid, share in votes.items() if pid not in residual_ids}
+    if not filtered:
+        return empty
+
+    exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
+    parties = party_uncertainties_from_means(
+        filtered, sample_size=1000, house_variance=1.0
+    )
+    rows = simulate_party_forecast(
+        parties,
+        threshold_percent=threshold,
+        exempt_party_ids=sorted(exempt),
+        residual_party_ids=residual_ids,
+        config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
+    )
+    return {
+        "parliament_id": parliament_id,
+        "threshold_percent": threshold,
+        "n_simulations": n_simulations,
+        "parties": [
+            {
+                "party_id": r.party_id,
+                "party_name": resolve_party_display_name(r.party_id, names),
+                "average_share": r.mean_share,
+                "threshold_percent": r.threshold_percent,
+                "probability_strongest": r.probability_strongest,
+                "probability_above_threshold": r.probability_above_threshold,
             }
             for r in rows
         ],

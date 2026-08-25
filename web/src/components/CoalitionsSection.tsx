@@ -13,6 +13,7 @@ import {
   CoalitionPanel,
   type ExclusionUiState,
 } from "@/components/CoalitionPanel";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
@@ -117,6 +118,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
             Unsicherheit (Monte-Carlo)
+            <InfoTooltip text="Anteil der simulierten Stimmenverteilungen, in denen diese Parteikombination gemeinsam mehr als 50 % der Sitze hätte — unter Berücksichtigung der aktuell aktiven Ausschlussregeln." />
           </h2>
           <p className="mb-3 text-sm text-ink/55">
             {uncertainty

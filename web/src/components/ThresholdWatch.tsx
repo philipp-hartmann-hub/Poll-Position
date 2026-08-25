@@ -9,6 +9,7 @@ import {
   type ThresholdWatchParty,
 } from "@/lib/api";
 import { displayPartyName } from "@/lib/colors";
+import { InfoTooltip } from "@/components/InfoTooltip";
 
 function parliamentHref(id: string): string {
   return `/parlament/${id}`;
@@ -74,7 +75,10 @@ export function ThresholdWatch({ parliamentId }: { parliamentId: string }) {
 
   return (
     <section className="space-y-3">
-      <h2 className="font-display text-2xl text-ink">Sperrklausel-Wächter</h2>
+      <h2 className="font-display text-2xl text-ink">
+        Sperrklausel-Wächter
+        <InfoTooltip text="Monte-Carlo-Simulation: Aus Umfragemittelwert und geschätztem Standardfehler (abhängig von Stichprobengröße plus einer zusätzlichen Haus-Varianz) werden 400 zufällige Stimmenverteilungen gezogen. Gezeigt wird der Anteil der Ziehungen unter der gesetzlichen Hürde — keine Wahlprognose, sondern eine Unsicherheitsabschätzung um den aktuellen Umfragestand." />
+      </h2>
       <p className="text-sm text-ink/55">
         Parteien im 3-Punkte-Band um die gesetzliche Hürde — Monte-Carlo, keine
         Prognose.
@@ -109,7 +113,10 @@ export function ThresholdWatchOverview() {
 
   return (
     <section className="space-y-4">
-      <h2 className="font-display text-2xl text-ink">Sperrklausel-Wächter</h2>
+      <h2 className="font-display text-2xl text-ink">
+        Sperrklausel-Wächter
+        <InfoTooltip text="Monte-Carlo-Simulation: Aus Umfragemittelwert und geschätztem Standardfehler (abhängig von Stichprobengröße plus einer zusätzlichen Haus-Varianz) werden 400 zufällige Stimmenverteilungen gezogen. Gezeigt wird der Anteil der Ziehungen unter der gesetzlichen Hürde — keine Wahlprognose, sondern eine Unsicherheitsabschätzung um den aktuellen Umfragestand." />
+      </h2>
       <p className="max-w-2xl text-sm text-ink/55">
         Wo die Hürde am unsichersten ist — Parteien nahe der Schwelle, sortiert
         nach Unentschiedenheit der Simulation.

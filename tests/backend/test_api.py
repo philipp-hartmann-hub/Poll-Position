@@ -93,7 +93,7 @@ def test_last_election_bundestag(client):
 def test_last_election_missing_returns_404(client):
     r = client.get(
         "/api/parliaments/last-election",
-        params={"parliament_id": "de_nw_landtag"},
+        params={"parliament_id": "de_nonexistent_landtag"},
     )
     assert r.status_code == 404
     detail = r.json()["detail"]

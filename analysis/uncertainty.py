@@ -252,3 +252,59 @@ def simulate_threshold_watch(
     ]
     rows.sort(key=lambda r: -min(r.probability_below_threshold, 1.0 - r.probability_below_threshold))
     return rows
+
+
+@dataclass(frozen=True)
+class PartyForecastRow:
+    party_id: str
+    mean_share: float
+    threshold_percent: float
+    probability_strongest: float
+    probability_above_threshold: float
+    n_simulations: int
+
+
+def simulate_party_forecast(
+    parties: Sequence[PartyUncertainty],
+    *,
+    threshold_percent: float,
+    exempt_party_ids: Sequence[str] = (),
+    residual_party_ids: Sequence[str] = (),
+    config: UncertaintyConfig | None = None,
+) -> list[PartyForecastRow]:
+    """Monte-Carlo: P(stärkste Kraft) und P(über Sperrklausel) aus denselben Ziehungen."""
+    cfg = config or UncertaintyConfig(n_simulations=400, seed=42)
+    residual = set(residual_party_ids)
+    exempt = set(exempt_party_ids)
+    ranked_ids = {p.party_id for p in parties if p.party_id not in residual}
+    strongest_hits = {p.party_id: 0 for p in parties}
+    above_hits = {p.party_id: 0 for p in parties}
+    rng = random.Random(cfg.seed)
+    for _ in range(cfg.n_simulations):
+        shares = draw_share_vector(
+            parties,
+            rng,
+            min_share=cfg.min_share,
+            max_share=cfg.max_share,
+            renormalize=cfg.renormalize,
+        )
+        candidates = {pid: s for pid, s in shares.items() if pid in ranked_ids}
+        if candidates:
+            strongest_hits[max(candidates, key=lambda pid: candidates[pid])] += 1
+        for pid, s in shares.items():
+            if pid in exempt or s >= threshold_percent:
+                above_hits[pid] += 1
+    n = cfg.n_simulations
+    rows = [
+        PartyForecastRow(
+            party_id=p.party_id,
+            mean_share=p.mean_share,
+            threshold_percent=threshold_percent,
+            probability_strongest=strongest_hits[p.party_id] / n,
+            probability_above_threshold=above_hits[p.party_id] / n,
+            n_simulations=n,
+        )
+        for p in parties
+    ]
+    rows.sort(key=lambda r: -r.mean_share)
+    return rows

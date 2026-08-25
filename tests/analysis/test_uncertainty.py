@@ -8,6 +8,7 @@ from analysis.seat_allocation import sainte_lague_schepers
 from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
+    simulate_party_forecast,
     simulate_threshold_watch,
     simulate_uncertainty,
     standard_error_pp,
@@ -70,3 +71,37 @@ def test_simulate_threshold_watch_band_and_exempt():
     over = next(r for r in rows if r.party_id == "near_over")
     assert under.probability_below_threshold > 0.5
     assert over.probability_below_threshold < 0.5
+
+
+def test_simulate_party_forecast_strongest_sums_near_one():
+    means = {"A": 38.0, "B": 28.0, "C": 22.0, "D": 12.0}
+    parties = party_uncertainties_from_means(
+        means, sample_size=5000, house_variance=0.2
+    )
+    rows = simulate_party_forecast(
+        parties,
+        threshold_percent=5.0,
+        config=UncertaintyConfig(n_simulations=500, seed=11, renormalize=True),
+    )
+    assert len(rows) == 4
+    total_strongest = sum(r.probability_strongest for r in rows)
+    assert abs(total_strongest - 1.0) < 1e-9
+    assert rows[0].party_id == "A"
+    assert all(0.0 <= r.probability_strongest <= 1.0 for r in rows)
+    assert all(0.0 <= r.probability_above_threshold <= 1.0 for r in rows)
+
+
+def test_simulate_party_forecast_clear_leader_near_one():
+    means = {"leader": 48.0, "mid": 22.0, "low": 18.0, "tiny": 12.0}
+    parties = party_uncertainties_from_means(
+        means, sample_size=20000, house_variance=0.05
+    )
+    rows = simulate_party_forecast(
+        parties,
+        threshold_percent=5.0,
+        residual_party_ids=[],
+        config=UncertaintyConfig(n_simulations=400, seed=3, renormalize=True),
+    )
+    leader = next(r for r in rows if r.party_id == "leader")
+    assert leader.probability_strongest > 0.95
+    assert leader.probability_above_threshold > 0.99

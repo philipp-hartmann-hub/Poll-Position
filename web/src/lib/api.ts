@@ -139,6 +139,22 @@ export type ThresholdWatchOverviewResponse = {
   })[];
 };
 
+export type PartyForecastParty = {
+  party_id: string;
+  party_name: string;
+  average_share: number;
+  threshold_percent: number;
+  probability_strongest: number;
+  probability_above_threshold: number;
+};
+
+export type PartyForecastResponse = {
+  parliament_id: string;
+  threshold_percent: number;
+  n_simulations: number;
+  parties: PartyForecastParty[];
+};
+
 export type HouseEffectsResponse = {
   parliament_id: string | null;
   effects: {
@@ -418,6 +434,13 @@ export function fetchThresholdWatch(
     band: String(band),
   });
   return apiFetch(`/api/threshold-watch?${q}`);
+}
+
+export function fetchPartyForecast(
+  parliamentId: string,
+): Promise<PartyForecastResponse> {
+  const q = new URLSearchParams({ parliament_id: parliamentId });
+  return apiFetch(`/api/party-forecast?${q}`);
 }
 
 export function fetchThresholdWatchOverview(

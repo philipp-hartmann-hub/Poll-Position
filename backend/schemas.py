@@ -169,6 +169,22 @@ class ThresholdWatchOverviewResponse(BaseModel):
     items: list[ThresholdWatchOverviewItem]
 
 
+class PartyForecastPartyOut(BaseModel):
+    party_id: str
+    party_name: str
+    average_share: float
+    threshold_percent: float
+    probability_strongest: float
+    probability_above_threshold: float
+
+
+class PartyForecastResponse(BaseModel):
+    parliament_id: str
+    threshold_percent: float
+    n_simulations: int
+    parties: list[PartyForecastPartyOut]
+
+
 class HouseEffectOut(BaseModel):
     institute_id: str
     institute_name: str | None = None

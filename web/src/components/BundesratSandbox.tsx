@@ -20,11 +20,14 @@ import {
   type BundesratMajorityCheckResponse,
   type BundesratStatusResponse,
 } from "@/lib/api";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { BundesratMap } from "@/components/BundesratMap";
+import {
+  ABSTAIN_COLOR,
+  NO_COLOR,
+  YES_COLOR,
+} from "@/lib/bundesratColors";
 import { labelPartyId } from "@/lib/colors";
-
-const YES_COLOR = "#2f6f4e";
-const NO_COLOR = "#a33b2c";
-const ABSTAIN_COLOR = "#8a8f98";
 
 const SLICE_COLORS = [
   "#1a5f7a",
@@ -349,6 +352,16 @@ export function BundesratSandbox() {
     setChoices(next);
   }
 
+  function resetToIncumbentGovernments() {
+    if (!status) return;
+    setSelectedKey(null);
+    const next: Record<string, string> = {};
+    for (const land of status.laender) {
+      next[land.parliament_id] = "default";
+    }
+    setChoices(next);
+  }
+
   if (!status) {
     return (
       <p className="text-sm text-ink/55">
@@ -424,6 +437,7 @@ export function BundesratSandbox() {
         <section className="space-y-3">
           <h2 className="font-display text-xl text-ink">
             Hätte diese Koalition eine Bundesrats-Mehrheit?
+            <InfoTooltip text="Modellannahme nach Art. 51 Abs. 3 GG: volle Übereinstimmung mit der Landesregierung → Ja, Teilüberschneidung → Enthaltung, keine Übereinstimmung → Nein. Keine Umfrage zum Abstimmungsverhalten, sondern eine Ableitung aus den amtierenden bzw. simulierten Landesregierungen." />
           </h2>
           <p className="max-w-2xl text-sm text-ink/55">
             Automatisch nach Art. 51 Abs. 3 GG: volle Übereinstimmung mit der
@@ -506,6 +520,50 @@ export function BundesratSandbox() {
       )}
 
       <section className="space-y-3">
+        <label className="block max-w-xl text-sm">
+          <span className="mb-1 block text-ink/50">Szenario</span>
+          <select
+            className="w-full rounded-md border border-ink/15 bg-white px-3 py-2 text-ink"
+            value={selectedKey ?? ""}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (!v) {
+                resetToIncumbentGovernments();
+                return;
+              }
+              const row = majorityCheck?.coalitions.find(
+                (r) => rowKey(r) === v,
+              );
+              if (row) applyMajorityCheckRow(row);
+            }}
+          >
+            <option value="">Amtierende Landesregierungen</option>
+            {(majorityCheck?.coalitions ?? []).map((row) => {
+              const key = rowKey(row);
+              const title =
+                row.label?.trim() ||
+                row.parties.map(labelPartyId).join(" + ");
+              return (
+                <option key={key} value={key}>
+                  {title}
+                  {row.is_incumbent ? " (Bundesregierung)" : ""}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+        <BundesratMap
+          laender={status.laender}
+          votes={votes ?? []}
+          onLandClick={(id) =>
+            document
+              .getElementById(`land-row-${id}`)
+              ?.scrollIntoView({ behavior: "smooth", block: "center" })
+          }
+        />
+      </section>
+
+      <section className="space-y-3">
         <h2 className="font-display text-xl text-ink">Länder im Detail</h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[40rem] border-collapse text-sm">
@@ -523,7 +581,11 @@ export function BundesratSandbox() {
                 const vote = voteById.get(land.parliament_id);
                 const choice = choices[land.parliament_id] ?? "default";
                 return (
-                  <tr key={land.parliament_id} className="border-b border-ink/8">
+                  <tr
+                    key={land.parliament_id}
+                    id={`land-row-${land.parliament_id}`}
+                    className="border-b border-ink/8"
+                  >
                     <td className="py-2.5 pr-3 font-medium text-ink">
                       {land.name}
                     </td>

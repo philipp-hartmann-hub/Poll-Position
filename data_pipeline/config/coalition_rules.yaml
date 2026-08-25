@@ -43,6 +43,18 @@ party_positions:
   de:sonstige:
     left_right: 5.0
     european_party_family: null
+  de:biw:
+    left_right: 8.5
+    european_party_family: null
+  de:bvb_freie_waehler:
+    left_right: 5.5
+    european_party_family: null
+  de:freie_sachsen:
+    left_right: 9.7
+    european_party_family: null
+  de:volt:
+    left_right: 4.0
+    european_party_family: null
 
   at:fpo:
     left_right: 9.0

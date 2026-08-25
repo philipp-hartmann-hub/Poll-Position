@@ -60,3 +60,198 @@ elections:
       at:neos: 9.1
       at:grune: 8.3
       at:others: 6.4
+
+  - parliament_id: de_bw_landtag
+    election_date: "2026-03-08"
+    label: Landtagswahl Baden-Württemberg 2026
+    source: "https://im.baden-wuerttemberg.de/de/service/presse-und-oeffentlichkeitsarbeit/pressemitteilung/pid/endgueltiges-landesergebnis-der-landtagswahl-2026-festgestellt"
+    results:
+      de:gruene: 30.2
+      de:cdu: 29.7
+      de:afd: 18.8
+      de:spd: 5.5
+      de:fdp: 4.4
+      de:linke: 4.4
+      de:fw: 1.9
+      de:bsw: 1.4
+      de:sonstige: 3.7
+
+  - parliament_id: de_be_abgeordnetenhaus
+    election_date: "2023-02-12"
+    label: Wiederholungswahl zum Abgeordnetenhaus von Berlin 2023
+    source: "https://de.wikipedia.org/wiki/Wahl_zum_Abgeordnetenhaus_von_Berlin_2023"
+    results:
+      de:cdu: 28.2
+      de:spd: 18.4
+      de:gruene: 18.4
+      de:linke: 12.2
+      de:afd: 9.1
+      de:fdp: 4.6
+      de:sonstige: 9.1
+
+  - parliament_id: de_bb_landtag
+    election_date: "2024-09-22"
+    label: Landtagswahl Brandenburg 2024
+    source: "https://wahlergebnisse.brandenburg.de/12/500/20240922/landtagswahl_land/ergebnisse.html"
+    results:
+      de:spd: 30.89
+      de:afd: 29.23
+      de:bsw: 13.48
+      de:cdu: 12.10
+      de:gruene: 4.13
+      de:linke: 2.98
+      de:bvb_freie_waehler: 2.57
+      de:sonstige: 4.62
+
+  - parliament_id: de_hb_buergerschaft
+    election_date: "2023-05-14"
+    label: Bürgerschaftswahl Bremen 2023
+    source: "https://www.statistik.bremen.de/sixcms/media.php/13/StatBeitragRepraesentativeWahlstatistikBuerger2023_pdfa.pdf"
+    results:
+      de:spd: 29.8
+      de:cdu: 26.2
+      de:gruene: 11.9
+      de:linke: 10.9
+      de:biw: 9.4
+      de:fdp: 5.1
+      de:sonstige: 6.7
+
+  - parliament_id: de_hh_buergerschaft
+    election_date: "2025-03-02"
+    label: Bürgerschaftswahl Hamburg 2025
+    source: "https://de.wikipedia.org/wiki/B%C3%BCrgerschaftswahl_in_Hamburg_2025"
+    results:
+      de:spd: 33.5
+      de:cdu: 19.8
+      de:gruene: 18.5
+      de:linke: 11.2
+      de:afd: 7.5
+      de:volt: 3.2
+      de:fdp: 2.3
+      de:bsw: 1.8
+      de:sonstige: 2.2
+
+  - parliament_id: de_mv_landtag
+    election_date: "2021-09-26"
+    label: Landtagswahl Mecklenburg-Vorpommern 2021
+    source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Mecklenburg-Vorpommern_2021"
+    results:
+      de:spd: 39.6
+      de:afd: 16.7
+      de:cdu: 13.3
+      de:linke: 9.9
+      de:gruene: 6.3
+      de:fdp: 5.8
+      de:sonstige: 8.4
+
+  - parliament_id: de_ni_landtag
+    election_date: "2022-10-09"
+    label: Landtagswahl Niedersachsen 2022
+    source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Niedersachsen_2022"
+    results:
+      de:spd: 33.4
+      de:cdu: 28.1
+      de:gruene: 14.5
+      de:afd: 10.9
+      de:fdp: 4.7
+      de:linke: 2.7
+      de:sonstige: 5.7
+
+  - parliament_id: de_nw_landtag
+    election_date: "2022-05-15"
+    label: Landtagswahl Nordrhein-Westfalen 2022
+    source: "https://www.wahlergebnisse.nrw/landtagswahlen/2022/aktuell/a000lw2200.shtml"
+    results:
+      de:cdu: 35.7
+      de:spd: 26.7
+      de:gruene: 18.2
+      de:fdp: 5.9
+      de:afd: 5.4
+      de:linke: 2.1
+      de:sonstige: 6.0
+
+  - parliament_id: de_rp_landtag
+    election_date: "2026-03-22"
+    label: Landtagswahl Rheinland-Pfalz 2026
+    source: "https://www.wahlen.rlp.de/nachrichten/nachichtendetailseite/endgueltiges-ergebnis-der-landtagswahl-2026-steht-fest"
+    results:
+      de:cdu: 31.0
+      de:spd: 25.9
+      de:afd: 19.5
+      de:gruene: 7.9
+      de:linke: 4.4
+      de:fw: 4.2
+      de:fdp: 2.1
+      de:bsw: 1.9
+      de:sonstige: 3.1
+
+  - parliament_id: de_sl_landtag
+    election_date: "2022-03-27"
+    label: Landtagswahl Saarland 2022
+    source: "https://www.bpb.de/kurz-knapp/hintergrund-aktuell/506485/landtagswahl-im-saarland-2022/"
+    results:
+      de:spd: 43.5
+      de:cdu: 28.5
+      de:afd: 5.7
+      de:gruene: 5.0
+      de:fdp: 4.8
+      de:linke: 2.6
+      de:sonstige: 9.9
+
+  - parliament_id: de_sn_landtag
+    election_date: "2024-09-01"
+    label: Landtagswahl Sachsen 2024
+    source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Sachsen_2024"
+    results:
+      de:cdu: 31.9
+      de:afd: 30.6
+      de:bsw: 11.8
+      de:spd: 7.3
+      de:gruene: 5.1
+      de:linke: 4.5
+      de:fw: 2.3
+      de:freie_sachsen: 2.2
+      de:fdp: 0.9
+      de:sonstige: 3.4
+
+  - parliament_id: de_st_landtag
+    election_date: "2021-06-06"
+    label: Landtagswahl Sachsen-Anhalt 2021
+    source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Sachsen-Anhalt_2021"
+    results:
+      de:cdu: 37.1
+      de:afd: 20.8
+      de:linke: 11.0
+      de:spd: 8.4
+      de:fdp: 6.4
+      de:gruene: 5.9
+      de:fw: 3.1
+      de:sonstige: 7.3
+
+  - parliament_id: de_sh_landtag
+    election_date: "2022-05-08"
+    label: Landtagswahl Schleswig-Holstein 2022
+    source: "https://www.wahlen-sh.de/ltw_2022/index.html"
+    results:
+      de:cdu: 43.4
+      de:gruene: 18.3
+      de:spd: 16.0
+      de:fdp: 6.4
+      de:ssw: 5.7
+      de:afd: 4.4
+      de:linke: 1.7
+      de:sonstige: 4.1
+
+  - parliament_id: de_th_landtag
+    election_date: "2024-09-01"
+    label: Landtagswahl Thüringen 2024
+    source: "https://www.bpb.de/kurz-knapp/hintergrund-aktuell/551667/landtagswahl-thueringen-2024/"
+    results:
+      de:afd: 32.8
+      de:cdu: 23.6
+      de:bsw: 15.8
+      de:linke: 13.1
+      de:spd: 6.1
+      de:gruene: 3.2
+      de:fdp: 1.1
+      de:sonstige: 4.3

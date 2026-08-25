@@ -40,6 +40,7 @@ _PUBLIC_CACHE_QUERY_PATHS = frozenset(
     {
         "/api/uncertainty",
         "/api/coalitions",
+        "/api/party-forecast",
     }
 )
 
@@ -283,6 +284,15 @@ def get_threshold_watch(
 ) -> schemas.ThresholdWatchResponse:
     return schemas.ThresholdWatchResponse.model_validate(
         services.threshold_watch_payload(parliament_id, band_points=band)
+    )
+
+
+@app.get("/api/party-forecast", response_model=schemas.PartyForecastResponse)
+def get_party_forecast(
+    parliament_id: str = Query(..., description="z. B. de_bundestag"),
+) -> schemas.PartyForecastResponse:
+    return schemas.PartyForecastResponse.model_validate(
+        services.party_forecast_payload(parliament_id)
     )
 
 

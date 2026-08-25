@@ -12,6 +12,7 @@ import {
   type TrendSeriesResponse,
 } from "@/lib/api";
 import { Hemicycle, TrendLineChart } from "@/components/charts";
+import { PartyForecast } from "@/components/PartyForecast";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
 import { ThresholdWatch } from "@/components/ThresholdWatch";
 import { partyColor } from "@/lib/colors";
@@ -208,7 +209,12 @@ export function OverviewSection({
         </div>
       </section>
 
-      {showThreshold ? <ThresholdWatch parliamentId={parliamentId} /> : null}
+      {showThreshold ? (
+        <>
+          <PartyForecast parliamentId={parliamentId} />
+          <ThresholdWatch parliamentId={parliamentId} />
+        </>
+      ) : null}
     </div>
   );
 }
