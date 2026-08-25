@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Coalition, ExclusionRule } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
+import { Hemicycle } from "@/components/charts";
 import { labelPartyId } from "@/lib/colors";
 
 function ruleLabel(rule: ExclusionRule): string {
@@ -14,7 +15,7 @@ function ruleLabel(rule: ExclusionRule): string {
 export function CoalitionPanel({
   parliamentId,
   initial,
-  onHighlightParties,
+  seatsByName,
 }: {
   parliamentId: string;
   initial: {
@@ -22,8 +23,7 @@ export function CoalitionPanel({
     excluded_by_rules: number;
     coalitions: Coalition[];
   };
-  /** Hover: Anzeigenamen der Koalitionsparteien (für Hemicycle-Highlight). */
-  onHighlightParties?: (parties: string[] | null) => void;
+  seatsByName: Record<string, number>;
 }) {
   const [applyExclusions, setApplyExclusions] = useState(true);
   const [rules, setRules] = useState<ExclusionRule[]>([]);
@@ -31,6 +31,9 @@ export function CoalitionPanel({
   const [data, setData] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [highlightParties, setHighlightParties] = useState<string[] | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -126,41 +129,56 @@ export function CoalitionPanel({
         {loading ? " · lädt…" : ""}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}
-      <div className="overflow-x-auto rounded-lg border border-ink/10">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-ink/5 text-ink/60">
-            <tr>
-              <th className="px-3 py-2 font-medium">Koalition</th>
-              <th className="px-3 py-2 font-medium">Sitze</th>
-              <th className="px-3 py-2 font-medium">Span</th>
-              <th className="px-3 py-2 font-medium">Minimal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.coalitions
-            .filter((c) => !c.parties.some((p) => /sonstige$|:others$|:other$/i.test(p)))
-            .slice(0, 20)
-            .map((c, i) => (
-              <tr
-                key={i}
-                className="border-t border-ink/5 transition hover:bg-mist/40"
-                onMouseEnter={() =>
-                  onHighlightParties?.(c.parties.map(labelPartyId))
-                }
-                onMouseLeave={() => onHighlightParties?.(null)}
-              >
-                <td className="px-3 py-2">
-                  {c.parties.map(labelPartyId).join(" + ")}
-                </td>
-                <td className="px-3 py-2 tabular-nums">{c.seats}</td>
-                <td className="px-3 py-2 tabular-nums">
-                  {c.compatibility_span?.toFixed(1) ?? "—"}
-                </td>
-                <td className="px-3 py-2">{c.is_minimal_winning ? "ja" : "nein"}</td>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+          <Hemicycle
+            seats={seatsByName}
+            highlightParties={highlightParties ?? undefined}
+          />
+        </div>
+        <div className="overflow-x-auto rounded-lg border border-ink/10">
+          <table className="min-w-full text-left text-sm">
+            <thead className="bg-ink/5 text-ink/60">
+              <tr>
+                <th className="px-3 py-2 font-medium">Koalition</th>
+                <th className="px-3 py-2 font-medium">Sitze</th>
+                <th className="px-3 py-2 font-medium">Span</th>
+                <th className="px-3 py-2 font-medium">Minimal</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.coalitions
+                .filter(
+                  (c) =>
+                    !c.parties.some((p) =>
+                      /sonstige$|:others$|:other$/i.test(p),
+                    ),
+                )
+                .slice(0, 20)
+                .map((c, i) => (
+                  <tr
+                    key={i}
+                    className="border-t border-ink/5 transition hover:bg-mist/40"
+                    onMouseEnter={() =>
+                      setHighlightParties(c.parties.map(labelPartyId))
+                    }
+                    onMouseLeave={() => setHighlightParties(null)}
+                  >
+                    <td className="px-3 py-2">
+                      {c.parties.map(labelPartyId).join(" + ")}
+                    </td>
+                    <td className="px-3 py-2 tabular-nums">{c.seats}</td>
+                    <td className="px-3 py-2 tabular-nums">
+                      {c.compatibility_span?.toFixed(1) ?? "—"}
+                    </td>
+                    <td className="px-3 py-2">
+                      {c.is_minimal_winning ? "ja" : "nein"}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

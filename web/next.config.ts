@@ -4,6 +4,20 @@ const apiProxy =
   process.env.API_PROXY_TARGET?.trim() || "http://127.0.0.1:8000";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/deutschland/bund",
+        destination: "/parlament/de_bundestag",
+        permanent: true,
+      },
+      {
+        source: "/szenario",
+        destination: "/parlament/de_bundestag/szenario",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     // Lokal: Next proxied /api/* und /health an FastAPI.
     // Auf Vercel (gleiches Projekt) antwortet die Python-Function direkt.

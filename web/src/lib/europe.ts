@@ -14,7 +14,7 @@ export const EUROPE_COUNTRIES: Record<string, EuropeCountryMeta> = {
     iso: "DE",
     name: "Deutschland",
     parliamentId: "de_bundestag",
-    href: "/deutschland/bund",
+    href: "/parlament/de_bundestag",
     approximation: "national",
     badge: "",
   },

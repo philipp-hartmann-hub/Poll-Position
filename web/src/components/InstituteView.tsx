@@ -3,21 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   fetchHouseEffects,
-  fetchParliaments,
   type HouseEffectsResponse,
-  type Parliament,
 } from "@/lib/api";
-
-function sortDeParliaments(list: Parliament[]): Parliament[] {
-  return [...list]
-    .filter((p) => p.country === "DE")
-    .sort((a, b) => {
-      const aNat = a.level_kind === "national" ? 0 : 1;
-      const bNat = b.level_kind === "national" ? 0 : 1;
-      if (aNat !== bNat) return aNat - bNat;
-      return a.name.localeCompare(b.name, "de");
-    });
-}
 
 /** Dezente divergierende Tints; Intensität proportional zu |pp|, Cap ±5. */
 function houseEffectCellStyle(value: number): { backgroundColor: string } | undefined {
@@ -33,20 +20,10 @@ function houseEffectCellStyle(value: number): { backgroundColor: string } | unde
   return { backgroundColor: `rgba(180, 75, 55, ${alpha})` };
 }
 
-export function InstituteView() {
-  const [parliaments, setParliaments] = useState<Parliament[]>([]);
-  const [parliamentId, setParliamentId] = useState("de_bundestag");
+export function InstituteView({ parliamentId }: { parliamentId: string }) {
   const [data, setData] = useState<HouseEffectsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    void fetchParliaments()
-      .then((list) => setParliaments(sortDeParliaments(list)))
-      .catch((e) =>
-        setError(e instanceof Error ? e.message : "Parlamente laden fehlgeschlagen"),
-      );
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,21 +79,6 @@ export function InstituteView() {
 
   return (
     <div className="space-y-6">
-      <label className="text-sm">
-        <span className="mb-1 block text-ink/50">Parlament</span>
-        <select
-          className="rounded-md border border-ink/15 bg-white px-3 py-2"
-          value={parliamentId}
-          onChange={(e) => setParliamentId(e.target.value)}
-        >
-          {parliaments.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </label>
-
       {loading && <p className="text-sm text-ink/50">Lade…</p>}
       {error && <p className="text-sm text-accent">{error}</p>}
 

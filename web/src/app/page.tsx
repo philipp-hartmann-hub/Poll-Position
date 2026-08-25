@@ -15,7 +15,7 @@ export default function HomePage() {
         </h1>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
-            href="/deutschland/bund"
+            href="/parlament/de_bundestag"
             className="rounded-md bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-sea"
           >
             Deutschland
@@ -42,13 +42,13 @@ export default function HomePage() {
           <h2 className="font-display text-2xl text-ink">Deutschland</h2>
           <ul className="mt-4 space-y-2 text-ink/75">
             <li>
-              <Link className="hover:text-sea" href="/deutschland/bund">
+              <Link className="hover:text-sea" href="/parlament/de_bundestag">
                 Bundestag — Trends & Koalitionen
               </Link>
             </li>
             <li>
               <Link className="hover:text-sea" href="/deutschland/laender">
-                Länder — Landtage
+                Länder — Landtag wählen
               </Link>
             </li>
             <li>
@@ -58,12 +58,7 @@ export default function HomePage() {
             </li>
             <li>
               <Link className="hover:text-sea" href="/institute">
-                Institute — House Effects
-              </Link>
-            </li>
-            <li>
-              <Link className="hover:text-sea" href="/szenario">
-                Was wäre wenn — Szenarien
+                Institute — Rangliste
               </Link>
             </li>
           </ul>

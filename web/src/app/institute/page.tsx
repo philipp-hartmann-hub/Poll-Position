@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { InstituteLeaderboard } from "@/components/InstituteLeaderboard";
-import { InstituteView } from "@/components/InstituteView";
 
 export default function InstitutePage() {
   return (
@@ -13,18 +13,18 @@ export default function InstitutePage() {
           Wer lag bei vergangenen Wahlen am nächsten am Ergebnis — und wie
           weichen Institute voneinander ab (House Effects).
         </p>
+        <p className="max-w-2xl text-sm text-ink/55">
+          Detailansicht je Parlament unter{" "}
+          <Link
+            href="/parlament/de_bundestag/institute"
+            className="text-sea underline-offset-2 hover:underline"
+          >
+            Parlament → Institute
+          </Link>
+          .
+        </p>
       </div>
       <InstituteLeaderboard />
-      <section className="space-y-3">
-        <h2 className="font-display text-xl text-ink">
-          House Effects nach Parlament
-        </h2>
-        <p className="text-sm text-ink/55">
-          Detailansicht: Abweichung vom Peer-Schnitt im Zeitfenster, plus
-          Backtest nur für das gewählte Parlament.
-        </p>
-        <InstituteView />
-      </section>
     </div>
   );
 }

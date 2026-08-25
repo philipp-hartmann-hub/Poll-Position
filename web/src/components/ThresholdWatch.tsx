@@ -10,8 +10,7 @@ import {
 } from "@/lib/api";
 
 function parliamentHref(id: string): string {
-  if (id === "de_bundestag") return "/deutschland/bund";
-  return "/deutschland/laender";
+  return `/parlament/${id}`;
 }
 
 function TileCard({
