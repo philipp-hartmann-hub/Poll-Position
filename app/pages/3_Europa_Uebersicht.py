@@ -15,10 +15,21 @@ from analysis.party_families import (
 )
 from app.lib.charts import COUNTRY_CENTROIDS, europe_family_deck
 from app.lib.db import load_all_latest_shares_by_country, warehouse_exists
+from app.lib.features import features
 from app.lib.ui import SHORT_TO_CANONICAL, render_footer
 
 st.set_page_config(page_title="Europa · Poll-Position", layout="wide")
 st.title("Europa — Übersicht")
+
+if not features["europe"]:
+    st.info(
+        "Der Europa-Bereich ist vorübergehend ausgeblendet. "
+        "Wieder aktivieren: Umgebungsvariable `ENABLE_EUROPE=1` "
+        "(siehe `app/lib/features.py`)."
+    )
+    render_footer()
+    st.stop()
+
 st.caption("Einfärbung nach stärkster europäischer Parteienfamilie je Land (neueste Umfragen).")
 
 if not warehouse_exists():

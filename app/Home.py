@@ -1,6 +1,9 @@
 # Streamlit Multi-Page Einstieg: streamlit run app/Home.py
 
+import streamlit as st
+
 from app.lib.db import load_parliaments, warehouse_backend_label, warehouse_exists
+from app.lib.features import features
 from app.lib.ui import render_footer
 from data_pipeline.warehouse import uses_motherduck
 
@@ -12,13 +15,17 @@ st.set_page_config(
 
 st.title("Poll-Position")
 st.markdown(
-    "Umfragetracker für **Deutschland und Europa** — "
-    "Trends, Sitzprojektionen und Koalitionsszenarien."
+    "Umfragetracker für **Deutschland**"
+    + (" **und Europa**" if features["europe"] else "")
+    + " — Trends, Sitzprojektionen und Koalitionsszenarien."
 )
 
+focus_options = ["Deutschland"]
+if features["europe"]:
+    focus_options.append("Europa")
 focus = st.radio(
     "Fokus",
-    ["Deutschland", "Europa"],
+    focus_options,
     horizontal=True,
     help="Steuert die Startnavigation; alle Seiten bleiben über die Seitenleiste erreichbar.",
 )

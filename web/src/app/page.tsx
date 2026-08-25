@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThresholdWatchOverview } from "@/components/ThresholdWatch";
+import { features } from "@/lib/features";
 
 export default function HomePage() {
   return (
@@ -9,8 +10,8 @@ export default function HomePage() {
           Poll-Position
         </p>
         <h1 className="mt-4 max-w-xl text-lg text-ink/70 md:text-xl">
-          Umfragetrends, Sitzprojektionen und Koalitionsszenarien — Deutschland
-          und Europa.
+          Umfragetrends, Sitzprojektionen und Koalitionsszenarien
+          {features.europe ? " — Deutschland und Europa." : " für Deutschland."}
         </h1>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
@@ -19,18 +20,24 @@ export default function HomePage() {
           >
             Deutschland
           </Link>
-          <Link
-            href="/europa"
-            className="rounded-md border border-ink/20 bg-white/60 px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-white"
-          >
-            Europa
-          </Link>
+          {features.europe ? (
+            <Link
+              href="/europa"
+              className="rounded-md border border-ink/20 bg-white/60 px-5 py-2.5 text-sm font-semibold text-ink transition hover:bg-white"
+            >
+              Europa
+            </Link>
+          ) : null}
         </div>
       </section>
 
       <ThresholdWatchOverview />
 
-      <section className="grid gap-6 md:grid-cols-2">
+      <section
+        className={
+          features.europe ? "grid gap-6 md:grid-cols-2" : "grid gap-6"
+        }
+      >
         <div>
           <h2 className="font-display text-2xl text-ink">Deutschland</h2>
           <ul className="mt-4 space-y-2 text-ink/75">
@@ -45,6 +52,11 @@ export default function HomePage() {
               </Link>
             </li>
             <li>
+              <Link className="hover:text-sea" href="/bundesrat">
+                Bundesrat — Sandbox
+              </Link>
+            </li>
+            <li>
               <Link className="hover:text-sea" href="/institute">
                 Institute — House Effects
               </Link>
@@ -56,16 +68,18 @@ export default function HomePage() {
             </li>
           </ul>
         </div>
-        <div>
-          <h2 className="font-display text-2xl text-ink">Europa</h2>
-          <ul className="mt-4 space-y-2 text-ink/75">
-            <li>
-              <Link className="hover:text-sea" href="/europa">
-                Übersichtskarte nach Parteienfamilie
-              </Link>
-            </li>
-          </ul>
-        </div>
+        {features.europe ? (
+          <div>
+            <h2 className="font-display text-2xl text-ink">Europa</h2>
+            <ul className="mt-4 space-y-2 text-ink/75">
+              <li>
+                <Link className="hover:text-sea" href="/europa">
+                  Übersichtskarte nach Parteienfamilie
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : null}
       </section>
     </div>
   );

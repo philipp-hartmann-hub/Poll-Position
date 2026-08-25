@@ -5,7 +5,7 @@ import { AttributionFooter } from "@/components/AttributionFooter";
 
 export const metadata: Metadata = {
   title: "Poll-Position",
-  description: "Umfragen, Sitze und Koalitionen für Deutschland und Europa",
+  description: "Umfragen, Sitze und Koalitionen für Deutschland",
 };
 
 export default function RootLayout({

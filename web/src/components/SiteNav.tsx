@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { features } from "@/lib/features";
 
 const links = [
   { href: "/", label: "Übersicht" },
   { href: "/deutschland/bund", label: "Bund" },
   { href: "/deutschland/laender", label: "Länder" },
   { href: "/bundesrat", label: "Bundesrat" },
-  { href: "/europa", label: "Europa" },
+  ...(features.europe ? [{ href: "/europa", label: "Europa" }] : []),
   { href: "/institute", label: "Institute" },
   { href: "/szenario", label: "Szenario" },
 ];
