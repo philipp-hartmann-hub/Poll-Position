@@ -14,6 +14,12 @@ votes_total: 69
 majority_simple: 35
 majority_two_thirds: 46
 
+# Amtierende Bundesregierung (Sandbox / Mehrheitscheck) — manuell pflegen
+bundesregierung:
+  stand: "2026-08-25"
+  parties: [de:cdu, de:csu, de:spd]
+  label: "CDU/CSU + SPD"
+
 sources:
   - "https://www.bundesrat.de/DE/bundesrat/verteilung/verteilung.html"
   - "Handbuch des Bundesrates, Band 1 (2025), Art. 51 Abs. 2 GG — Stimmenverteilung"

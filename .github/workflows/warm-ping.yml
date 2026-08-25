@@ -1,0 +1,47 @@
+# Hält die FastAPI-Function warm (Cold-Start-Wahrscheinlichkeit senken).
+#
+# Voraussetzung: Repository-Variable PRODUCTION_URL
+#   (Settings → Secrets and variables → Actions → Variables),
+#   z. B. https://poll-position.vercel.app — ohne trailing slash.
+#
+# Hinweis: Statische JSON unter /data/… kommen aus der Daily Pipeline
+# (web/public/data/, nicht im Git). Vercel Blob oder ein Post-Pipeline-
+# Deploy wären die nachhaltige Auslieferung; dieser Ping ist die
+# pragmatische Zwischenlösung gegen Cold Starts.
+name: Warm Ping
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: warm-ping
+  cancel-in-progress: true
+
+jobs:
+  ping-health:
+    name: GET /health
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping production /health
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PRODUCTION_URL:-}" ]; then
+            echo "::warning::Variable PRODUCTION_URL fehlt — Warm-Ping übersprungen."
+            echo "Anlegen unter Settings → Secrets and variables → Actions → Variables."
+            exit 0
+          fi
+          url="${PRODUCTION_URL%/}/health"
+          echo "Ping $url"
+          code=$(curl -sS -o /tmp/health.json -w "%{http_code}" --max-time 25 "$url" || true)
+          echo "HTTP $code"
+          head -c 500 /tmp/health.json || true
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::warning::Warm-Ping ohne 200 (Function ggf. kalt/fehlerhaft)."
+            exit 0
+          fi

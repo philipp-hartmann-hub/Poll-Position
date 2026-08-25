@@ -237,6 +237,29 @@ async function apiFetch<T>(path: string, init?: ApiFetchInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * Zuerst Pipeline-Static unter /data/… (kein Cold-Start), bei 404 → FastAPI.
+ * Nur für die täglich exportierten Default-Payloads.
+ */
+async function fetchStaticOrApi<T>(
+  staticPath: string,
+  apiPath: string,
+  init?: ApiFetchInit,
+): Promise<T> {
+  try {
+    const res = await fetch(staticPath, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (res.ok) {
+      return (await res.json()) as T;
+    }
+  } catch {
+    // Netzwerk / lokal ohne Export → API
+  }
+  return apiFetch<T>(apiPath, init);
+}
+
 export function fetchParliaments(): Promise<Parliament[]> {
   return apiFetch("/api/parliaments");
 }
@@ -249,7 +272,14 @@ export function fetchAverages(
     parliament_id: parliamentId,
     days: String(days),
   });
-  return apiFetch(`/api/parties/averages?${q}`);
+  const apiPath = `/api/parties/averages?${q}`;
+  if (days !== 365) {
+    return apiFetch(apiPath);
+  }
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(parliamentId)}/averages.json`,
+    apiPath,
+  );
 }
 
 export function fetchTrendSeries(
@@ -260,7 +290,14 @@ export function fetchTrendSeries(
     parliament_id: parliamentId,
     days: String(days),
   });
-  return apiFetch(`/api/parties/trend-series?${q}`);
+  const apiPath = `/api/parties/trend-series?${q}`;
+  if (days !== 365) {
+    return apiFetch(apiPath);
+  }
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(parliamentId)}/trend.json`,
+    apiPath,
+  );
 }
 
 export function fetchRawSurveys(
@@ -277,7 +314,10 @@ export function fetchRawSurveys(
 
 export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
-  return apiFetch(`/api/seats?${q}`);
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(parliamentId)}/seats.json`,
+    `/api/seats?${q}`,
+  );
 }
 
 export function fetchCoalitions(
@@ -299,10 +339,18 @@ export function fetchCoalitions(
   for (const id of disabled) {
     q.append("disabled_rule_ids", id);
   }
-  // Individuelle Regel-Auswahl = Nutzerinteraktion → nicht cachen
-  return apiFetch(`/api/coalitions?${q}`, {
-    noStore: disabled.length > 0,
-  });
+  const apiPath = `/api/coalitions?${q}`;
+  const interactive =
+    disabled.length > 0 ||
+    opts?.apply_exclusions === false ||
+    (opts?.max_parties !== undefined && opts.max_parties !== 4);
+  if (interactive) {
+    return apiFetch(apiPath, { noStore: true });
+  }
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(parliamentId)}/coalitions.json`,
+    apiPath,
+  );
 }
 
 export function fetchCoalitionRules(
@@ -418,8 +466,10 @@ export type BundesratSimulateResponse = {
 
 export type BundesratMajorityCheckItem = {
   parties: string[];
+  label?: string | null;
   bundestag_seats: number;
   is_minimal_winning: boolean;
+  is_incumbent?: boolean;
   choices: Record<string, string>;
   yes_votes: number;
   no_votes: number;
@@ -428,11 +478,26 @@ export type BundesratMajorityCheckItem = {
   has_two_thirds: boolean;
 };
 
+export type BundesratCoalitionBalanceSlice = {
+  key: string;
+  label: string;
+  parties_normalized: string[];
+  votes: number;
+  parliament_ids: string[];
+  matches_federal: boolean;
+};
+
 export type BundesratMajorityCheckResponse = {
   as_of: string;
   total_votes: number;
   majority_threshold: number;
   two_thirds_threshold: number;
+  federal_government?: {
+    stand: string;
+    parties: string[];
+    label: string;
+  } | null;
+  coalition_balance?: BundesratCoalitionBalanceSlice[];
   coalitions: BundesratMajorityCheckItem[];
 };
 

@@ -16,6 +16,7 @@ from analysis.averages import (
 from analysis.bundesrat import (
     choices_for_coalition,
     coalition_key,
+    group_votes_by_coalition,
     load_bundesrat_config,
     parse_coalition_key,
     simulate_bundesrat,
@@ -362,8 +363,48 @@ def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tup
     return seats, sum(seats.values())
 
 
+def _seat_projection_enabled(parliament_id: str) -> bool | None:
+    """True/False wenn Parlament bekannt, sonst None (Fallback-Allokation)."""
+    bundle = load_parliament_config()
+    parliament = next((p for p in bundle.parliaments if p.id == parliament_id), None)
+    if not parliament:
+        return None
+    system = next(
+        s for s in bundle.election_systems if s.key == parliament.election_system_key
+    )
+    return bool(system.seat_projection)
+
+
 def seats_payload(parliament_id: str) -> dict[str, Any]:
+    """
+    Sitzprojektion. Bei leerem ``seats`` steht ``reason``:
+    ``no_averages`` | ``all_below_threshold`` | ``no_seat_projection``.
+    """
     votes, names = _votes_from_averages(parliament_id)
+    if not votes:
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": 0,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "no_averages",
+        }
+
+    projection = _seat_projection_enabled(parliament_id)
+    if projection is False:
+        bundle = load_parliament_config()
+        parliament = next(p for p in bundle.parliaments if p.id == parliament_id)
+        system = next(
+            s for s in bundle.election_systems if s.key == parliament.election_system_key
+        )
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": system.seats_total,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "no_seat_projection",
+        }
+
     seats, total = _allocate_for_parliament(parliament_id, votes)
     # Restkategorie nie in der Sitz-/Koalitions-UI
     seats = {
@@ -372,11 +413,20 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
         if n > 0 and not _is_residual_party(pid, names.get(pid))
     }
     by_name = {names.get(k, k): v for k, v in seats.items()}
+    if not seats:
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": total,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "all_below_threshold",
+        }
     return {
         "parliament_id": parliament_id,
         "total_seats": total,
         "seats": seats,
         "seats_by_name": by_name,
+        "reason": None,
     }
 
 
@@ -1006,10 +1056,31 @@ def bundesrat_simulate_payload(choices: dict[str, str]) -> dict[str, Any]:
 
 
 def bundesrat_majority_check_payload(*, limit: int = 8) -> dict[str, Any]:
-    """Top-Bundestags-Koalitionen × automatische Bundesrats-Stimmen (Art. 51 Abs. 3)."""
+    """Amtierende Bundesregierung + Top-Bundestags-Koalitionen × Art. 51 Abs. 3."""
     cfg = load_bundesrat_config()
-    coal = coalitions_payload("de_bundestag", apply_exclusions=True, max_parties=4)
     rows: list[dict[str, Any]] = []
+
+    if cfg.bundesregierung and cfg.bundesregierung.parties:
+        fed_parties = list(cfg.bundesregierung.parties)
+        choices = choices_for_coalition(cfg, fed_parties)
+        sim = simulate_bundesrat(cfg, choices=choices)
+        rows.append(
+            {
+                "parties": fed_parties,
+                "label": cfg.bundesregierung.label,
+                "bundestag_seats": 0,
+                "is_minimal_winning": False,
+                "is_incumbent": True,
+                "choices": choices,
+                "yes_votes": sim.yes,
+                "no_votes": sim.no,
+                "abstain_votes": sim.abstain,
+                "has_majority": sim.has_simple_majority,
+                "has_two_thirds": sim.has_two_thirds_majority,
+            }
+        )
+
+    coal = coalitions_payload("de_bundestag", apply_exclusions=True, max_parties=4)
     for c in (coal.get("coalitions") or [])[:limit]:
         parties = [p for p in (c.get("parties") or []) if not is_residual_party_id(p)]
         if not parties:
@@ -1019,8 +1090,10 @@ def bundesrat_majority_check_payload(*, limit: int = 8) -> dict[str, Any]:
         rows.append(
             {
                 "parties": parties,
+                "label": None,
                 "bundestag_seats": int(c.get("seats") or 0),
                 "is_minimal_winning": bool(c.get("is_minimal_winning")),
+                "is_incumbent": False,
                 "choices": choices,
                 "yes_votes": sim.yes,
                 "no_votes": sim.no,
@@ -1029,11 +1102,35 @@ def bundesrat_majority_check_payload(*, limit: int = 8) -> dict[str, Any]:
                 "has_two_thirds": sim.has_two_thirds_majority,
             }
         )
+
+    balance = [
+        {
+            "key": g.key,
+            "label": g.label,
+            "parties_normalized": list(g.parties_normalized),
+            "votes": g.votes,
+            "parliament_ids": list(g.parliament_ids),
+            "matches_federal": g.matches_federal,
+        }
+        for g in group_votes_by_coalition(cfg)
+    ]
+
+    fed = cfg.bundesregierung
     return {
         "as_of": cfg.stand,
         "total_votes": cfg.votes_total,
         "majority_threshold": cfg.majority_simple,
         "two_thirds_threshold": cfg.majority_two_thirds,
+        "federal_government": (
+            {
+                "stand": fed.stand,
+                "parties": list(fed.parties),
+                "label": fed.label,
+            }
+            if fed
+            else None
+        ),
+        "coalition_balance": balance,
         "coalitions": rows,
     }
 

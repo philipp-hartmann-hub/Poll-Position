@@ -186,7 +186,24 @@ def get_seats(
 ) -> schemas.SeatsResponse:
     data = services.seats_payload(parliament_id)
     if not data["seats"]:
-        raise HTTPException(status_code=404, detail="Keine Umfragedaten / Sitze")
+        reason = data.get("reason") or "no_averages"
+        detail = {
+            "no_averages": (
+                "Keine Umfragedaten für dieses Parlament "
+                "(Averages leer -- Pipeline geprüft?)"
+            ),
+            "all_below_threshold": (
+                "Alle Parteien unter der gesetzlichen Hürde -- "
+                "keine Sitzzuteilung möglich"
+            ),
+            "no_seat_projection": (
+                "Für dieses Parlament ist keine Sitzprojektion konfiguriert"
+            ),
+        }.get(reason, "Keine Umfragedaten / Sitze")
+        raise HTTPException(
+            status_code=404,
+            detail={"message": detail, "reason": reason},
+        )
     return schemas.SeatsResponse.model_validate(data)
 
 

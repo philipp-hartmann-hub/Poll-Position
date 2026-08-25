@@ -339,6 +339,64 @@ def test_seats(client):
     assert body["total_seats"] == 630
     assert sum(body["seats"].values()) == 630
     assert body["seats_by_name"]
+    assert body.get("reason") is None
+
+
+def test_seats_404_reasons(api_warehouse, monkeypatch):
+    """Drei unterscheidbare Leer-Fälle im 404-Detail."""
+    from fastapi.testclient import TestClient
+
+    from backend import services
+    from backend.main import app
+
+    services.clear_payload_caches()
+
+    # 1) Keine Averages
+    monkeypatch.setattr(services, "_votes_from_averages", lambda _pid: ({}, {}))
+    with TestClient(app) as client:
+        r = client.get("/api/seats", params={"parliament_id": "de_bundestag"})
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert detail["reason"] == "no_averages"
+    assert "Averages leer" in detail["message"]
+
+    # 2) seat_projection=false (FR), trotz Stimmen
+    monkeypatch.setattr(
+        services,
+        "_votes_from_averages",
+        lambda _pid: (
+            {"fr:party:a": 30.0, "fr:party:b": 25.0},
+            {"fr:party:a": "A", "fr:party:b": "B"},
+        ),
+    )
+    with TestClient(app) as client:
+        r = client.get("/api/seats", params={"parliament_id": "fr_assemblee"})
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert detail["reason"] == "no_seat_projection"
+    assert "keine Sitzprojektion" in detail["message"]
+
+    # 3) Averages da, Projektion an, aber keine Sitze nach Hürde
+    monkeypatch.setattr(
+        services,
+        "_votes_from_averages",
+        lambda _pid: (
+            {"de:tiny_a": 2.0, "de:tiny_b": 2.0},
+            {"de:tiny_a": "TinyA", "de:tiny_b": "TinyB"},
+        ),
+    )
+    monkeypatch.setattr(services, "_seat_projection_enabled", lambda _pid: True)
+    monkeypatch.setattr(
+        services,
+        "_allocate_for_parliament",
+        lambda _pid, _votes: ({}, 630),
+    )
+    with TestClient(app) as client:
+        r = client.get("/api/seats", params={"parliament_id": "de_bundestag"})
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert detail["reason"] == "all_below_threshold"
+    assert "gesetzlichen Hürde" in detail["message"]
 
 
 def test_coalitions(client):
@@ -636,7 +694,12 @@ def test_bundesrat_majority_check(client):
     body = r.json()
     assert body["total_votes"] == 69
     assert body["majority_threshold"] == 35
+    assert body["federal_government"]["label"]
+    assert len(body["coalition_balance"]) >= 1
+    assert sum(s["votes"] for s in body["coalition_balance"]) == 69
+    assert any(s["matches_federal"] for s in body["coalition_balance"])
     assert len(body["coalitions"]) >= 1
+    assert body["coalitions"][0]["is_incumbent"] is True
     row = body["coalitions"][0]
     assert row["parties"]
     assert len(row["choices"]) == 16

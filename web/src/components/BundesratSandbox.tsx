@@ -2,9 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+import {
   fetchBundesratMajorityCheck,
   fetchBundesratStatus,
   postBundesratSimulate,
+  type BundesratCoalitionBalanceSlice,
   type BundesratLand,
   type BundesratLandVote,
   type BundesratMajorityCheckItem,
@@ -16,6 +25,19 @@ import { labelPartyId } from "@/lib/colors";
 const YES_COLOR = "#2f6f4e";
 const NO_COLOR = "#a33b2c";
 const ABSTAIN_COLOR = "#8a8f98";
+
+const SLICE_COLORS = [
+  "#1a5f7a",
+  "#c45c26",
+  "#2f6f4e",
+  "#5c4a7a",
+  "#a33b2c",
+  "#8a6d3b",
+  "#3d6b8a",
+  "#6b5b4a",
+  "#4a7a6b",
+  "#7a4a5c",
+];
 
 function StanceBadge({ stance }: { stance: string }) {
   const map: Record<string, { label: string; className: string }> = {
@@ -140,10 +162,97 @@ function VoteBar({
   );
 }
 
+function CoalitionBalancePie({
+  slices,
+}: {
+  slices: BundesratCoalitionBalanceSlice[];
+}) {
+  const data = slices.map((s, i) => ({
+    ...s,
+    name: s.matches_federal ? `${s.label} ★` : s.label,
+    fill: SLICE_COLORS[i % SLICE_COLORS.length],
+  }));
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="votes"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              innerRadius={48}
+              outerRadius={88}
+              paddingAngle={1}
+              stroke="#f3efe6"
+              strokeWidth={2}
+            >
+              {data.map((entry) => (
+                <Cell
+                  key={entry.key}
+                  fill={entry.fill}
+                  stroke={entry.matches_federal ? "#0f1c2e" : "#f3efe6"}
+                  strokeWidth={entry.matches_federal ? 3 : 2}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value: number, _n, item) => [
+                `${value} Stimmen`,
+                String(item?.payload?.label ?? ""),
+              ]}
+            />
+            <Legend
+              layout="vertical"
+              align="right"
+              verticalAlign="middle"
+              wrapperStyle={{ fontSize: 12 }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <ul className="space-y-1.5 self-center text-sm">
+        {data.map((s) => (
+          <li
+            key={s.key}
+            className={
+              s.matches_federal
+                ? "flex items-baseline justify-between gap-2 rounded-md border border-ink/25 bg-mist/40 px-2 py-1.5 font-medium"
+                : "flex items-baseline justify-between gap-2 px-2 py-1 text-ink/75"
+            }
+          >
+            <span className="flex items-center gap-2">
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-sm"
+                style={{ background: s.fill }}
+              />
+              {s.label}
+              {s.matches_federal ? (
+                <span className="text-xs font-normal text-ink/50">
+                  ★ amtierende Bundesregierung
+                </span>
+              ) : null}
+            </span>
+            <span className="tabular-nums text-ink/60">{s.votes}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function samePartySet(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
   const sb = new Set(b);
   return a.every((p) => sb.has(p));
+}
+
+function rowKey(item: BundesratMajorityCheckItem): string {
+  if (item.is_incumbent) return "incumbent";
+  return item.parties.slice().sort().join("+");
 }
 
 export function BundesratSandbox() {
@@ -224,8 +333,7 @@ export function BundesratSandbox() {
 
   function applyMajorityCheckRow(item: BundesratMajorityCheckItem) {
     if (!status) return;
-    const key = item.parties.slice().sort().join("+");
-    setSelectedKey(key);
+    setSelectedKey(rowKey(item));
     const next: Record<string, string> = {};
     for (const land of status.laender) {
       const auto = item.choices[land.parliament_id] ?? "default";
@@ -250,6 +358,7 @@ export function BundesratSandbox() {
   }
 
   const voteById = new Map((votes ?? []).map((v) => [v.parliament_id, v]));
+  const balance = majorityCheck?.coalition_balance ?? [];
 
   return (
     <div className="space-y-8">
@@ -291,6 +400,24 @@ export function BundesratSandbox() {
         </div>
       </section>
 
+      {balance.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-display text-xl text-ink">
+            Kräfteverhältnis nach Koalitionsfarbe
+          </h2>
+          <p className="max-w-2xl text-sm text-ink/55">
+            Stimmen der Länder nach Regierungs-Kombination (Reihenfolge egal;
+            CDU/CSU als Union). ★ markiert die Farbe der amtierenden
+            Bundesregierung
+            {majorityCheck?.federal_government
+              ? ` (${majorityCheck.federal_government.label})`
+              : ""}
+            .
+          </p>
+          <CoalitionBalancePie slices={balance} />
+        </section>
+      )}
+
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
 
       {majorityCheck && majorityCheck.coalitions.length > 0 && (
@@ -305,25 +432,38 @@ export function BundesratSandbox() {
           </p>
           <ul className="space-y-2">
             {majorityCheck.coalitions.map((row) => {
-              const key = row.parties.slice().sort().join("+");
+              const key = rowKey(row);
               const active = selectedKey === key;
+              const title =
+                row.label?.trim() ||
+                row.parties.map(labelPartyId).join(" + ");
               return (
                 <li key={key}>
                   <button
                     type="button"
                     onClick={() => applyMajorityCheckRow(row)}
                     className={
-                      active
-                        ? "w-full rounded-lg border border-sea/40 bg-mist/50 px-3 py-2.5 text-left transition"
-                        : "w-full rounded-lg border border-ink/10 bg-white/50 px-3 py-2.5 text-left transition hover:border-sea/30 hover:bg-mist/30"
+                      row.is_incumbent
+                        ? active
+                          ? "w-full rounded-lg border-2 border-sea bg-sea/10 px-3 py-3 text-left shadow-sm transition"
+                          : "w-full rounded-lg border-2 border-ink/20 bg-gradient-to-br from-mist/50 to-white/80 px-3 py-3 text-left shadow-sm transition hover:border-sea/50"
+                        : active
+                          ? "w-full rounded-lg border border-sea/40 bg-mist/50 px-3 py-2.5 text-left transition"
+                          : "w-full rounded-lg border border-ink/10 bg-white/50 px-3 py-2.5 text-left transition hover:border-sea/30 hover:bg-mist/30"
                     }
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-sm font-medium text-ink">
-                        {row.parties.map(labelPartyId).join(" + ")}
-                        <span className="ml-2 text-xs font-normal text-ink/45">
-                          BT {row.bundestag_seats} Sitze
-                        </span>
+                        {title}
+                        {row.is_incumbent ? (
+                          <span className="ml-2 inline-flex rounded-full bg-ink px-2 py-0.5 text-xs font-medium text-paper">
+                            Amtierende Bundesregierung
+                          </span>
+                        ) : (
+                          <span className="ml-2 text-xs font-normal text-ink/45">
+                            BT {row.bundestag_seats} Sitze
+                          </span>
+                        )}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <span

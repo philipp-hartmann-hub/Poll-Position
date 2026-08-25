@@ -64,6 +64,12 @@ def main() -> int:
 
         n_avg, n_tr = refresh_gold_averages(reference_date=today)
         log.info("Gold: party_averages=%d party_trends=%d", n_avg, n_tr)
+
+        from data_pipeline.export_static import export_all_static
+
+        n_static = export_all_static()
+        log.info("Static-JSON-Export: %d Dateien", n_static)
+
         log.info("Pipeline erfolgreich abgeschlossen.")
         return 0
     except Exception:

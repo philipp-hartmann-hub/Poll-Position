@@ -14,6 +14,36 @@ CONFIG_PATH = (
 
 VoteStance = Literal["yes", "no", "abstain"]
 
+# Normalisierte Tokens für Koalitionsfarben (CDU/CSU → Union)
+_UNION_IDS = frozenset({"de:cdu", "de:csu", "de:cdu_csu"})
+_PARTY_DISPLAY: dict[str, str] = {
+    "union": "Union",
+    "de:cdu": "CDU",
+    "de:csu": "CSU",
+    "de:cdu_csu": "CDU/CSU",
+    "de:spd": "SPD",
+    "de:gruene": "Grüne",
+    "de:fdp": "FDP",
+    "de:linke": "Linke",
+    "de:afd": "AfD",
+    "de:bsw": "BSW",
+    "de:fw": "Freie Wähler",
+    "de:ssw": "SSW",
+}
+
+# Informelle Namen — Key = frozenset normalisierter Tokens (union statt cdu/csu)
+_INFORMAL_COALITION_NAMES: dict[frozenset[str], str] = {
+    frozenset({"union", "de:spd"}): "Schwarz-Rot",
+    frozenset({"union", "de:gruene"}): "Schwarz-Grün",
+    frozenset({"union", "de:fdp"}): "Schwarz-Gelb",
+    frozenset({"union", "de:spd", "de:gruene"}): "Kenia",
+    frozenset({"union", "de:spd", "de:fdp"}): "Deutschland-Koalition",
+    frozenset({"de:spd", "de:gruene"}): "Rot-Grün",
+    frozenset({"de:spd", "de:gruene", "de:fdp"}): "Ampel",
+    frozenset({"de:spd", "de:gruene", "de:linke"}): "Rot-Rot-Grün",
+    frozenset({"de:spd", "de:linke"}): "Rot-Rot",
+}
+
 
 class BundesratStateConfig(BaseModel):
     parliament_id: str
@@ -23,6 +53,12 @@ class BundesratStateConfig(BaseModel):
     government_label: str
 
 
+class FederalGovernmentConfig(BaseModel):
+    stand: str
+    parties: list[str] = Field(default_factory=list)
+    label: str
+
+
 class BundesratConfig(BaseModel):
     stand: str
     votes_total: int = 69
@@ -30,6 +66,7 @@ class BundesratConfig(BaseModel):
     majority_two_thirds: int = 46
     sources: list[str] = Field(default_factory=list)
     states: list[BundesratStateConfig]
+    bundesregierung: FederalGovernmentConfig | None = None
 
 
 @dataclass(frozen=True)
@@ -56,6 +93,18 @@ class BundesratTally:
     states: tuple[StateVote, ...]
 
 
+@dataclass(frozen=True)
+class CoalitionVoteGroup:
+    """Stimmen-Slice nach Parteikombination (Reihenfolge egal, Union normalisiert)."""
+
+    key: str
+    label: str
+    parties_normalized: tuple[str, ...]
+    votes: int
+    parliament_ids: tuple[str, ...]
+    matches_federal: bool
+
+
 def load_bundesrat_config(path: Path | None = None) -> BundesratConfig:
     import yaml
 
@@ -80,11 +129,66 @@ def parse_coalition_key(key: str) -> tuple[str, ...]:
 
 
 def _expand_party_ids(parties: Sequence[str]) -> set[str]:
-    """Union (de:cdu_csu) deckt Landes-CDU/CSU ab."""
+    """Union (de:cdu_csu) und explizite CDU+CSU decken Landes-CDU/CSU ab."""
     out = set(parties)
-    if "de:cdu_csu" in out:
-        out.update({"de:cdu", "de:csu"})
+    if "de:cdu_csu" in out or ({"de:cdu", "de:csu"} <= out):
+        out.update({"de:cdu", "de:csu", "de:cdu_csu"})
     return out
+
+
+def normalize_parties_for_color(parties: Sequence[str]) -> frozenset[str]:
+    """CDU/CSU → Token ``union``; Reihenfolge egal."""
+    out: set[str] = set()
+    has_union = False
+    for p in parties:
+        if p in _UNION_IDS:
+            has_union = True
+        else:
+            out.add(p)
+    if has_union:
+        out.add("union")
+    return frozenset(out)
+
+
+def informal_coalition_label(parties: Sequence[str]) -> str:
+    """Informeller Koalitionsname oder wörtliche Auflistung / Alleinregierung."""
+    raw = [p for p in parties if p]
+    norm = normalize_parties_for_color(raw)
+    if not norm:
+        return "—"
+    if len(norm) == 1:
+        only = next(iter(norm))
+        if only == "union" and raw:
+            name = _PARTY_DISPLAY.get(raw[0], raw[0])
+        else:
+            name = _PARTY_DISPLAY.get(only, only)
+        return f"Alleinregierung ({name})"
+    known = _INFORMAL_COALITION_NAMES.get(norm)
+    if known:
+        return known
+    # Fallback: wörtlich aus Roh-IDs (CDU/CSU getrennt, stabile Parteireihenfolge)
+    order = [
+        "de:cdu",
+        "de:csu",
+        "de:cdu_csu",
+        "de:bsw",
+        "de:spd",
+        "de:gruene",
+        "de:fdp",
+        "de:linke",
+        "de:afd",
+        "de:fw",
+        "de:ssw",
+    ]
+
+    def _raw_sort(p: str) -> tuple[int, str]:
+        try:
+            return (order.index(p), p)
+        except ValueError:
+            return (len(order), p)
+
+    ordered = sorted(raw, key=_raw_sort)
+    return " + ".join(_PARTY_DISPLAY.get(p, p) for p in ordered)
 
 
 def choices_for_coalition(
@@ -112,6 +216,51 @@ def choices_for_coalition(
         else:
             choices[state.parliament_id] = "reject"
     return choices
+
+
+def group_votes_by_coalition(
+    config: BundesratConfig,
+    *,
+    parties_by_parliament: Mapping[str, Sequence[str]] | None = None,
+) -> list[CoalitionVoteGroup]:
+    """
+    Gruppiert Länderstimmen nach Regierungs-Parteikombination.
+
+    Ohne ``parties_by_parliament``: Defaults aus der Config.
+    """
+    federal_norm: frozenset[str] | None = None
+    if config.bundesregierung and config.bundesregierung.parties:
+        federal_norm = normalize_parties_for_color(config.bundesregierung.parties)
+
+    buckets: dict[frozenset[str], list[BundesratStateConfig]] = {}
+    for state in config.states:
+        if parties_by_parliament is not None:
+            parties = list(parties_by_parliament.get(state.parliament_id) or [])
+        else:
+            parties = list(state.government_parties)
+        key = normalize_parties_for_color(parties)
+        buckets.setdefault(key, []).append(state)
+
+    groups: list[CoalitionVoteGroup] = []
+    for norm, states in buckets.items():
+        # Repräsentative Roh-IDs für Label (erste Landesliste, Union-normalisiert)
+        sample = list(states[0].government_parties)
+        if parties_by_parliament is not None:
+            sample = list(parties_by_parliament.get(states[0].parliament_id) or sample)
+        label = informal_coalition_label(sample if sample else sorted(norm))
+        votes = sum(s.votes for s in states)
+        groups.append(
+            CoalitionVoteGroup(
+                key="+".join(sorted(norm)),
+                label=label,
+                parties_normalized=tuple(sorted(norm)),
+                votes=votes,
+                parliament_ids=tuple(s.parliament_id for s in states),
+                matches_federal=bool(federal_norm is not None and norm == federal_norm),
+            )
+        )
+    groups.sort(key=lambda g: (-g.votes, g.label))
+    return groups
 
 
 def simulate_bundesrat(

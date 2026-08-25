@@ -8,6 +8,8 @@ import {
   Legend,
   Line,
   LineChart,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -101,7 +103,7 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
   );
 }
 
-/** Halbkreis: Winkelkeile proportional zu Sitzen, Reihenfolge links→rechts. */
+/** Halbkreis-Flächen (Donut): Keile proportional zu Sitzen, links→rechts. */
 export function Hemicycle({
   seats,
   highlightParties,
@@ -123,67 +125,54 @@ export function Hemicycle({
       ? new Set(highlightParties)
       : null;
 
-  const points: { x: number; y: number; party: string; opacity: number }[] = [];
-
-  // Winkel von π (links) nach 0 (rechts)
-  let angleStart = Math.PI;
-  for (const [party, n] of items) {
-    const wedge = (n / total) * Math.PI;
-    const angleEnd = angleStart - wedge;
-    const opacity =
-      highlightSet && !highlightSet.has(party) ? 0.25 : 1;
-
-    const rows = Math.max(3, Math.ceil(Math.sqrt(n)));
-    let remaining = n;
-    let placed = 0;
-    for (let row = 0; row < rows && remaining > 0; row++) {
-      const rowsLeft = rows - row;
-      const nInRow = Math.max(1, Math.ceil(remaining / rowsLeft));
-      const take = Math.min(nInRow, remaining);
-      const radius = 0.42 + (0.52 * row) / Math.max(rows - 1, 1);
-      for (let i = 0; i < take; i++) {
-        const t = (i + 0.5) / take;
-        const angle = angleStart - t * wedge;
-        points.push({
-          x: radius * Math.cos(angle),
-          y: radius * Math.sin(angle),
-          party,
-          opacity,
-        });
-        placed += 1;
-      }
-      remaining -= take;
-    }
-    // Sicherheitsnetz falls Rundung Sitze übrig lässt
-    while (placed < n) {
-      const angle = (angleStart + angleEnd) / 2;
-      points.push({
-        x: 0.95 * Math.cos(angle),
-        y: 0.95 * Math.sin(angle),
-        party,
-        opacity,
-      });
-      placed += 1;
-    }
-    angleStart = angleEnd;
-  }
+  const data = items.map(([name, value]) => ({
+    name,
+    value,
+    pct: (value / total) * 100,
+  }));
 
   return (
     <div className="w-full">
-      <svg viewBox="-1.2 -0.15 2.4 1.4" className="h-72 w-full">
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r={0.028}
-            fill={partyColor(p.party)}
-            opacity={p.opacity}
-          >
-            <title>{p.party}</title>
-          </circle>
-        ))}
-      </svg>
+      <div className="h-72 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="100%"
+              startAngle={180}
+              endAngle={0}
+              innerRadius="55%"
+              outerRadius="100%"
+              paddingAngle={0.6}
+              stroke="#f3efe6"
+              strokeWidth={1}
+              isAnimationActive={false}
+            >
+              {data.map((d) => {
+                const dimmed = Boolean(
+                  highlightSet && !highlightSet.has(d.name),
+                );
+                return (
+                  <Cell
+                    key={d.name}
+                    fill={partyColor(d.name)}
+                    fillOpacity={dimmed ? 0.25 : 1}
+                  />
+                );
+              })}
+            </Pie>
+            <Tooltip
+              formatter={(value: number, name: string, item) => {
+                const pct = Number(item?.payload?.pct ?? 0).toFixed(1);
+                return [`${value} Sitze (${pct} %)`, name];
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/80">
         {items.map(([name, n]) => {
           const dimmed = highlightSet && !highlightSet.has(name);

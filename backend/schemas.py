@@ -82,6 +82,10 @@ class SeatsResponse(BaseModel):
     total_seats: int
     seats: dict[str, int] = Field(description="party_id → Sitze")
     seats_by_name: dict[str, int] = Field(default_factory=dict)
+    reason: str | None = Field(
+        default=None,
+        description="Nur bei leeren Sitze: no_averages | all_below_threshold | no_seat_projection",
+    )
 
 
 class CoalitionOut(BaseModel):
@@ -296,8 +300,10 @@ class BundesratSimulateResponse(BaseModel):
 
 class BundesratMajorityCheckItem(BaseModel):
     parties: list[str]
-    bundestag_seats: int
+    label: str | None = None
+    bundestag_seats: int = 0
     is_minimal_winning: bool = False
+    is_incumbent: bool = False
     choices: dict[str, str]
     yes_votes: int
     no_votes: int
@@ -306,9 +312,26 @@ class BundesratMajorityCheckItem(BaseModel):
     has_two_thirds: bool
 
 
+class BundesratCoalitionBalanceSlice(BaseModel):
+    key: str
+    label: str
+    parties_normalized: list[str]
+    votes: int
+    parliament_ids: list[str]
+    matches_federal: bool = False
+
+
+class BundesratFederalGovernmentOut(BaseModel):
+    stand: str
+    parties: list[str]
+    label: str
+
+
 class BundesratMajorityCheckResponse(BaseModel):
     as_of: str
     total_votes: int
     majority_threshold: int
     two_thirds_threshold: int
+    federal_government: BundesratFederalGovernmentOut | None = None
+    coalition_balance: list[BundesratCoalitionBalanceSlice] = Field(default_factory=list)
     coalitions: list[BundesratMajorityCheckItem]
