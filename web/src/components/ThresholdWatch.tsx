@@ -8,6 +8,7 @@ import {
   type ThresholdWatchOverviewResponse,
   type ThresholdWatchParty,
 } from "@/lib/api";
+import { displayPartyName } from "@/lib/colors";
 
 function parliamentHref(id: string): string {
   return `/parlament/${id}`;
@@ -24,9 +25,10 @@ function TileCard({
 }) {
   const pct = Math.round(party.probability_below_threshold * 100);
   const thr = party.threshold_percent.toFixed(0);
+  const name = displayPartyName(party.party_id, party.party_name);
   const inner = (
     <>
-      <p className="text-sm font-medium text-ink">{party.party_name}</p>
+      <p className="text-sm font-medium text-ink">{name}</p>
       {subtitle && <p className="text-xs text-ink/50">{subtitle}</p>}
       <p className="mt-2 font-display text-3xl tabular-nums text-accent">
         {pct} %

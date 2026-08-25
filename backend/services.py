@@ -66,6 +66,19 @@ SHORT_TO_CANONICAL: dict[str, str] = {
     "Freie Wähler": "de:fw",
 }
 
+# Stabile Dawum-Party-IDs → Shortcut (Fallback, wenn Warehouse-Join fehlt)
+DAWUM_PARTY_SHORTCUTS: dict[str, str] = {
+    "dawum:party:1": "CDU/CSU",
+    "dawum:party:2": "SPD",
+    "dawum:party:3": "FDP",
+    "dawum:party:4": "Grüne",
+    "dawum:party:5": "Linke",
+    "dawum:party:7": "AfD",
+    "dawum:party:8": "Freie Wähler",
+    "dawum:party:23": "BSW",
+    "de:sonstige": "Sonstige",
+}
+
 # Prozess-lokaler TTL-Cache (warme Serverless-Instanzen; Daily-Pipeline ~1×/Tag).
 _PAYLOAD_TTL_SECONDS = 300.0
 _averages_cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]] = {}
@@ -114,8 +127,38 @@ def _as_date(value: Any) -> date:
 
 
 def _party_name_map(con) -> dict[str, str]:
-    rows = con.execute("SELECT id, short_name FROM parties").fetchall()
-    return {r[0]: r[1] for r in rows}
+    rows = con.execute(
+        """
+        SELECT id,
+               COALESCE(
+                   NULLIF(TRIM(short_name), ''),
+                   NULLIF(TRIM(full_name), ''),
+                   id
+               )
+        FROM parties
+        """
+    ).fetchall()
+    return {str(r[0]): str(r[1]) for r in rows}
+
+
+def resolve_party_display_name(
+    party_id: str,
+    names: dict[str, str] | None = None,
+) -> str:
+    """Lesbarer Parteiname; nie rohe ``dawum:party:N`` wenn Shortcut bekannt."""
+    pid = str(party_id)
+    if names:
+        hit = names.get(pid)
+        if hit is not None:
+            label = str(hit).strip()
+            if label and label != pid and not label.startswith("dawum:party:"):
+                return label
+    if pid in DAWUM_PARTY_SHORTCUTS:
+        return DAWUM_PARTY_SHORTCUTS[pid]
+    for short, canon in SHORT_TO_CANONICAL.items():
+        if canon == pid:
+            return short
+    return pid
 
 
 def _institute_name_map(con) -> dict[str, str]:
@@ -197,7 +240,7 @@ def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, 
         {
             "parliament_id": a.parliament_id,
             "party_id": a.party_id,
-            "party_name": names.get(a.party_id, a.party_id),
+            "party_name": resolve_party_display_name(a.party_id, names),
             "average_share": a.average_share,
             "n_surveys": a.n_surveys,
             "swing": a.swing,
@@ -247,7 +290,7 @@ def party_trend_series_payload(parliament_id: str, *, days: int = 365) -> dict[s
     parties = [
         {
             "party_id": pid,
-            "party_name": names.get(pid, pid),
+            "party_name": resolve_party_display_name(pid, names),
             "points": points,
         }
         for pid, points in by_party.items()
@@ -309,7 +352,9 @@ def raw_surveys_payload(
                 results_by_survey[str(survey_id)].append(
                     {
                         "party_id": str(party_id),
-                        "party_name": party_names.get(str(party_id), str(party_id)),
+                        "party_name": resolve_party_display_name(
+                            str(party_id), party_names
+                        ),
                         "share": float(share),
                     }
                 )
@@ -412,7 +457,9 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
         for pid, n in seats.items()
         if n > 0 and not _is_residual_party(pid, names.get(pid))
     }
-    by_name = {names.get(k, k): v for k, v in seats.items()}
+    by_name = {
+        resolve_party_display_name(k, names): v for k, v in seats.items()
+    }
     if not seats:
         return {
             "parliament_id": parliament_id,
@@ -655,6 +702,18 @@ def threshold_watch_payload(
     n_simulations: int = 400,
 ) -> dict[str, Any]:
     votes, names = _votes_from_averages(parliament_id)
+    # Averages-TTL-Cache kann veraltete/fehlende Namen tragen — Warehouse nochmal mergen.
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        # Read-only / Cold-Start: Dawum-Shortcuts in resolve_party_display_name
+        pass
+
     _parliament, system = _election_system_for(parliament_id)
     threshold = float(system.threshold_percent) if system else 5.0
     minority = list(system.minority_exempt_party_ids) if system else []
@@ -685,7 +744,7 @@ def threshold_watch_payload(
         "parties": [
             {
                 "party_id": r.party_id,
-                "party_name": names.get(r.party_id, r.party_id),
+                "party_name": resolve_party_display_name(r.party_id, names),
                 "average_share": r.mean_share,
                 "threshold_percent": r.threshold_percent,
                 "probability_below_threshold": r.probability_below_threshold,

@@ -583,6 +583,16 @@ def test_threshold_watch_endpoint(client):
     assert "BSW" in names
     for p in body["parties"]:
         assert abs(p["average_share"] - body["threshold_percent"]) <= body["band_points"] + 1e-6
+        assert not str(p["party_name"]).startswith("dawum:party:")
+
+
+def test_resolve_party_display_name_dawum_fallback():
+    from backend.services import resolve_party_display_name
+
+    assert resolve_party_display_name("dawum:party:3", {}) == "FDP"
+    assert resolve_party_display_name("dawum:party:23", {"dawum:party:23": "dawum:party:23"}) == "BSW"
+    assert resolve_party_display_name("dawum:party:3", {"dawum:party:3": "FDP"}) == "FDP"
+    assert resolve_party_display_name("de:fdp", {}) == "FDP"
 
 
 def test_house_effects(client):

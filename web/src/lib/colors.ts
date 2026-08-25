@@ -32,7 +32,7 @@ export function familyColor(family: string): string {
   return FAMILY_COLORS[family] ?? "#6b7280";
 }
 
-/** Lesbare Labels für kanonische IDs (de:spd → SPD). */
+/** Lesbare Labels für kanonische / Dawum-IDs. */
 export function labelPartyId(id: string): string {
   const map: Record<string, string> = {
     "de:afd": "AfD",
@@ -44,9 +44,35 @@ export function labelPartyId(id: string): string {
     "de:fdp": "FDP",
     "de:linke": "Linke",
     "de:bsw": "BSW",
+    "de:fw": "Freie Wähler",
     "de:sonstige": "Sonstige",
+    "dawum:party:1": "CDU/CSU",
+    "dawum:party:2": "SPD",
+    "dawum:party:3": "FDP",
+    "dawum:party:4": "Grüne",
+    "dawum:party:5": "Linke",
+    "dawum:party:7": "AfD",
+    "dawum:party:8": "Freie Wähler",
+    "dawum:party:23": "BSW",
   };
   if (map[id]) return map[id];
+  if (id.startsWith("dawum:party:")) return id;
   if (id.includes(":")) return id.split(":").pop()!.replace(/_/g, " ");
   return id;
+}
+
+/** Anzeigename: API-Name, sonst Label-Map — nie rohe dawum:party:N wenn bekannt. */
+export function displayPartyName(
+  partyId: string,
+  partyName?: string | null,
+): string {
+  if (
+    partyName &&
+    partyName.trim() &&
+    partyName !== partyId &&
+    !partyName.startsWith("dawum:party:")
+  ) {
+    return partyName.trim();
+  }
+  return labelPartyId(partyId);
 }
