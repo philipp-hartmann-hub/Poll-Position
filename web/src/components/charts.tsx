@@ -15,7 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { partyColor } from "@/lib/colors";
+import { displayPartyName, partyColor, relabelSeatMap } from "@/lib/colors";
 import { leftRightPosition } from "@/lib/partyPositions";
 
 type TrendPoint = { as_of: string; [party: string]: string | number };
@@ -80,7 +80,7 @@ export function TrendLineChart({
 }
 
 export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
-  const data = Object.entries(seats)
+  const data = Object.entries(relabelSeatMap(seats))
     .filter(([, n]) => n > 0)
     .sort((a, b) => b[1] - a[1])
     .map(([name, value]) => ({ name, value }));
@@ -112,7 +112,11 @@ export function Hemicycle({
   /** Wenn gesetzt: nur diese Parteien voll sichtbar, übrige mit Opacity 0.25 */
   highlightParties?: string[];
 }) {
-  const items = Object.entries(seats)
+  const labeled = relabelSeatMap(seats);
+  const highlightLabeled = highlightParties?.map((p) =>
+    displayPartyName(p, p),
+  );
+  const items = Object.entries(labeled)
     .filter(([, n]) => n > 0)
     .sort((a, b) => {
       const lr = leftRightPosition(a[0]) - leftRightPosition(b[0]);
@@ -121,8 +125,8 @@ export function Hemicycle({
     });
   const total = items.reduce((s, [, n]) => s + n, 0) || 1;
   const highlightSet =
-    highlightParties && highlightParties.length > 0
-      ? new Set(highlightParties)
+    highlightLabeled && highlightLabeled.length > 0
+      ? new Set(highlightLabeled)
       : null;
 
   const data = items.map(([name, value]) => ({

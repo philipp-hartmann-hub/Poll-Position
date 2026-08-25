@@ -3,6 +3,8 @@
  * (party_positions.left_right). Für Hemicycle-Sortierung links→rechts.
  * Unbekannte Parteien: +Infinity (ans rechte Ende).
  */
+import { labelPartyId } from "@/lib/colors";
+
 const BY_ID: Record<string, number> = {
   "de:linke": 1.0,
   "de:bsw": 2.5,
@@ -45,6 +47,8 @@ const BY_NAME: Record<string, number> = {
 export function leftRightPosition(partyKey: string): number {
   if (BY_ID[partyKey] != null) return BY_ID[partyKey];
   if (BY_NAME[partyKey] != null) return BY_NAME[partyKey];
+  const labeled = labelPartyId(partyKey);
+  if (labeled !== partyKey && BY_NAME[labeled] != null) return BY_NAME[labeled];
   const lower = partyKey.toLowerCase();
   for (const [id, v] of Object.entries(BY_ID)) {
     if (id.endsWith(`:${lower}`) || id.split(":")[1] === lower) return v;

@@ -24,14 +24,6 @@ export const FAMILY_COLORS: Record<string, string> = {
   NI: "#8c8c8c",
 };
 
-export function partyColor(name: string): string {
-  return PARTY_COLORS[name] ?? "#6b7280";
-}
-
-export function familyColor(family: string): string {
-  return FAMILY_COLORS[family] ?? "#6b7280";
-}
-
 /** Lesbare Labels für kanonische / Dawum-IDs. */
 export function labelPartyId(id: string): string {
   const map: Record<string, string> = {
@@ -56,9 +48,19 @@ export function labelPartyId(id: string): string {
     "dawum:party:23": "BSW",
   };
   if (map[id]) return map[id];
+  if (PARTY_COLORS[id]) return id;
   if (id.startsWith("dawum:party:")) return id;
   if (id.includes(":")) return id.split(":").pop()!.replace(/_/g, " ");
   return id;
+}
+
+export function partyColor(name: string): string {
+  const labeled = labelPartyId(name);
+  return PARTY_COLORS[name] ?? PARTY_COLORS[labeled] ?? "#6b7280";
+}
+
+export function familyColor(family: string): string {
+  return FAMILY_COLORS[family] ?? "#6b7280";
 }
 
 /** Anzeigename: API-Name, sonst Label-Map — nie rohe dawum:party:N wenn bekannt. */
@@ -75,4 +77,16 @@ export function displayPartyName(
     return partyName.trim();
   }
   return labelPartyId(partyId);
+}
+
+/** Sitz-Maps: dawum:party:N / de:spd → Kurzname (AfD, SPD, …). */
+export function relabelSeatMap(
+  seats: Record<string, number>,
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [key, n] of Object.entries(seats)) {
+    const label = displayPartyName(key, key);
+    out[label] = (out[label] ?? 0) + n;
+  }
+  return out;
 }

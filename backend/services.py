@@ -426,6 +426,15 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     ``no_averages`` | ``all_below_threshold`` | ``no_seat_projection``.
     """
     votes, names = _votes_from_averages(parliament_id)
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        pass
     if not votes:
         return {
             "parliament_id": parliament_id,
