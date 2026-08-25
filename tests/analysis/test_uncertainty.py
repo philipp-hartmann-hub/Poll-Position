@@ -8,6 +8,7 @@ from analysis.seat_allocation import sainte_lague_schepers
 from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
+    simulate_threshold_watch,
     simulate_uncertainty,
     standard_error_pp,
     total_sd_pp,
@@ -43,3 +44,29 @@ def test_monte_carlo_coalition_probability_deterministic_seed():
     # A+B ist klar über 50 % — Wahrscheinlichkeit sollte hoch sein
     assert probs[("A", "B")] > 0.8
     assert 0.0 <= probs[("B", "C")] <= 1.0
+
+
+def test_simulate_threshold_watch_band_and_exempt():
+    """Nur Parteien im Band; Exempt und weit entfernte fehlen."""
+    means = {
+        "near_under": 4.2,
+        "near_over": 6.5,
+        "far": 25.0,
+        "exempt": 4.1,
+    }
+    parties = party_uncertainties_from_means(
+        means, sample_size=8000, house_variance=0.05
+    )
+    rows = simulate_threshold_watch(
+        parties,
+        threshold_percent=5.0,
+        band_points=3.0,
+        exempt_party_ids=["exempt"],
+        config=UncertaintyConfig(n_simulations=300, seed=1, renormalize=False),
+    )
+    ids = {r.party_id for r in rows}
+    assert ids == {"near_under", "near_over"}
+    under = next(r for r in rows if r.party_id == "near_under")
+    over = next(r for r in rows if r.party_id == "near_over")
+    assert under.probability_below_threshold > 0.5
+    assert over.probability_below_threshold < 0.5

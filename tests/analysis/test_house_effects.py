@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from datetime import date
 
+import pytest
+
 from analysis.averages import PollObservationPoint
 from analysis.house_effects import (
+    InstituteAccuracy,
+    aggregate_institute_leaderboard,
     backtest_institutes,
     compute_house_effects,
     institute_accuracy_scores,
@@ -78,3 +82,40 @@ def test_backtest_accuracy_score():
     assert scores[0].institute_id == "fgw"
     assert scores[0].mae > 0
     assert 0 < scores[0].score < 1
+
+
+def test_aggregate_institute_leaderboard_weights_two_parliaments():
+    """Aggregation, nicht Verkettung: ein Rangplatz, n und Score gewichtet."""
+    scores = [
+        InstituteAccuracy(
+            institute_id="inst_a",
+            parliament_id="de_bundestag",
+            n_comparisons=2,
+            mae=1.0,
+            rmse=1.0,
+            score=0.5,
+        ),
+        InstituteAccuracy(
+            institute_id="inst_a",
+            parliament_id="de_by_landtag",
+            n_comparisons=6,
+            mae=3.0,
+            rmse=3.0,
+            score=0.25,
+        ),
+        InstituteAccuracy(
+            institute_id="inst_b",
+            parliament_id="de_bundestag",
+            n_comparisons=4,
+            mae=0.5,
+            rmse=0.5,
+            score=1.0 / 1.5,
+        ),
+    ]
+    ranked = aggregate_institute_leaderboard(scores)
+    assert [e.institute_id for e in ranked] == ["inst_b", "inst_a"]
+    a = next(e for e in ranked if e.institute_id == "inst_a")
+    assert a.n_comparisons == 8
+    assert a.mae == pytest.approx((2 * 1.0 + 6 * 3.0) / 8)
+    assert a.score == pytest.approx((2 * 0.5 + 6 * 0.25) / 8)
+    assert {d.parliament_id for d in a.details} == {"de_bundestag", "de_by_landtag"}

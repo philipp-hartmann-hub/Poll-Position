@@ -1,0 +1,117 @@
+# Bundesrat — Stimmen und amtierende Landesregierungen (Sandbox-Default)
+#
+# Stimmen: Art. 51 Abs. 2 GG — bestätigt u. a. in
+#   Handbuch des Bundesrates, Band 1 (2025), bundesrat.de
+#   https://www.bundesrat.de/DE/bundesrat/verteilung/verteilung.html
+# Mehrheiten: absolute Mehrheit 35/69, Zwei-Drittel 46/69.
+#
+# Regierungen: manuell gepflegt, KEINE Umfrage-Projektion.
+# Stand: 2026-08-25 (Quellen: Wikipedia „Liste der Ministerpräsidenten…“,
+# Stand 28.07.2026; dewiki „Landesregierung (Deutschland)“).
+
+stand: "2026-08-25"
+votes_total: 69
+majority_simple: 35
+majority_two_thirds: 46
+
+sources:
+  - "https://www.bundesrat.de/DE/bundesrat/verteilung/verteilung.html"
+  - "Handbuch des Bundesrates, Band 1 (2025), Art. 51 Abs. 2 GG — Stimmenverteilung"
+  - "https://de.wikipedia.org/wiki/Liste_der_Ministerpräsidenten_der_deutschen_Länder (Stand 28.07.2026)"
+
+states:
+  - parliament_id: de_bw_landtag
+    name: Baden-Württemberg
+    votes: 6
+    government_parties: [de:gruene, de:cdu]
+    government_label: "Grüne + CDU"
+
+  - parliament_id: de_by_landtag
+    name: Bayern
+    votes: 6
+    government_parties: [de:csu, de:fw]
+    government_label: "CSU + Freie Wähler"
+
+  - parliament_id: de_be_abgeordnetenhaus
+    name: Berlin
+    votes: 4
+    government_parties: [de:cdu, de:spd]
+    government_label: "CDU + SPD"
+
+  - parliament_id: de_bb_landtag
+    name: Brandenburg
+    votes: 4
+    government_parties: [de:spd, de:cdu]
+    government_label: "SPD + CDU"
+
+  - parliament_id: de_hb_buergerschaft
+    name: Bremen
+    votes: 3
+    government_parties: [de:spd, de:gruene, de:linke]
+    government_label: "SPD + Grüne + Linke"
+
+  - parliament_id: de_hh_buergerschaft
+    name: Hamburg
+    votes: 3
+    government_parties: [de:spd, de:gruene]
+    government_label: "SPD + Grüne"
+
+  - parliament_id: de_he_landtag
+    name: Hessen
+    votes: 5
+    government_parties: [de:cdu, de:spd]
+    government_label: "CDU + SPD"
+
+  - parliament_id: de_mv_landtag
+    name: Mecklenburg-Vorpommern
+    votes: 3
+    government_parties: [de:spd, de:linke]
+    government_label: "SPD + Linke"
+
+  - parliament_id: de_ni_landtag
+    name: Niedersachsen
+    votes: 6
+    government_parties: [de:spd, de:gruene]
+    government_label: "SPD + Grüne"
+
+  - parliament_id: de_nw_landtag
+    name: Nordrhein-Westfalen
+    votes: 6
+    government_parties: [de:cdu, de:gruene]
+    government_label: "CDU + Grüne"
+
+  - parliament_id: de_rp_landtag
+    name: Rheinland-Pfalz
+    votes: 4
+    government_parties: [de:cdu, de:spd]
+    government_label: "CDU + SPD"
+
+  - parliament_id: de_sl_landtag
+    name: Saarland
+    votes: 3
+    government_parties: [de:spd]
+    government_label: "SPD"
+
+  - parliament_id: de_sn_landtag
+    name: Sachsen
+    votes: 4
+    government_parties: [de:cdu, de:spd]
+    government_label: "CDU + SPD"
+
+  - parliament_id: de_st_landtag
+    name: Sachsen-Anhalt
+    votes: 4
+    government_parties: [de:cdu, de:spd, de:fdp]
+    government_label: "CDU + SPD + FDP"
+
+  - parliament_id: de_sh_landtag
+    name: Schleswig-Holstein
+    votes: 4
+    government_parties: [de:cdu, de:gruene]
+    government_label: "CDU + Grüne"
+
+  - parliament_id: de_th_landtag
+    name: Thüringen
+    votes: 4
+    government_parties: [de:cdu, de:bsw, de:spd]
+    government_label: "CDU + BSW + SPD"

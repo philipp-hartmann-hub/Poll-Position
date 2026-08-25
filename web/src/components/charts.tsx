@@ -53,6 +53,29 @@ export function TrendChart({
   );
 }
 
+export function TrendLineChart({
+  parties,
+}: {
+  parties: {
+    party_id: string;
+    party_name: string;
+    points: { as_of: string; trend_share: number }[];
+  }[];
+}) {
+  const dates = Array.from(
+    new Set(parties.flatMap((p) => p.points.map((pt) => pt.as_of))),
+  ).sort();
+  const series: TrendPoint[] = dates.map((as_of) => {
+    const row: TrendPoint = { as_of };
+    for (const p of parties) {
+      const hit = p.points.find((pt) => pt.as_of === as_of);
+      if (hit != null) row[p.party_name] = Number(hit.trend_share.toFixed(1));
+    }
+    return row;
+  });
+  return <TrendChart series={series} parties={parties.map((p) => p.party_name)} />;
+}
+
 export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
   const data = Object.entries(seats)
     .filter(([, n]) => n > 0)

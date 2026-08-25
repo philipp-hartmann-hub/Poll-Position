@@ -11,8 +11,15 @@ from analysis.averages import (
     party_averages_for_parliament,
     party_trends_for_parliament,
 )
-from analysis.coalitions import possible_majorities
+from analysis.bundesrat import (
+    coalition_key,
+    load_bundesrat_config,
+    parse_coalition_key,
+    simulate_bundesrat,
+)
+from analysis.coalitions import list_active_exclusion_rules, possible_majorities
 from analysis.house_effects import (
+    aggregate_institute_leaderboard,
     backtest_institutes,
     compute_house_effects,
     institute_accuracy_scores,
@@ -28,6 +35,7 @@ from analysis.seat_allocation import allocate_seats, sainte_lague_schepers
 from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
+    simulate_threshold_watch,
     simulate_uncertainty,
 )
 from data_pipeline.reference.election_results import load_election_results
@@ -147,6 +155,127 @@ def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, 
     return {"parliament_id": parliament_id, "as_of": date.today(), "parties": parties}
 
 
+def party_trend_series_payload(parliament_id: str, *, days: int = 365) -> dict[str, Any]:
+    """Chronologische Trendpunkte je Partei aus Gold-Tabelle `party_trends`."""
+    since = date.today() - timedelta(days=days)
+    ensure_warehouse()
+    con = connect_warehouse(read_only=not uses_motherduck())
+    try:
+        names = _party_name_map(con)
+        rows = con.execute(
+            """
+            SELECT party_id, as_of, trend_share
+            FROM party_trends
+            WHERE parliament_id = ?
+              AND as_of >= ?
+            ORDER BY party_id, as_of
+            """,
+            [parliament_id, since],
+        ).fetchall()
+    finally:
+        con.close()
+
+    by_party: dict[str, list[dict[str, Any]]] = {}
+    for party_id, as_of, trend_share in rows:
+        by_party.setdefault(str(party_id), []).append(
+            {"as_of": _as_date(as_of), "trend_share": float(trend_share)}
+        )
+
+    parties = [
+        {
+            "party_id": pid,
+            "party_name": names.get(pid, pid),
+            "points": points,
+        }
+        for pid, points in by_party.items()
+    ]
+    parties.sort(key=lambda p: (-(p["points"][-1]["trend_share"] if p["points"] else 0.0), p["party_id"]))
+    return {"parliament_id": parliament_id, "days": days, "parties": parties}
+
+
+def raw_surveys_payload(
+    parliament_id: str,
+    *,
+    limit: int = 50,
+    offset: int = 0,
+) -> dict[str, Any]:
+    """Einzelne Umfragen (nicht aggregiert), neueste zuerst, paginiert."""
+    ensure_warehouse()
+    con = connect_warehouse(read_only=not uses_motherduck())
+    try:
+        total = int(
+            con.execute(
+                "SELECT COUNT(*) FROM surveys WHERE parliament_id = ?",
+                [parliament_id],
+            ).fetchone()[0]
+        )
+        survey_rows = con.execute(
+            """
+            SELECT
+                s.id,
+                s.institute_id,
+                i.name,
+                s.field_date_from,
+                s.field_date_to,
+                s.publication_date,
+                s.sample_size,
+                s.source_url
+            FROM surveys s
+            LEFT JOIN institutes i ON i.id = s.institute_id
+            WHERE s.parliament_id = ?
+            ORDER BY s.publication_date DESC, s.id DESC
+            LIMIT ? OFFSET ?
+            """,
+            [parliament_id, limit, offset],
+        ).fetchall()
+        party_names = _party_name_map(con)
+        ids = [r[0] for r in survey_rows]
+        results_by_survey: dict[str, list[dict[str, Any]]] = {sid: [] for sid in ids}
+        if ids:
+            placeholders = ", ".join(["?"] * len(ids))
+            result_rows = con.execute(
+                f"""
+                SELECT survey_id, party_id, share
+                FROM survey_results
+                WHERE survey_id IN ({placeholders})
+                ORDER BY share DESC
+                """,
+                ids,
+            ).fetchall()
+            for survey_id, party_id, share in result_rows:
+                results_by_survey[str(survey_id)].append(
+                    {
+                        "party_id": str(party_id),
+                        "party_name": party_names.get(str(party_id), str(party_id)),
+                        "share": float(share),
+                    }
+                )
+    finally:
+        con.close()
+
+    surveys = [
+        {
+            "id": row[0],
+            "institute_id": row[1],
+            "institute_name": row[2],
+            "field_date_from": _as_date(row[3]) if row[3] is not None else None,
+            "field_date_to": _as_date(row[4]) if row[4] is not None else None,
+            "publication_date": _as_date(row[5]),
+            "sample_size": int(row[6]) if row[6] is not None else None,
+            "source_url": row[7],
+            "results": results_by_survey.get(row[0], []),
+        }
+        for row in survey_rows
+    ]
+    return {
+        "parliament_id": parliament_id,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "surveys": surveys,
+    }
+
+
 def _votes_from_averages(parliament_id: str) -> tuple[dict[str, float], dict[str, str]]:
     payload = party_averages_payload(parliament_id)
     votes = {p["party_id"]: float(p["average_share"]) for p in payload["parties"]}
@@ -197,6 +326,7 @@ def coalitions_payload(
     *,
     apply_exclusions: bool = True,
     max_parties: int = 4,
+    disabled_rule_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     seats_data = seats_payload(parliament_id)
     seats = seats_data["seats"]
@@ -219,6 +349,7 @@ def coalitions_payload(
         max_parties=max_parties,
         parliament_id=parliament_id,
         apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
     )
     return {
         "parliament_id": parliament_id,
@@ -233,6 +364,24 @@ def coalitions_payload(
                 "compatibility_span": c.compatibility_span,
             }
             for c in result.coalitions
+        ],
+    }
+
+
+def coalition_rules_payload(parliament_id: str) -> dict[str, Any]:
+    """Aktive Ausschlussregeln für ein Parlament (UI-Checkboxen)."""
+    rules = list_active_exclusion_rules(parliament_id)
+    return {
+        "parliament_id": parliament_id,
+        "rules": [
+            {
+                "id": r.id or "",
+                "party": r.party,
+                "excludes": list(r.excludes),
+                "note": r.note,
+            }
+            for r in rules
+            if r.id
         ],
     }
 
@@ -260,6 +409,7 @@ def uncertainty_payload(
         for pid, name in names.items()
         if name in SHORT_TO_CANONICAL
     }
+    id_to_canon = {v: k for k, v in canon_to_id.items()}
     mapped: list[tuple[str, ...]] = []
     for c in coal["coalitions"][:8]:
         ids = tuple(sorted(canon_to_id[p] for p in c["parties"] if p in canon_to_id))
@@ -292,7 +442,7 @@ def uncertainty_payload(
         "mean_seats": result.mean_seats,
         "coalition_probabilities": [
             {
-                "parties": list(c.parties),
+                "parties": [id_to_canon.get(p, p) for p in c.parties],
                 "majority_probability": c.majority_probability,
                 "n_majority": c.n_majority,
                 "n_simulations": c.n_simulations,
@@ -300,6 +450,106 @@ def uncertainty_payload(
             for c in result.coalition_probabilities
         ],
     }
+
+
+def _election_system_for(parliament_id: str):
+    bundle = load_parliament_config()
+    parliament = next((p for p in bundle.parliaments if p.id == parliament_id), None)
+    if not parliament:
+        return None, None
+    system = next(
+        s for s in bundle.election_systems if s.key == parliament.election_system_key
+    )
+    return parliament, system
+
+
+def _threshold_exempt_ids(
+    names: dict[str, str],
+    *,
+    minority_exempt_party_ids: list[str],
+) -> set[str]:
+    """Warehouse-IDs, die nicht vor die Sperrklausel gestellt werden (Minderheit)."""
+    exempt_canon = set(minority_exempt_party_ids)
+    out: set[str] = set()
+    for pid, name in names.items():
+        canon = SHORT_TO_CANONICAL.get(name, pid)
+        if pid in exempt_canon or canon in exempt_canon or name in exempt_canon:
+            out.add(pid)
+        if name == "Sonstige" or canon == "de:sonstige":
+            out.add(pid)
+    return out
+
+
+def threshold_watch_payload(
+    parliament_id: str,
+    *,
+    band_points: float = 3.0,
+    n_simulations: int = 400,
+) -> dict[str, Any]:
+    votes, names = _votes_from_averages(parliament_id)
+    _parliament, system = _election_system_for(parliament_id)
+    threshold = float(system.threshold_percent) if system else 5.0
+    minority = list(system.minority_exempt_party_ids) if system else []
+    empty = {
+        "parliament_id": parliament_id,
+        "threshold_percent": threshold,
+        "band_points": band_points,
+        "n_simulations": 0,
+        "parties": [],
+    }
+    if not votes:
+        return empty
+
+    exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
+    parties = party_uncertainties_from_means(votes, sample_size=1000, house_variance=1.0)
+    rows = simulate_threshold_watch(
+        parties,
+        threshold_percent=threshold,
+        band_points=band_points,
+        exempt_party_ids=sorted(exempt),
+        config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
+    )
+    return {
+        "parliament_id": parliament_id,
+        "threshold_percent": threshold,
+        "band_points": band_points,
+        "n_simulations": n_simulations if rows else 0,
+        "parties": [
+            {
+                "party_id": r.party_id,
+                "party_name": names.get(r.party_id, r.party_id),
+                "average_share": r.mean_share,
+                "threshold_percent": r.threshold_percent,
+                "probability_below_threshold": r.probability_below_threshold,
+            }
+            for r in rows
+        ],
+    }
+
+
+def threshold_watch_overview_payload(
+    *,
+    band_points: float = 3.0,
+    limit: int = 8,
+) -> dict[str, Any]:
+    """Kritischste Sperrklausel-Fälle über DE-Parlamente (für die Startseite)."""
+    items: list[dict[str, Any]] = []
+    for parl in list_parliaments():
+        if parl.get("country") != "DE":
+            continue
+        watch = threshold_watch_payload(parl["id"], band_points=band_points, n_simulations=250)
+        for p in watch["parties"]:
+            prob = float(p["probability_below_threshold"])
+            items.append(
+                {
+                    **p,
+                    "parliament_id": parl["id"],
+                    "parliament_name": parl.get("name"),
+                    "toss_up": min(prob, 1.0 - prob),
+                }
+            )
+    items.sort(key=lambda r: (-r["toss_up"], -abs(r["average_share"] - r["threshold_percent"])))
+    return {"band_points": band_points, "items": items[:limit]}
 
 
 def house_effects_payload(
@@ -340,24 +590,7 @@ def house_effects_payload(
 
     accuracy_rows: list[dict[str, Any]] = []
     try:
-        elections = load_election_results()
-        relevant = [
-            e
-            for e in elections.elections
-            if parliament_id is None or e.parliament_id == parliament_id
-        ]
-        canon_to_name = {v: k for k, v in SHORT_TO_CANONICAL.items()}
-        name_to_wh = {v: k for k, v in pnames.items()}
-        tuples = []
-        for el in relevant:
-            mapped: dict[str, float] = {}
-            for pid, share in el.results.items():
-                pname = canon_to_name.get(pid)
-                wh = name_to_wh.get(pname) if pname else None
-                if wh:
-                    mapped[wh] = float(share)
-            if mapped:
-                tuples.append((el.parliament_id, el.election_date, mapped))
+        tuples = _election_tuples_for_backtest(pnames, parliament_id=parliament_id)
         if tuples:
             records = backtest_institutes(points, tuples)
             for s in institute_accuracy_scores(records):
@@ -380,6 +613,82 @@ def house_effects_payload(
         "effects": effect_rows,
         "accuracy": accuracy_rows,
     }
+
+
+def _election_tuples_for_backtest(
+    pnames: dict[str, str],
+    *,
+    parliament_id: str | None = None,
+) -> list[tuple[str, date, dict[str, float]]]:
+    elections = load_election_results()
+    relevant = [
+        e
+        for e in elections.elections
+        if parliament_id is None or e.parliament_id == parliament_id
+    ]
+    canon_to_name = {v: k for k, v in SHORT_TO_CANONICAL.items()}
+    name_to_wh = {v: k for k, v in pnames.items()}
+    tuples: list[tuple[str, date, dict[str, float]]] = []
+    for el in relevant:
+        mapped: dict[str, float] = {}
+        for pid, share in el.results.items():
+            pname = canon_to_name.get(pid)
+            wh = name_to_wh.get(pname) if pname else None
+            if wh:
+                mapped[wh] = float(share)
+        if mapped:
+            tuples.append((el.parliament_id, el.election_date, mapped))
+    return tuples
+
+
+def institute_leaderboard_payload() -> dict[str, Any]:
+    """Gesamt-Rangliste der Institute über alle Parlamente mit Backtest-Daten."""
+    points = _load_points(None)
+    if not points:
+        return {"institutes": []}
+
+    ensure_warehouse()
+    con = connect_warehouse(read_only=not uses_motherduck())
+    try:
+        inames = _institute_name_map(con)
+        pnames = _party_name_map(con)
+    finally:
+        con.close()
+
+    tuples = _election_tuples_for_backtest(pnames)
+    if not tuples:
+        return {"institutes": []}
+
+    records = backtest_institutes(points, tuples)
+    per_parliament = institute_accuracy_scores(records, by_parliament=True)
+    ranked = aggregate_institute_leaderboard(per_parliament)
+
+    institutes = []
+    for rank, entry in enumerate(ranked, start=1):
+        institutes.append(
+            {
+                "rank": rank,
+                "institute_id": entry.institute_id,
+                "institute_name": inames.get(entry.institute_id),
+                "n_comparisons": entry.n_comparisons,
+                "mae": entry.mae,
+                "rmse": entry.rmse,
+                "score": entry.score,
+                "by_parliament": [
+                    {
+                        "institute_id": d.institute_id,
+                        "institute_name": inames.get(d.institute_id),
+                        "parliament_id": d.parliament_id,
+                        "n_comparisons": d.n_comparisons,
+                        "mae": d.mae,
+                        "rmse": d.rmse,
+                        "score": d.score,
+                    }
+                    for d in entry.details
+                ],
+            }
+        )
+    return {"institutes": institutes}
 
 
 def europe_overview_payload() -> dict[str, Any]:
@@ -460,12 +769,131 @@ def europe_overview_payload() -> dict[str, Any]:
     return {"as_of": date.today(), "countries": countries_out}
 
 
+BUNDESRAT_DISCLAIMER = (
+    "Basierend auf den aktuell amtierenden Landesregierungen (Stand siehe Datum), "
+    "nicht auf Umfragen-Projektionen der Landtage — die kannst du über die "
+    "Dropdowns selbst durchspielen."
+)
+
+_ALLOWED_STANCES = frozenset({"default", "abstain", "enthaltung", "nein", "reject", "no"})
+
+
+def _bundesrat_coalition_options(parliament_id: str) -> list[dict[str, Any]]:
+    """Mehrheitsfähige Umfrage-Koalitionen für ein Land (Sandbox-Dropdown)."""
+    try:
+        data = coalitions_payload(
+            parliament_id,
+            apply_exclusions=True,
+            max_parties=4,
+        )
+    except Exception:
+        return []
+    options: list[dict[str, Any]] = []
+    for c in data.get("coalitions") or []:
+        parties = list(c.get("parties") or [])
+        if len(parties) < 2:
+            continue
+        options.append(
+            {
+                "key": coalition_key(parties),
+                "parties": parties,
+                "seats": int(c.get("seats") or 0),
+                "is_minimal_winning": bool(c.get("is_minimal_winning")),
+            }
+        )
+    return options
+
+
+def _tally_to_dict(sim: Any) -> dict[str, Any]:
+    return {
+        "yes_votes": sim.yes,
+        "no_votes": sim.no,
+        "abstain_votes": sim.abstain,
+        "has_majority": sim.has_simple_majority,
+        "has_two_thirds": sim.has_two_thirds_majority,
+        "by_land": [
+            {
+                "parliament_id": r.parliament_id,
+                "name": r.name,
+                "votes": r.votes,
+                "stance": r.stance,
+                "government": list(r.parties),
+                "government_label": r.government_label,
+                "source": r.source,
+            }
+            for r in sim.states
+        ],
+    }
+
+
+def bundesrat_status_payload() -> dict[str, Any]:
+    cfg = load_bundesrat_config()
+    land_rows: list[dict[str, Any]] = []
+    for land in cfg.states:
+        land_rows.append(
+            {
+                "parliament_id": land.parliament_id,
+                "name": land.name,
+                "votes": land.votes,
+                "default_government": list(land.government_parties),
+                "default_government_label": land.government_label,
+                "coalition_options": _bundesrat_coalition_options(land.parliament_id),
+            }
+        )
+    sim = simulate_bundesrat(cfg, choices={})
+    return {
+        "as_of": cfg.stand,
+        "disclaimer": BUNDESRAT_DISCLAIMER,
+        "sources": list(cfg.sources),
+        "total_votes": cfg.votes_total,
+        "majority_threshold": cfg.majority_simple,
+        "two_thirds_threshold": cfg.majority_two_thirds,
+        "laender": land_rows,
+        "simulation": _tally_to_dict(sim),
+    }
+
+
+def bundesrat_simulate_payload(choices: dict[str, str]) -> dict[str, Any]:
+    cfg = load_bundesrat_config()
+    cleaned: dict[str, str] = {}
+    known = {land.parliament_id for land in cfg.states}
+    labels: dict[str, str] = {}
+    for pid, choice in choices.items():
+        if pid not in known:
+            raise ValueError(f"Unbekanntes Land: {pid}")
+        value = (choice or "default").strip()
+        lower = value.lower()
+        if lower in _ALLOWED_STANCES:
+            cleaned[pid] = "reject" if lower in {"nein", "no", "reject"} else (
+                "abstain" if lower in {"abstain", "enthaltung"} else "default"
+            )
+        elif "+" in value:
+            parties = parse_coalition_key(value)
+            cleaned[pid] = coalition_key(parties)
+            labels[cleaned[pid]] = " + ".join(parties)
+        else:
+            raise ValueError(
+                f"Ungültige Wahl für {pid}: {choice!r} "
+                f"(erwartet: default | abstain | reject | de:a+de:b)"
+            )
+    sim = simulate_bundesrat(cfg, choices=cleaned, coalition_labels=labels)
+    return {
+        "as_of": cfg.stand,
+        "disclaimer": BUNDESRAT_DISCLAIMER,
+        "total_votes": cfg.votes_total,
+        "majority_threshold": cfg.majority_simple,
+        "two_thirds_threshold": cfg.majority_two_thirds,
+        **_tally_to_dict(sim),
+    }
+
+
 def scenario_payload(
     parliament_id: str,
     party_shares: dict[str, float],
     *,
     apply_exclusions: bool = True,
     max_coalition_parties: int = 4,
+    disabled_rule_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     bundle = load_parliament_config()
     parliament = next((p for p in bundle.parliaments if p.id == parliament_id), None)
@@ -479,6 +907,7 @@ def scenario_payload(
         parliament=parliament,
         election_system=system,
         apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
         max_coalition_parties=max_coalition_parties,
     )
     return {

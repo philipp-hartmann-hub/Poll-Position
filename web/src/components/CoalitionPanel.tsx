@@ -1,17 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { Coalition } from "@/lib/api";
-import { fetchCoalitions } from "@/lib/api";
+import { useEffect, useMemo, useState } from "react";
+import type { Coalition, ExclusionRule } from "@/lib/api";
+import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { labelPartyId } from "@/lib/colors";
 
-const DEFAULT_RULES: { id: string; label: string; party: string; excludes: string }[] = [
-  { id: "union-afd", label: "Union schließt AfD aus", party: "de:cdu_csu", excludes: "de:afd" },
-  { id: "spd-afd", label: "SPD schließt AfD aus", party: "de:spd", excludes: "de:afd" },
-  { id: "gruene-afd", label: "Grüne schließen AfD aus", party: "de:gruene", excludes: "de:afd" },
-  { id: "linke-afd", label: "Linke schließt AfD aus", party: "de:linke", excludes: "de:afd" },
-  { id: "afd-linke", label: "AfD schließt Linke aus", party: "de:afd", excludes: "de:linke" },
-];
+function ruleLabel(rule: ExclusionRule): string {
+  if (rule.note?.trim()) return rule.note;
+  const excl = rule.excludes.map(labelPartyId).join(", ");
+  return `${labelPartyId(rule.party)} schließt ${excl} aus`;
+}
 
 export function CoalitionPanel({
   parliamentId,
@@ -25,24 +23,48 @@ export function CoalitionPanel({
   };
 }) {
   const [applyExclusions, setApplyExclusions] = useState(true);
-  const [enabled, setEnabled] = useState<Record<string, boolean>>(
-    Object.fromEntries(DEFAULT_RULES.map((r) => [r.id, true])),
-  );
+  const [rules, setRules] = useState<ExclusionRule[]>([]);
+  const [enabled, setEnabled] = useState<Record<string, boolean>>({});
   const [data, setData] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetchCoalitionRules(parliamentId);
+        if (cancelled) return;
+        setRules(res.rules);
+        setEnabled(Object.fromEntries(res.rules.map((r) => [r.id, true])));
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Regeln laden fehlgeschlagen");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [parliamentId]);
+
+  const disabledRuleIds = useMemo(
+    () => rules.filter((r) => enabled[r.id] === false).map((r) => r.id),
+    [rules, enabled],
+  );
 
   const activeCount = useMemo(
     () => Object.values(enabled).filter(Boolean).length,
     [enabled],
   );
 
-  async function refresh(nextApply: boolean) {
+  async function refresh(nextApply: boolean, nextDisabled: string[]) {
     setLoading(true);
     setError(null);
     try {
       const res = await fetchCoalitions(parliamentId, {
         apply_exclusions: nextApply,
+        disabled_rule_ids: nextApply ? nextDisabled : [],
       });
       setData(res);
     } catch (e) {
@@ -50,6 +72,15 @@ export function CoalitionPanel({
     } finally {
       setLoading(false);
     }
+  }
+
+  function toggleRule(id: string, checked: boolean) {
+    const nextEnabled = { ...enabled, [id]: checked };
+    setEnabled(nextEnabled);
+    const nextDisabled = rules
+      .filter((r) => nextEnabled[r.id] === false)
+      .map((r) => r.id);
+    void refresh(applyExclusions, nextDisabled);
   }
 
   return (
@@ -63,14 +94,14 @@ export function CoalitionPanel({
             onChange={(e) => {
               const v = e.target.checked;
               setApplyExclusions(v);
-              void refresh(v);
+              void refresh(v, disabledRuleIds);
             }}
           />
           Ausschlussregeln anwenden
         </label>
       </div>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {DEFAULT_RULES.map((r) => (
+        {rules.map((r) => (
           <label
             key={r.id}
             className="flex items-start gap-2 rounded-lg border border-ink/10 bg-white/50 px-3 py-2 text-sm"
@@ -78,19 +109,17 @@ export function CoalitionPanel({
             <input
               type="checkbox"
               className="mt-0.5"
-              checked={enabled[r.id]}
+              checked={enabled[r.id] !== false}
               disabled={!applyExclusions}
-              onChange={(e) =>
-                setEnabled((prev) => ({ ...prev, [r.id]: e.target.checked }))
-              }
+              onChange={(e) => toggleRule(r.id, e.target.checked)}
             />
-            <span>{r.label}</span>
+            <span>{ruleLabel(r)}</span>
           </label>
         ))}
       </div>
       <p className="text-xs text-ink/50">
         Mehrheit ab {data.majority_threshold} · {data.excluded_by_rules} Kombinationen
-        ausgeschlossen · {activeCount} UI-Regeln markiert
+        ausgeschlossen · {activeCount}/{rules.length} Regeln aktiv
         {loading ? " · lädt…" : ""}
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}

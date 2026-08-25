@@ -16,6 +16,9 @@ CONFIG_PATH = (
 
 
 class ExclusionRule(BaseModel):
+    """Einzelne Ausschlussregel; `id` wird beim Laden gesetzt, falls im YAML fehlt."""
+
+    id: str | None = None
     party: str
     excludes: list[str] = Field(default_factory=list)
     note: str | None = None
@@ -39,6 +42,27 @@ class CoalitionRulesConfig(BaseModel):
     version: int = 1
     party_positions: dict[str, PartyPosition] = Field(default_factory=dict)
     exclusions: list[ExclusionSet] = Field(default_factory=list)
+
+
+def assign_exclusion_rule_ids(config: CoalitionRulesConfig) -> CoalitionRulesConfig:
+    """
+    Vergibt stabile IDs `"{set_id}:{index}"` an Regeln ohne explizite id.
+
+    Mutiert die übergebene Config und gibt sie zurück (für Chaining).
+    """
+    for excl in config.exclusions:
+        for i, rule in enumerate(excl.rules):
+            if not rule.id:
+                rule.id = f"{excl.id}:{i}"
+    return config
+
+
+def load_coalition_rules(path: Path | None = None) -> CoalitionRulesConfig:
+    import yaml
+
+    config_path = path or CONFIG_PATH
+    raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    return assign_exclusion_rule_ids(CoalitionRulesConfig.model_validate(raw))
 
 
 @dataclass(frozen=True)
@@ -82,14 +106,6 @@ class MajoritySearchResult:
     total_seats: int
     excluded_by_rules: int
     """Anzahl rechnerischer Mehrheiten, die an Ausschlusslisten scheiterten."""
-
-
-def load_coalition_rules(path: Path | None = None) -> CoalitionRulesConfig:
-    import yaml
-
-    config_path = path or CONFIG_PATH
-    raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    return CoalitionRulesConfig.model_validate(raw)
 
 
 def majority_threshold(total_seats: int) -> int:
@@ -166,15 +182,36 @@ def collect_exclusion_rules(
     parliament_id: str | None = None,
     as_of: date | None = None,
     exclusion_set_ids: Sequence[str] | None = None,
+    disabled_rule_ids: Sequence[str] | None = None,
 ) -> list[ExclusionRule]:
+    """Sammelt aktive Einzelregeln; `disabled_rule_ids` filtert trotz apply_exclusions."""
+    disabled = set(disabled_rule_ids or ())
     rules: list[ExclusionRule] = []
     for excl in config.exclusions:
         if exclusion_set_ids is not None and excl.id not in exclusion_set_ids:
             continue
         if not _exclusion_active(excl, parliament_id=parliament_id, as_of=as_of):
             continue
-        rules.extend(excl.rules)
+        for rule in excl.rules:
+            rid = rule.id
+            if rid and rid in disabled:
+                continue
+            rules.append(rule)
     return rules
+
+
+def list_active_exclusion_rules(
+    parliament_id: str,
+    *,
+    as_of: date | None = None,
+    rules_config: CoalitionRulesConfig | None = None,
+) -> list[ExclusionRule]:
+    """
+    Öffentliche Loader-API: für ein Parlament gültige Ausschlussregeln
+    (mit stabilen IDs nach `assign_exclusion_rule_ids`).
+    """
+    config = rules_config if rules_config is not None else load_coalition_rules()
+    return collect_exclusion_rules(config, parliament_id=parliament_id, as_of=as_of)
 
 
 def ideological_span(
@@ -250,6 +287,7 @@ def possible_majorities(
     parliament_id: str | None = None,
     as_of: date | None = None,
     exclusion_set_ids: Sequence[str] | None = None,
+    disabled_rule_ids: Sequence[str] | None = None,
     rules_config: CoalitionRulesConfig | None = None,
     apply_exclusions: bool = True,
 ) -> MajoritySearchResult:
@@ -271,6 +309,7 @@ def possible_majorities(
             parliament_id=parliament_id,
             as_of=as_of,
             exclusion_set_ids=exclusion_set_ids,
+            disabled_rule_ids=disabled_rule_ids,
         )
         if apply_exclusions
         else []

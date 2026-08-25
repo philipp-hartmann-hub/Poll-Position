@@ -49,6 +49,7 @@ def run_scenario(
     max_coalition_parties: int = 4,
     parliament_id: str | None = None,
     apply_exclusions: bool = True,
+    disabled_rule_ids: Sequence[str] | None = None,
     rules_config: CoalitionRulesConfig | None = None,
     as_of: date | None = None,
 ) -> ScenarioResult:
@@ -107,6 +108,7 @@ def run_scenario(
         parliament_id=pid,
         as_of=as_of,
         apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
         rules_config=rules_config,
     )
     return ScenarioResult(

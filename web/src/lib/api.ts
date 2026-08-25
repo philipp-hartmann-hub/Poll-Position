@@ -27,6 +27,34 @@ export type AveragesResponse = {
   parties: PartyAverage[];
 };
 
+export type TrendSeriesResponse = {
+  parliament_id: string;
+  days: number;
+  parties: {
+    party_id: string;
+    party_name: string;
+    points: { as_of: string; trend_share: number }[];
+  }[];
+};
+
+export type RawSurveysResponse = {
+  parliament_id: string;
+  total: number;
+  limit: number;
+  offset: number;
+  surveys: {
+    id: string;
+    institute_id: string;
+    institute_name: string | null;
+    field_date_from: string | null;
+    field_date_to: string | null;
+    publication_date: string;
+    sample_size: number | null;
+    source_url: string | null;
+    results: { party_id: string; party_name: string; share: number }[];
+  }[];
+};
+
 export type SeatsResponse = {
   parliament_id: string;
   total_seats: number;
@@ -49,6 +77,18 @@ export type CoalitionsResponse = {
   coalitions: Coalition[];
 };
 
+export type ExclusionRule = {
+  id: string;
+  party: string;
+  excludes: string[];
+  note: string | null;
+};
+
+export type CoalitionRulesResponse = {
+  parliament_id: string;
+  rules: ExclusionRule[];
+};
+
 export type UncertaintyResponse = {
   parliament_id: string;
   n_simulations: number;
@@ -59,6 +99,31 @@ export type UncertaintyResponse = {
     n_majority: number;
     n_simulations: number;
   }[];
+};
+
+export type ThresholdWatchParty = {
+  party_id: string;
+  party_name: string;
+  average_share: number;
+  threshold_percent: number;
+  probability_below_threshold: number;
+};
+
+export type ThresholdWatchResponse = {
+  parliament_id: string;
+  threshold_percent: number;
+  band_points: number;
+  n_simulations: number;
+  parties: ThresholdWatchParty[];
+};
+
+export type ThresholdWatchOverviewResponse = {
+  band_points: number;
+  items: (ThresholdWatchParty & {
+    parliament_id: string;
+    parliament_name: string | null;
+    toss_up: number;
+  })[];
 };
 
 export type HouseEffectsResponse = {
@@ -84,6 +149,27 @@ export type HouseEffectsResponse = {
   }[];
 };
 
+export type InstituteLeaderboardResponse = {
+  institutes: {
+    rank: number;
+    institute_id: string;
+    institute_name: string | null;
+    n_comparisons: number;
+    mae: number;
+    rmse: number;
+    score: number;
+    by_parliament: {
+      institute_id: string;
+      institute_name: string | null;
+      parliament_id: string | null;
+      n_comparisons: number;
+      mae: number;
+      rmse: number;
+      score: number;
+    }[];
+  }[];
+};
+
 export type EuropeOverviewResponse = {
   as_of: string;
   countries: {
@@ -99,6 +185,7 @@ export type ScenarioRequest = {
   parliament_id: string;
   party_shares: Record<string, number>;
   apply_exclusions?: boolean;
+  disabled_rule_ids?: string[];
   max_coalition_parties?: number;
 };
 
@@ -150,6 +237,29 @@ export function fetchAverages(
   return apiFetch(`/api/parties/averages?${q}`);
 }
 
+export function fetchTrendSeries(
+  parliamentId: string,
+  days = 365,
+): Promise<TrendSeriesResponse> {
+  const q = new URLSearchParams({
+    parliament_id: parliamentId,
+    days: String(days),
+  });
+  return apiFetch(`/api/parties/trend-series?${q}`);
+}
+
+export function fetchRawSurveys(
+  parliamentId: string,
+  opts?: { limit?: number; offset?: number },
+): Promise<RawSurveysResponse> {
+  const q = new URLSearchParams({
+    parliament_id: parliamentId,
+    limit: String(opts?.limit ?? 50),
+    offset: String(opts?.offset ?? 0),
+  });
+  return apiFetch(`/api/surveys?${q}`);
+}
+
 export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
   return apiFetch(`/api/seats?${q}`);
@@ -157,7 +267,11 @@ export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
 
 export function fetchCoalitions(
   parliamentId: string,
-  opts?: { apply_exclusions?: boolean; max_parties?: number },
+  opts?: {
+    apply_exclusions?: boolean;
+    max_parties?: number;
+    disabled_rule_ids?: string[];
+  },
 ): Promise<CoalitionsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
   if (opts?.apply_exclusions !== undefined) {
@@ -166,7 +280,17 @@ export function fetchCoalitions(
   if (opts?.max_parties !== undefined) {
     q.set("max_parties", String(opts.max_parties));
   }
+  for (const id of opts?.disabled_rule_ids ?? []) {
+    q.append("disabled_rule_ids", id);
+  }
   return apiFetch(`/api/coalitions?${q}`);
+}
+
+export function fetchCoalitionRules(
+  parliamentId: string,
+): Promise<CoalitionRulesResponse> {
+  const q = new URLSearchParams({ parliament_id: parliamentId });
+  return apiFetch(`/api/coalitions/rules?${q}`);
 }
 
 export function fetchUncertainty(
@@ -180,6 +304,24 @@ export function fetchUncertainty(
   return apiFetch(`/api/uncertainty?${q}`);
 }
 
+export function fetchThresholdWatch(
+  parliamentId: string,
+  band = 3,
+): Promise<ThresholdWatchResponse> {
+  const q = new URLSearchParams({
+    parliament_id: parliamentId,
+    band: String(band),
+  });
+  return apiFetch(`/api/threshold-watch?${q}`);
+}
+
+export function fetchThresholdWatchOverview(
+  band = 3,
+): Promise<ThresholdWatchOverviewResponse> {
+  const q = new URLSearchParams({ band: String(band) });
+  return apiFetch(`/api/threshold-watch/overview?${q}`);
+}
+
 export function fetchHouseEffects(
   parliamentId?: string,
   windowDays = 14,
@@ -189,8 +331,83 @@ export function fetchHouseEffects(
   return apiFetch(`/api/institutes/house-effects?${q}`);
 }
 
+export function fetchInstituteLeaderboard(): Promise<InstituteLeaderboardResponse> {
+  return apiFetch("/api/institutes/leaderboard");
+}
+
 export function fetchEuropeOverview(): Promise<EuropeOverviewResponse> {
   return apiFetch("/api/europe/overview");
+}
+
+export type BundesratCoalitionOption = {
+  key: string;
+  parties: string[];
+  seats: number;
+  is_minimal_winning: boolean;
+};
+
+export type BundesratLand = {
+  parliament_id: string;
+  name: string;
+  votes: number;
+  default_government: string[];
+  default_government_label: string;
+  coalition_options: BundesratCoalitionOption[];
+};
+
+export type BundesratLandVote = {
+  parliament_id: string;
+  name: string;
+  votes: number;
+  stance: string;
+  government: string[];
+  government_label: string;
+  source: string;
+};
+
+export type BundesratStatusResponse = {
+  as_of: string;
+  disclaimer: string;
+  sources: string[];
+  total_votes: number;
+  majority_threshold: number;
+  two_thirds_threshold: number;
+  laender: BundesratLand[];
+  simulation: {
+    yes_votes: number;
+    no_votes: number;
+    abstain_votes: number;
+    has_majority: boolean;
+    has_two_thirds: boolean;
+    by_land: BundesratLandVote[];
+  };
+};
+
+export type BundesratSimulateResponse = {
+  as_of: string;
+  disclaimer: string;
+  total_votes: number;
+  majority_threshold: number;
+  two_thirds_threshold: number;
+  yes_votes: number;
+  no_votes: number;
+  abstain_votes: number;
+  has_majority: boolean;
+  has_two_thirds: boolean;
+  by_land: BundesratLandVote[];
+};
+
+export function fetchBundesratStatus(): Promise<BundesratStatusResponse> {
+  return apiFetch("/api/bundesrat/status");
+}
+
+export function postBundesratSimulate(
+  choices: Record<string, string>,
+): Promise<BundesratSimulateResponse> {
+  return apiFetch("/api/bundesrat/simulate", {
+    method: "POST",
+    body: JSON.stringify({ choices }),
+  });
 }
 
 export function postScenario(body: ScenarioRequest): Promise<ScenarioResponse> {

@@ -211,3 +211,58 @@ def institute_accuracy_scores(
         )
     scores.sort(key=lambda s: (-s.score, s.institute_id))
     return scores
+
+
+@dataclass(frozen=True)
+class InstituteLeaderboardEntry:
+    """Gesamt-Rang eines Instituts über mehrere Parlamente."""
+
+    institute_id: str
+    n_comparisons: int
+    mae: float
+    """Gewichteter MAE (nach n_comparisons je Parlament)."""
+
+    rmse: float
+    """RMSE aus gewichtetem mittleren Quadratfehler."""
+
+    score: float
+    """Gewichteter Durchschnitt der Parlaments-Scores (nicht nur Verkettung)."""
+
+    details: tuple[InstituteAccuracy, ...]
+    """Aufschlüsselung je Parlament."""
+
+
+def aggregate_institute_leaderboard(
+    by_parliament: Sequence[InstituteAccuracy],
+) -> list[InstituteLeaderboardEntry]:
+    """
+    Fasst parlamentsweise Scores zu einer Instituts-Rangliste zusammen.
+
+    n_comparisons = Summe; MAE/RMSE/Score gewichtet nach n_comparisons.
+    """
+    groups: dict[str, list[InstituteAccuracy]] = {}
+    for s in by_parliament:
+        groups.setdefault(s.institute_id, []).append(s)
+
+    out: list[InstituteLeaderboardEntry] = []
+    for inst, rows in groups.items():
+        n_total = sum(r.n_comparisons for r in rows)
+        if n_total <= 0:
+            continue
+        mae = sum(r.mae * r.n_comparisons for r in rows) / n_total
+        mse = sum((r.rmse**2) * r.n_comparisons for r in rows) / n_total
+        score = sum(r.score * r.n_comparisons for r in rows) / n_total
+        details = tuple(sorted(rows, key=lambda r: (r.parliament_id or "")))
+        out.append(
+            InstituteLeaderboardEntry(
+                institute_id=inst,
+                n_comparisons=n_total,
+                mae=mae,
+                rmse=mse**0.5,
+                score=score,
+                details=details,
+            )
+        )
+    out.sort(key=lambda e: (-e.score, e.institute_id))
+    return out
+

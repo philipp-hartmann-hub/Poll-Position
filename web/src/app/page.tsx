@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThresholdWatchOverview } from "@/components/ThresholdWatch";
 
 export default function HomePage() {
   return (
@@ -26,6 +27,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <ThresholdWatchOverview />
 
       <section className="grid gap-6 md:grid-cols-2">
         <div>

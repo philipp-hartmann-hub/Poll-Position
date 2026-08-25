@@ -77,7 +77,7 @@ export function InstituteView() {
       {data && !loading && (
         <>
           <section>
-            <h2 className="mb-3 font-display text-2xl text-ink">
+            <h2 className="mb-3 font-display text-xl text-ink">
               House Effects (pp)
             </h2>
             {pivot.institutes.length === 0 ? (
@@ -118,7 +118,9 @@ export function InstituteView() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-2xl text-ink">Backtesting</h2>
+            <h2 className="mb-3 font-display text-xl text-ink">
+              Backtesting (dieses Parlament)
+            </h2>
             {data.accuracy.length === 0 ? (
               <p className="text-sm text-ink/50">
                 Keine Backtest-Treffer für dieses Parlament.

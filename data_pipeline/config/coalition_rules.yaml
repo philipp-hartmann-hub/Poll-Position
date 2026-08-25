@@ -1,7 +1,9 @@
 # Koalitionsregeln und heuristische Links-Rechts-Positionen
 #
 # exclusions: Pairweise Ausschlüsse — eine Koalition entfällt, wenn ein Mitglied
-#   laut Regel ein anderes Mitglied ausschließt (gerichtet, wird aber beidseitig geprüft).
+#   laut Regel ein anderes Mitglied ausschließt (gerichtet, wird beidseitig geprüft).
+#   Einzelregeln bekommen beim Laden stabile IDs "{set_id}:{index}" (z. B.
+#   de_bundestag_default:0), falls im YAML keine explizite `id` steht.
 # party_positions.left_right: 0 = links, 10 = rechts (heuristisch, keine Faktendarstellung)
 
 version: 1

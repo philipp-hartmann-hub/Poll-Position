@@ -187,3 +187,68 @@ def party_uncertainties_from_means(
         )
         for pid, share in means.items()
     ]
+
+
+@dataclass(frozen=True)
+class ThresholdWatchRow:
+    party_id: str
+    mean_share: float
+    threshold_percent: float
+    probability_below_threshold: float
+    n_below: int
+    n_simulations: int
+
+
+def simulate_threshold_watch(
+    parties: Sequence[PartyUncertainty],
+    *,
+    threshold_percent: float,
+    band_points: float = 3.0,
+    exempt_party_ids: Sequence[str] = (),
+    config: UncertaintyConfig | None = None,
+) -> list[ThresholdWatchRow]:
+    """
+    Monte-Carlo: P(Anteil < Sperrklausel) für Parteien im ±band-Fenster.
+
+    `exempt_party_ids` (Minderheiten / Grundmandat-Ausnahmen) werden nicht gewarnt.
+    """
+    if band_points < 0:
+        raise ValueError("band_points muss >= 0 sein")
+    cfg = config or UncertaintyConfig(n_simulations=400, seed=42)
+    exempt = set(exempt_party_ids)
+    watched = [
+        p
+        for p in parties
+        if p.party_id not in exempt
+        and abs(p.mean_share - threshold_percent) <= band_points
+    ]
+    if not watched:
+        return []
+
+    rng = random.Random(cfg.seed)
+    hits = {p.party_id: 0 for p in watched}
+    for _ in range(cfg.n_simulations):
+        shares = draw_share_vector(
+            parties,
+            rng,
+            min_share=cfg.min_share,
+            max_share=cfg.max_share,
+            renormalize=cfg.renormalize,
+        )
+        for p in watched:
+            if shares.get(p.party_id, 0.0) < threshold_percent:
+                hits[p.party_id] += 1
+
+    rows = [
+        ThresholdWatchRow(
+            party_id=p.party_id,
+            mean_share=p.mean_share,
+            threshold_percent=threshold_percent,
+            probability_below_threshold=hits[p.party_id] / cfg.n_simulations,
+            n_below=hits[p.party_id],
+            n_simulations=cfg.n_simulations,
+        )
+        for p in watched
+    ]
+    rows.sort(key=lambda r: -min(r.probability_below_threshold, 1.0 - r.probability_below_threshold))
+    return rows

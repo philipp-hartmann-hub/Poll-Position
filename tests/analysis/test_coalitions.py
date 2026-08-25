@@ -9,6 +9,7 @@ from analysis.coalitions import (
     PartyPosition,
     has_majority,
     is_minimal_winning,
+    list_active_exclusion_rules,
     load_coalition_rules,
     majority_coalitions,
     majority_threshold,
@@ -124,6 +125,52 @@ def test_yaml_exclusions_block_afd_union_style():
     afd_cdu = [c for c in with_rules.coalitions if set(c.parties) == {"de:cdu_csu", "de:afd"}]
     assert afd_cdu == []
     assert with_rules.excluded_by_rules >= 1
+
+
+def test_exclusion_rule_ids_auto_assigned():
+    config = load_coalition_rules()
+    bund = next(e for e in config.exclusions if e.id == "de_bundestag_default")
+    assert all(r.id for r in bund.rules)
+    assert bund.rules[0].id == "de_bundestag_default:0"
+    assert bund.rules[1].id == "de_bundestag_default:1"
+
+
+def test_disabled_rule_ids_restores_excluded_coalition():
+    """Abgewählte Einzelregel lässt zuvor ausgeschlossene Mehrheit wieder zu."""
+    seats = {
+        "de:cdu_csu": 208,
+        "de:afd": 152,
+        "de:spd": 120,
+        "de:gruene": 85,
+        "de:linke": 64,
+    }
+    total = 630
+    config = load_coalition_rules()
+    with_rules = possible_majorities(
+        seats,
+        total,
+        max_parties=2,
+        parliament_id="de_bundestag",
+        apply_exclusions=True,
+        rules_config=config,
+    )
+    assert not any(set(c.parties) == {"de:cdu_csu", "de:afd"} for c in with_rules.coalitions)
+
+    union_rule = next(
+        r
+        for r in list_active_exclusion_rules("de_bundestag", rules_config=config)
+        if r.party == "de:cdu_csu" and "de:afd" in r.excludes
+    )
+    relaxed = possible_majorities(
+        seats,
+        total,
+        max_parties=2,
+        parliament_id="de_bundestag",
+        apply_exclusions=True,
+        disabled_rule_ids=[union_rule.id or ""],
+        rules_config=config,
+    )
+    assert any(set(c.parties) == {"de:cdu_csu", "de:afd"} for c in relaxed.coalitions)
 
 
 def test_compatibility_heuristic_marked_as_estimate():

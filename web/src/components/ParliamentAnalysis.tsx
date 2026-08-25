@@ -5,14 +5,18 @@ import {
   fetchAverages,
   fetchCoalitions,
   fetchSeats,
+  fetchTrendSeries,
   fetchUncertainty,
   type AveragesResponse,
   type CoalitionsResponse,
   type SeatsResponse,
+  type TrendSeriesResponse,
   type UncertaintyResponse,
 } from "@/lib/api";
-import { Hemicycle, SeatsBarChart } from "@/components/charts";
+import { Hemicycle, SeatsBarChart, TrendLineChart } from "@/components/charts";
 import { CoalitionPanel } from "@/components/CoalitionPanel";
+import { RawSurveysTable } from "@/components/RawSurveysTable";
+import { ThresholdWatch } from "@/components/ThresholdWatch";
 import {
   Bar,
   BarChart,
@@ -23,7 +27,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { partyColor } from "@/lib/colors";
+import { labelPartyId, partyColor } from "@/lib/colors";
 
 export function ParliamentAnalysis({
   parliamentId,
@@ -33,6 +37,7 @@ export function ParliamentAnalysis({
   title?: string;
 }) {
   const [averages, setAverages] = useState<AveragesResponse | null>(null);
+  const [trends, setTrends] = useState<TrendSeriesResponse | null>(null);
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
   const [uncertainty, setUncertainty] = useState<UncertaintyResponse | null>(
@@ -47,14 +52,16 @@ export function ParliamentAnalysis({
     setError(null);
     (async () => {
       try {
-        const [a, s, c, u] = await Promise.all([
+        const [a, t, s, c, u] = await Promise.all([
           fetchAverages(parliamentId),
+          fetchTrendSeries(parliamentId).catch(() => null),
           fetchSeats(parliamentId),
           fetchCoalitions(parliamentId),
           fetchUncertainty(parliamentId, 200).catch(() => null),
         ]);
         if (cancelled) return;
         setAverages(a);
+        setTrends(t);
         setSeats(s);
         setCoalitions(c);
         setUncertainty(u);
@@ -101,6 +108,8 @@ export function ParliamentAnalysis({
         </h1>
       )}
 
+      <ThresholdWatch parliamentId={parliamentId} />
+
       <section>
         <h2 className="mb-3 font-display text-2xl text-ink">
           Umfragemittelwert & Trend
@@ -109,6 +118,11 @@ export function ParliamentAnalysis({
           Stand {averages.as_of} · gewichteter Schnitt vs. geglätteter
           Trendanteil
         </p>
+        {trends && trends.parties.some((p) => p.points.length > 0) && (
+          <div className="mb-4 rounded-xl border border-ink/10 bg-white/50 p-2">
+            <TrendLineChart parties={trends.parties} />
+          </div>
+        )}
         <div className="h-80 w-full rounded-xl border border-ink/10 bg-white/50 p-2">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
@@ -158,6 +172,9 @@ export function ParliamentAnalysis({
             </tbody>
           </table>
         </div>
+        <div className="mt-4">
+          <RawSurveysTable parliamentId={parliamentId} />
+        </div>
       </section>
 
       <section>
@@ -199,7 +216,7 @@ export function ParliamentAnalysis({
                 key={i}
                 className="flex items-center justify-between rounded-lg border border-ink/10 bg-white/40 px-3 py-2"
               >
-                <span>{c.parties.join(" + ")}</span>
+                <span>{c.parties.map(labelPartyId).join(" + ")}</span>
                 <span className="tabular-nums font-medium">
                   {(c.majority_probability * 100).toFixed(0)} %
                 </span>

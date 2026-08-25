@@ -4,6 +4,7 @@ const links = [
   { href: "/", label: "Übersicht" },
   { href: "/deutschland/bund", label: "Bund" },
   { href: "/deutschland/laender", label: "Länder" },
+  { href: "/bundesrat", label: "Bundesrat" },
   { href: "/europa", label: "Europa" },
   { href: "/institute", label: "Institute" },
   { href: "/szenario", label: "Szenario" },

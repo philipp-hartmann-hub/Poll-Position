@@ -15,9 +15,11 @@ ROOT = Path(__file__).resolve().parents[2]
         "data_pipeline/config/de_parliaments.yaml",
         "data_pipeline/config/coalition_rules.yaml",
         "data_pipeline/config/party_families.yaml",
+        "data_pipeline/config/bundesrat.yaml",
         "data_pipeline/reference/election_results.yaml",
         "backend/main.py",
         "analysis/coalitions.py",
+        "analysis/bundesrat.py",
     ],
 )
 def test_runtime_paths_exist(rel: str):

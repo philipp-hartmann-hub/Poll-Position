@@ -106,6 +106,27 @@ def get_party_averages(
     )
 
 
+@app.get("/api/parties/trend-series", response_model=schemas.TrendSeriesResponse)
+def get_party_trend_series(
+    parliament_id: str = Query(..., description="z. B. de_bundestag"),
+    days: int = Query(365, ge=7, le=4000),
+) -> schemas.TrendSeriesResponse:
+    return schemas.TrendSeriesResponse.model_validate(
+        services.party_trend_series_payload(parliament_id, days=days)
+    )
+
+
+@app.get("/api/surveys", response_model=schemas.RawSurveysResponse)
+def get_raw_surveys(
+    parliament_id: str = Query(...),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+) -> schemas.RawSurveysResponse:
+    return schemas.RawSurveysResponse.model_validate(
+        services.raw_surveys_payload(parliament_id, limit=limit, offset=offset)
+    )
+
+
 @app.get("/api/seats", response_model=schemas.SeatsResponse)
 def get_seats(
     parliament_id: str = Query(..., description="z. B. de_bundestag"),
@@ -116,16 +137,27 @@ def get_seats(
     return schemas.SeatsResponse.model_validate(data)
 
 
+@app.get("/api/coalitions/rules", response_model=schemas.CoalitionRulesResponse)
+def get_coalition_rules(
+    parliament_id: str = Query(..., description="z. B. de_bundestag"),
+) -> schemas.CoalitionRulesResponse:
+    return schemas.CoalitionRulesResponse.model_validate(
+        services.coalition_rules_payload(parliament_id)
+    )
+
+
 @app.get("/api/coalitions", response_model=schemas.CoalitionsResponse)
 def get_coalitions(
     parliament_id: str = Query(...),
     apply_exclusions: bool = Query(True),
     max_parties: int = Query(4, ge=1, le=6),
+    disabled_rule_ids: list[str] | None = Query(None),
 ) -> schemas.CoalitionsResponse:
     data = services.coalitions_payload(
         parliament_id,
         apply_exclusions=apply_exclusions,
         max_parties=max_parties,
+        disabled_rule_ids=disabled_rule_ids,
     )
     if data["total_seats"] <= 0:
         raise HTTPException(status_code=404, detail="Keine Sitzdaten")
@@ -143,6 +175,25 @@ def get_uncertainty(
     return schemas.UncertaintyResponse.model_validate(data)
 
 
+@app.get("/api/threshold-watch", response_model=schemas.ThresholdWatchResponse)
+def get_threshold_watch(
+    parliament_id: str = Query(...),
+    band: float = Query(3.0, ge=0.5, le=10.0),
+) -> schemas.ThresholdWatchResponse:
+    return schemas.ThresholdWatchResponse.model_validate(
+        services.threshold_watch_payload(parliament_id, band_points=band)
+    )
+
+
+@app.get("/api/threshold-watch/overview", response_model=schemas.ThresholdWatchOverviewResponse)
+def get_threshold_watch_overview(
+    band: float = Query(3.0, ge=0.5, le=10.0),
+) -> schemas.ThresholdWatchOverviewResponse:
+    return schemas.ThresholdWatchOverviewResponse.model_validate(
+        services.threshold_watch_overview_payload(band_points=band)
+    )
+
+
 @app.get("/api/institutes/house-effects", response_model=schemas.HouseEffectsResponse)
 def get_house_effects(
     parliament_id: str | None = Query(None),
@@ -153,11 +204,36 @@ def get_house_effects(
     )
 
 
+@app.get("/api/institutes/leaderboard", response_model=schemas.InstituteLeaderboardResponse)
+def get_institute_leaderboard() -> schemas.InstituteLeaderboardResponse:
+    return schemas.InstituteLeaderboardResponse.model_validate(
+        services.institute_leaderboard_payload()
+    )
+
+
 @app.get("/api/europe/overview", response_model=schemas.EuropeOverviewResponse)
 def get_europe_overview() -> schemas.EuropeOverviewResponse:
     return schemas.EuropeOverviewResponse.model_validate(
         services.europe_overview_payload()
     )
+
+
+@app.get("/api/bundesrat/status", response_model=schemas.BundesratStatusResponse)
+def get_bundesrat_status() -> schemas.BundesratStatusResponse:
+    return schemas.BundesratStatusResponse.model_validate(
+        services.bundesrat_status_payload()
+    )
+
+
+@app.post("/api/bundesrat/simulate", response_model=schemas.BundesratSimulateResponse)
+def post_bundesrat_simulate(
+    body: schemas.BundesratSimulateRequest,
+) -> schemas.BundesratSimulateResponse:
+    try:
+        data = services.bundesrat_simulate_payload(body.choices)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return schemas.BundesratSimulateResponse.model_validate(data)
 
 
 @app.post("/api/scenario", response_model=schemas.ScenarioResponse)
@@ -167,6 +243,7 @@ def post_scenario(body: schemas.ScenarioRequest) -> schemas.ScenarioResponse:
             body.parliament_id,
             body.party_shares,
             apply_exclusions=body.apply_exclusions,
+            disabled_rule_ids=body.disabled_rule_ids or None,
             max_coalition_parties=body.max_coalition_parties,
         )
     except ValueError as exc:
