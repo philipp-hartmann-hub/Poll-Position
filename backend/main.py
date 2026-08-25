@@ -57,11 +57,15 @@ class PublicGetCacheMiddleware(BaseHTTPMiddleware):
             return response
 
         if path in _PUBLIC_CACHE_QUERY_PATHS:
-            if path == "/api/coalitions" and request.query_params.getlist(
-                "disabled_rule_ids"
-            ):
-                response.headers["Cache-Control"] = "private, no-store"
-                return response
+            if path == "/api/coalitions":
+                apply = request.query_params.get("apply_exclusions", "true").lower()
+                interactive = (
+                    bool(request.query_params.getlist("disabled_rule_ids"))
+                    or apply in {"false", "0", "no", "off"}
+                )
+                if interactive:
+                    response.headers["Cache-Control"] = "private, no-store"
+                    return response
             response.headers["Cache-Control"] = _CACHE_CONTROL_PUBLIC
             # Volle URL inkl. Query ist Cache-Key; Vary schützt vor
             # falsch geteilten Varianten über Accept.

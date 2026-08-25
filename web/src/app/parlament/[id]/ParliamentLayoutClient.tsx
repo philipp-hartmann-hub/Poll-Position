@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { fetchParliaments, type Parliament } from "@/lib/api";
+import {
+  DE_PARLIAMENTS,
+  parliamentIdFromPath,
+} from "@/lib/deParliaments";
 import { ParliamentIdProvider } from "./parliament-context";
 
 const TABS = [
@@ -25,6 +29,15 @@ function sortDeParliaments(list: Parliament[]): Parliament[] {
     });
 }
 
+function mergeDeParliaments(apiList: Parliament[]): Parliament[] {
+  const byId = new Map(DE_PARLIAMENTS.map((p) => [p.id, p]));
+  for (const p of apiList) {
+    if (p.country !== "DE") continue;
+    byId.set(p.id, { ...byId.get(p.id), ...p });
+  }
+  return sortDeParliaments([...byId.values()]);
+}
+
 function currentTabSlug(pathname: string, parliamentId: string): string {
   const prefix = `/parlament/${parliamentId}`;
   if (pathname === prefix || pathname === `${prefix}/`) return "";
@@ -33,7 +46,7 @@ function currentTabSlug(pathname: string, parliamentId: string): string {
 }
 
 export function ParliamentLayoutClient({
-  parliamentId,
+  parliamentId: parliamentIdProp,
   children,
 }: {
   parliamentId: string;
@@ -41,12 +54,18 @@ export function ParliamentLayoutClient({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [parliaments, setParliaments] = useState<Parliament[]>([]);
+  // URL ist maßgeblich — Layout-Props können bei Client-Navigation kurz hinken.
+  const parliamentId =
+    parliamentIdFromPath(pathname) ?? parliamentIdProp;
+
+  const [parliaments, setParliaments] = useState<Parliament[]>(() =>
+    sortDeParliaments(DE_PARLIAMENTS),
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchParliaments()
-      .then((list) => setParliaments(sortDeParliaments(list)))
+      .then((list) => setParliaments(mergeDeParliaments(list)))
       .catch((e) =>
         setLoadError(e instanceof Error ? e.message : "Parlamente laden fehlgeschlagen"),
       );
@@ -76,11 +95,8 @@ export function ParliamentLayoutClient({
             className="w-full rounded-md border border-ink/15 bg-white px-3 py-2"
             value={parliamentId}
             onChange={(e) => onParliamentChange(e.target.value)}
-            disabled={!parliaments.length}
           >
-            {!knownId && (
-              <option value={parliamentId}>{parliamentId}</option>
-            )}
+            {!knownId && <option value={parliamentId}>{parliamentId}</option>}
             {bund.length > 0 && (
               <optgroup label="Bund">
                 {bund.map((p) => (
@@ -102,7 +118,11 @@ export function ParliamentLayoutClient({
           </select>
         </label>
 
-        {loadError && <p className="text-sm text-accent">{loadError}</p>}
+        {loadError && (
+          <p className="text-sm text-ink/45">
+            Live-Liste nicht erreichbar — lokale Auswahl wird genutzt.
+          </p>
+        )}
 
         <nav
           className="flex flex-wrap gap-1 border-b border-ink/10"

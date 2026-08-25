@@ -3,29 +3,24 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchParliaments, type Parliament } from "@/lib/api";
+import { DE_PARLIAMENTS } from "@/lib/deParliaments";
+
+function deStates(list: Parliament[]): Parliament[] {
+  return list
+    .filter((p) => p.level_kind === "state" && p.country === "DE")
+    .sort((a, b) => a.name.localeCompare(b.name, "de"));
+}
 
 export function LaenderIndex() {
-  const [states, setStates] = useState<Parliament[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [states, setStates] = useState<Parliament[]>(() => deStates(DE_PARLIAMENTS));
 
   useEffect(() => {
     void fetchParliaments()
-      .then((list) => {
-        setStates(
-          list
-            .filter((p) => p.level_kind === "state" && p.country === "DE")
-            .sort((a, b) => a.name.localeCompare(b.name, "de")),
-        );
-      })
-      .catch((e) => setError(e instanceof Error ? e.message : "Fehler"));
+      .then((list) => setStates(deStates(list)))
+      .catch(() => {
+        /* statische Liste bleibt */
+      });
   }, []);
-
-  if (error) {
-    return <p className="text-sm text-accent">{error}</p>;
-  }
-  if (!states.length) {
-    return <p className="text-sm text-ink/50">Lade Landtage…</p>;
-  }
 
   return (
     <ul className="grid gap-2 sm:grid-cols-2">

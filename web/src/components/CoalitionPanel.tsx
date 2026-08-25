@@ -72,7 +72,11 @@ export function CoalitionPanel({
         apply_exclusions: nextApply,
         disabled_rule_ids: nextApply ? nextDisabled : [],
       });
-      setData(res);
+      setData({
+        majority_threshold: res.majority_threshold,
+        excluded_by_rules: res.excluded_by_rules,
+        coalitions: res.coalitions,
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Fehler");
     } finally {

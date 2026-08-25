@@ -59,3 +59,16 @@ def test_export_parliament_static_writes_four_files(export_warehouse, tmp_path):
         assert path.is_file()
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert payload["parliament_id"] == "de_bundestag"
+
+
+def test_export_all_static_writes_parliaments_index(export_warehouse, tmp_path):
+    from data_pipeline.export_static import export_all_static
+
+    out = tmp_path / "static"
+    written = export_all_static(out_dir=out)
+    assert written >= 1
+    index = out / "parliaments.json"
+    assert index.is_file()
+    payload = json.loads(index.read_text(encoding="utf-8"))
+    assert isinstance(payload, list)
+    assert any(p["id"] == "de_bundestag" for p in payload)

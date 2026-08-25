@@ -261,7 +261,7 @@ async function fetchStaticOrApi<T>(
 }
 
 export function fetchParliaments(): Promise<Parliament[]> {
-  return apiFetch("/api/parliaments");
+  return fetchStaticOrApi("/data/parliaments.json", "/api/parliaments");
 }
 
 export function fetchAverages(
@@ -340,10 +340,14 @@ export function fetchCoalitions(
     q.append("disabled_rule_ids", id);
   }
   const apiPath = `/api/coalitions?${q}`;
+  // Static-JSON nur für den Default-Export (kein opts). Jede UI-Interaktion
+  // (Ausschluss an/aus, einzelne Regeln, max_parties) muss die API treffen —
+  // sonst bleibt die Übersicht auf dem gecachten Snapshot mit Exclusions.
   const interactive =
-    disabled.length > 0 ||
-    opts?.apply_exclusions === false ||
-    (opts?.max_parties !== undefined && opts.max_parties !== 4);
+    opts !== undefined &&
+    (opts.apply_exclusions !== undefined ||
+      disabled.length > 0 ||
+      (opts.max_parties !== undefined && opts.max_parties !== 4));
   if (interactive) {
     return apiFetch(apiPath, { noStore: true });
   }

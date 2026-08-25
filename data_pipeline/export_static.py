@@ -1,6 +1,9 @@
 """Statische JSON-Exports für das Next.js-Frontend (kein Function-Cold-Start).
 
-Schreibt unter ``web/public/data/<parliament_id>/{averages,trend,seats,coalitions}.json``.
+Schreibt unter ``web/public/data/``:
+- ``parliaments.json`` (Index)
+- ``<parliament_id>/{averages,trend,seats,coalitions}.json``
+
 Diese Dateien gehören NICHT ins Git — sie entstehen beim Pipeline-Lauf.
 
 Auslieferung in Produktion (Kurzfazit):
@@ -36,7 +39,7 @@ def _json_default(obj: Any) -> Any:
     raise TypeError(f"Nicht JSON-serialisierbar: {type(obj)!r}")
 
 
-def _write_json(path: Path, payload: dict[str, Any]) -> None:
+def _write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2, default=_json_default) + "\n",
@@ -88,6 +91,15 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
     target.mkdir(parents=True, exist_ok=True)
     parliaments = services.list_parliaments()
     written = 0
+
+    index_path = target / "parliaments.json"
+    try:
+        _write_json(index_path, parliaments)
+        written += 1
+        log.info("Static-Export parliaments.json: ok (%d Einträge)", len(parliaments))
+    except Exception:
+        log.exception("Export parliaments.json fehlgeschlagen")
+
     for row in parliaments:
         pid = str(row["id"])
         ok = export_parliament_static(pid, out_dir=target)

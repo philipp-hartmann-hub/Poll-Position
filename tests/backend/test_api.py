@@ -413,6 +413,33 @@ def test_coalitions(client):
         ), c["parties"]
 
 
+def test_coalitions_apply_exclusions_false_changes_result(client):
+    """Ausschlussregeln aus → mehr/andere Koalitionen, excluded_by_rules=0, kein CDN-Cache."""
+    from backend import services
+
+    services.clear_payload_caches()
+    with_ex = client.get(
+        "/api/coalitions",
+        params={"parliament_id": "de_bundestag", "apply_exclusions": True},
+    )
+    assert with_ex.status_code == 200
+    assert with_ex.headers.get("cache-control") == (
+        "public, max-age=300, stale-while-revalidate=3600"
+    )
+    body_on = with_ex.json()
+    assert body_on["excluded_by_rules"] >= 1
+
+    without = client.get(
+        "/api/coalitions",
+        params={"parliament_id": "de_bundestag", "apply_exclusions": False},
+    )
+    assert without.status_code == 200
+    assert without.headers.get("cache-control") == "private, no-store"
+    body_off = without.json()
+    assert body_off["excluded_by_rules"] == 0
+    assert len(body_off["coalitions"]) >= len(body_on["coalitions"])
+
+
 def test_seats_exclude_sonstige(client):
     r = client.get("/api/seats", params={"parliament_id": "de_bundestag"})
     assert r.status_code == 200
