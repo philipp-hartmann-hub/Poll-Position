@@ -367,12 +367,26 @@ export function fetchCoalitionRules(
 export function fetchUncertainty(
   parliamentId: string,
   nSimulations = 400,
+  opts?: {
+    applyExclusions?: boolean;
+    disabledRuleIds?: string[];
+  },
 ): Promise<UncertaintyResponse> {
   const q = new URLSearchParams({
     parliament_id: parliamentId,
     n_simulations: String(nSimulations),
   });
-  return apiFetch(`/api/uncertainty?${q}`);
+  if (opts?.applyExclusions !== undefined) {
+    q.set("apply_exclusions", String(opts.applyExclusions));
+  }
+  const disabled = opts?.disabledRuleIds ?? [];
+  for (const id of disabled) {
+    q.append("disabled_rule_ids", id);
+  }
+  const interactive =
+    opts !== undefined &&
+    (opts.applyExclusions !== undefined || disabled.length > 0);
+  return apiFetch(`/api/uncertainty?${q}`, interactive ? { noStore: true } : undefined);
 }
 
 export function fetchThresholdWatch(

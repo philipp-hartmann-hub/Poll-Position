@@ -6,6 +6,11 @@ import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
 import { labelPartyId } from "@/lib/colors";
 
+export type ExclusionUiState = {
+  applyExclusions: boolean;
+  disabledRuleIds: string[];
+};
+
 function ruleLabel(rule: ExclusionRule): string {
   if (rule.note?.trim()) return rule.note;
   const excl = rule.excludes.map(labelPartyId).join(", ");
@@ -16,6 +21,7 @@ export function CoalitionPanel({
   parliamentId,
   initial,
   seatsByName,
+  onExclusionStateChange,
 }: {
   parliamentId: string;
   initial: {
@@ -24,6 +30,7 @@ export function CoalitionPanel({
     coalitions: Coalition[];
   };
   seatsByName: Record<string, number>;
+  onExclusionStateChange?: (state: ExclusionUiState) => void;
 }) {
   const [applyExclusions, setApplyExclusions] = useState(true);
   const [rules, setRules] = useState<ExclusionRule[]>([]);
@@ -65,12 +72,17 @@ export function CoalitionPanel({
   );
 
   async function refresh(nextApply: boolean, nextDisabled: string[]) {
+    const disabledForApi = nextApply ? nextDisabled : [];
+    onExclusionStateChange?.({
+      applyExclusions: nextApply,
+      disabledRuleIds: disabledForApi,
+    });
     setLoading(true);
     setError(null);
     try {
       const res = await fetchCoalitions(parliamentId, {
         apply_exclusions: nextApply,
-        disabled_rule_ids: nextApply ? nextDisabled : [],
+        disabled_rule_ids: disabledForApi,
       });
       setData({
         majority_threshold: res.majority_threshold,

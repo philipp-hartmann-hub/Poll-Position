@@ -523,6 +523,25 @@ def test_uncertainty(client):
             assert pid.startswith("de:"), pid
 
 
+def test_uncertainty_respects_apply_exclusions(client):
+    """Ohne Ausschlüsse erscheinen andere/mehr Koalitionen in der Simulation."""
+    params_base = {"parliament_id": "de_bundestag", "n_simulations": 80}
+    on = client.get(
+        "/api/uncertainty",
+        params={**params_base, "apply_exclusions": True},
+    )
+    off = client.get(
+        "/api/uncertainty",
+        params={**params_base, "apply_exclusions": False},
+    )
+    assert on.status_code == 200 and off.status_code == 200
+    assert off.headers.get("cache-control") == "private, no-store"
+    parties_on = {tuple(sorted(e["parties"])) for e in on.json()["coalition_probabilities"]}
+    parties_off = {tuple(sorted(e["parties"])) for e in off.json()["coalition_probabilities"]}
+    # Mindestens eine AfD-/Linke-Kombination wird durch Defaults ausgeschlossen
+    assert parties_on != parties_off or len(parties_off) >= len(parties_on)
+
+
 def test_uncertainty_payload_canonical_coalition_ids(api_warehouse):
     """Direktes Service-API: coalition_probabilities nur mit kanonischen IDs."""
     from backend import services

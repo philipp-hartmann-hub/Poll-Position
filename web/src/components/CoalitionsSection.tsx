@@ -9,7 +9,10 @@ import {
   type SeatsResponse,
   type UncertaintyResponse,
 } from "@/lib/api";
-import { CoalitionPanel } from "@/components/CoalitionPanel";
+import {
+  CoalitionPanel,
+  type ExclusionUiState,
+} from "@/components/CoalitionPanel";
 import { labelPartyId } from "@/lib/colors";
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
@@ -18,6 +21,11 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const [uncertainty, setUncertainty] = useState<UncertaintyResponse | null>(
     null,
   );
+  const [exclusionState, setExclusionState] = useState<ExclusionUiState>({
+    applyExclusions: true,
+    disabledRuleIds: [],
+  });
+  const [uncertaintyBusy, setUncertaintyBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,17 +33,16 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setExclusionState({ applyExclusions: true, disabledRuleIds: [] });
     (async () => {
       try {
-        const [c, s, u] = await Promise.all([
+        const [c, s] = await Promise.all([
           fetchCoalitions(parliamentId),
           fetchSeats(parliamentId),
-          fetchUncertainty(parliamentId, 200).catch(() => null),
         ]);
         if (cancelled) return;
         setCoalitions(c);
         setSeats(s);
-        setUncertainty(u);
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
@@ -48,6 +55,32 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
       cancelled = true;
     };
   }, [parliamentId]);
+
+  const disabledKey = exclusionState.disabledRuleIds.join("\0");
+
+  useEffect(() => {
+    let cancelled = false;
+    const t = setTimeout(() => {
+      setUncertaintyBusy(true);
+      void fetchUncertainty(parliamentId, 200, {
+        applyExclusions: exclusionState.applyExclusions,
+        disabledRuleIds: exclusionState.disabledRuleIds,
+      })
+        .then((u) => {
+          if (!cancelled) setUncertainty(u);
+        })
+        .catch(() => {
+          if (!cancelled) setUncertainty(null);
+        })
+        .finally(() => {
+          if (!cancelled) setUncertaintyBusy(false);
+        });
+    }, 200);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [parliamentId, exclusionState.applyExclusions, disabledKey]);
 
   if (loading) {
     return <p className="text-sm text-ink/50">Lade Analyse…</p>;
@@ -76,32 +109,45 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
           excluded_by_rules: coalitions.excluded_by_rules,
           coalitions: coalitions.coalitions,
         }}
+        onExclusionStateChange={setExclusionState}
       />
 
-      {uncertainty && uncertainty.coalition_probabilities.length > 0 && (
+      {(uncertainty && uncertainty.coalition_probabilities.length > 0) ||
+      uncertaintyBusy ? (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
             Unsicherheit (Monte-Carlo)
           </h2>
           <p className="mb-3 text-sm text-ink/55">
-            {uncertainty.n_simulations} Simulationen ·
-            Mehrheitswahrscheinlichkeiten
+            {uncertainty
+              ? `${uncertainty.n_simulations} Simulationen · Mehrheitswahrscheinlichkeiten`
+              : "Simulation lädt…"}
+            {uncertaintyBusy ? " · aktualisiert…" : ""}
+            {!exclusionState.applyExclusions
+              ? " · ohne Ausschlussregeln"
+              : exclusionState.disabledRuleIds.length > 0
+                ? ` · ${exclusionState.disabledRuleIds.length} Regeln aus`
+                : ""}
           </p>
-          <ul className="space-y-2 text-sm">
-            {uncertainty.coalition_probabilities.slice(0, 8).map((c, i) => (
-              <li
-                key={i}
-                className="flex items-center justify-between rounded-lg border border-ink/10 bg-white/40 px-3 py-2"
-              >
-                <span>{c.parties.map(labelPartyId).join(" + ")}</span>
-                <span className="tabular-nums font-medium">
-                  {(c.majority_probability * 100).toFixed(0)} %
-                </span>
-              </li>
-            ))}
-          </ul>
+          {uncertainty && uncertainty.coalition_probabilities.length > 0 ? (
+            <ul className="space-y-2 text-sm">
+              {uncertainty.coalition_probabilities.slice(0, 8).map((c, i) => (
+                <li
+                  key={i}
+                  className="flex items-center justify-between rounded-lg border border-ink/10 bg-white/40 px-3 py-2"
+                >
+                  <span>{c.parties.map(labelPartyId).join(" + ")}</span>
+                  <span className="tabular-nums font-medium">
+                    {(c.majority_probability * 100).toFixed(0)} %
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-ink/50">Keine Mehrheitskoalitionen in der Simulation.</p>
+          )}
         </section>
-      )}
+      ) : null}
     </div>
   );
 }

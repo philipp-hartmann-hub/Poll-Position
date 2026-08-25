@@ -614,6 +614,8 @@ def uncertainty_payload(
     parliament_id: str,
     *,
     n_simulations: int = 400,
+    apply_exclusions: bool = True,
+    disabled_rule_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     votes, _names = _votes_from_averages(parliament_id)
     if not votes:
@@ -625,7 +627,11 @@ def uncertainty_payload(
         }
     parties = party_uncertainties_from_means(votes, sample_size=1000, house_variance=1.0)
     seats, total = _allocate_for_parliament(parliament_id, votes)
-    coal = coalitions_payload(parliament_id)
+    coal = coalitions_payload(
+        parliament_id,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
+    )
     # Koalitionen sind kanonisch — Simulation nutzt warehouse IDs
     names = _names
     canon_to_id = {

@@ -57,7 +57,7 @@ class PublicGetCacheMiddleware(BaseHTTPMiddleware):
             return response
 
         if path in _PUBLIC_CACHE_QUERY_PATHS:
-            if path == "/api/coalitions":
+            if path == "/api/coalitions" or path == "/api/uncertainty":
                 apply = request.query_params.get("apply_exclusions", "true").lower()
                 interactive = (
                     bool(request.query_params.getlist("disabled_rule_ids"))
@@ -242,8 +242,15 @@ def get_coalitions(
 def get_uncertainty(
     parliament_id: str = Query(...),
     n_simulations: int = Query(400, ge=50, le=5000),
+    apply_exclusions: bool = Query(True),
+    disabled_rule_ids: list[str] | None = Query(None),
 ) -> schemas.UncertaintyResponse:
-    data = services.uncertainty_payload(parliament_id, n_simulations=n_simulations)
+    data = services.uncertainty_payload(
+        parliament_id,
+        n_simulations=n_simulations,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
+    )
     if data["n_simulations"] == 0 and not data["mean_seats"]:
         raise HTTPException(status_code=404, detail="Keine Daten für Unsicherheit")
     return schemas.UncertaintyResponse.model_validate(data)
