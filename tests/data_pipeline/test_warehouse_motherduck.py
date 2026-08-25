@@ -42,6 +42,13 @@ def test_uses_motherduck_true_with_readonly_token(monkeypatch):
     assert warehouse.motherduck_token() == "ro-token"
 
 
+def test_motherduck_token_strips_wrapping_quotes(monkeypatch):
+    monkeypatch.setenv("MOTHERDUCK_TOKEN", '"eyJhbGciOiJIUzI1NiJ9.test"')
+    assert warehouse.motherduck_token() == "eyJhbGciOiJIUzI1NiJ9.test"
+    monkeypatch.setenv("MOTHERDUCK_TOKEN", "'eyJhbGciOiJIUzI1NiJ9.test'")
+    assert warehouse.motherduck_token() == "eyJhbGciOiJIUzI1NiJ9.test"
+
+
 def test_motherduck_database_default(monkeypatch):
     monkeypatch.setenv("MOTHERDUCK_TOKEN", "tok")
     assert warehouse.motherduck_database() == "poll_position"

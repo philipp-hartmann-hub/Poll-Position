@@ -141,10 +141,14 @@ def motherduck_token() -> str | None:
 
     Primär `MOTHERDUCK_TOKEN` (Vercel Marketplace / Pipeline).
     Fallback: `MOTHERDUCK_READONLY_TOKEN` (nur Lesen, Marketplace).
+    Entfernt umschließende Anführungszeichen (häufig beim Einfügen aus ``.env``
+    in GitHub Actions Secrets).
     """
     _maybe_load_dotenv()
     for key in ("MOTHERDUCK_TOKEN", "MOTHERDUCK_READONLY_TOKEN"):
         token = os.environ.get(key, "").strip()
+        if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"}:
+            token = token[1:-1].strip()
         if token:
             return token
     return None

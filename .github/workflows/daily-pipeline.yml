@@ -31,14 +31,25 @@ jobs:
 
       - name: Require MotherDuck secrets
         run: |
-          if [ -z "${MOTHERDUCK_TOKEN:-}" ]; then
+          TOKEN="${MOTHERDUCK_TOKEN:-}"
+          TOKEN="${TOKEN%$'\r'}"
+          TOKEN="$(printf '%s' "$TOKEN" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+          # Nur Diagnose — Wert nicht nach GITHUB_ENV schreiben (Masking)
+          if [ -z "$TOKEN" ]; then
             echo "::error::Secret MOTHERDUCK_TOKEN fehlt. Anlegen unter Settings → Secrets and variables → Actions."
             exit 1
           fi
-          # Datenbankname: Secret oder Default poll_position
+          echo "MOTHERDUCK_TOKEN gesetzt (Länge=${#TOKEN}, Präfix=${TOKEN:0:3}…)"
+          if [[ "$TOKEN" == \"*\" || "$TOKEN" == \'*\' ]]; then
+            echo "::warning::Token hat Anführungszeichen — warehouse.py entfernt sie; besser Secret ohne Quotes neu setzen."
+          elif [[ "$TOKEN" != eyJ* ]]; then
+            echo "::warning::Token beginnt nicht mit eyJ — oft falsch eingefügt (Quotes/Leerzeichen/falscher Wert)."
+          fi
           if [ -z "${MOTHERDUCK_DATABASE:-}" ]; then
             echo "MOTHERDUCK_DATABASE nicht gesetzt — verwende Default poll_position"
             echo "MOTHERDUCK_DATABASE=poll_position" >> "$GITHUB_ENV"
+          else
+            echo "MOTHERDUCK_DATABASE ist gesetzt"
           fi
           echo "MotherDuck-Ziel konfiguriert (Token nicht geloggt)."
 
