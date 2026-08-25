@@ -10,7 +10,7 @@ from __future__ import annotations
 from datetime import date
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Sequence
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -90,6 +90,14 @@ class ElectionSystem(BaseModel):
     minority_exempt_party_ids: list[str] = Field(
         default_factory=list,
         description="Parteien nationaler Minderheiten ohne Sperrklausel (z. B. SSW)",
+    )
+    seat_projection: bool = Field(
+        default=True,
+        description="False: keine Sitzzuteilung aus nationalen Umfragewerten (z. B. FR)",
+    )
+    approximation: Literal["national", "district", "mixed", "majority"] | None = Field(
+        default=None,
+        description="Art der Näherung für UI-Hinweise; None = exaktes/landesübliches Verfahren",
     )
     notes: str | None = None
     sources: list[str] = Field(default_factory=list)
@@ -193,12 +201,52 @@ class ParliamentConfigBundle(BaseModel):
         return self
 
 
+def _merge_parliament_yamls(raws: Sequence[dict]) -> dict:
+    countries: list = []
+    systems: list = []
+    parliaments: list = []
+    sources: list[str] = []
+    as_ofs: list[str] = []
+    version = 1
+    for raw in raws:
+        version = int(raw.get("version") or version)
+        if raw.get("as_of"):
+            as_ofs.append(str(raw["as_of"]))
+        sources.extend(raw.get("sources_bibliography") or [])
+        countries.extend(raw.get("countries") or [])
+        systems.extend(raw.get("election_systems") or [])
+        parliaments.extend(raw.get("parliaments") or [])
+    seen_countries: set[str] = set()
+    unique_countries = []
+    for c in countries:
+        code = c.get("iso_code") if isinstance(c, dict) else getattr(c, "iso_code", None)
+        if code in seen_countries:
+            continue
+        seen_countries.add(code)
+        unique_countries.append(c)
+    return {
+        "version": version,
+        "as_of": max(as_ofs) if as_ofs else None,
+        "sources_bibliography": sources,
+        "countries": unique_countries,
+        "election_systems": systems,
+        "parliaments": parliaments,
+    }
+
+
 def load_parliament_config(
     path: Path | None = None,
 ) -> ParliamentConfigBundle:
-    """Lädt die Parlament-/Wahlrechts-Konfiguration (YAML)."""
+    """Lädt DE- plus Europa-Wahlrechts-YAML (oder eine einzelne Datei, falls `path` gesetzt)."""
     import yaml
 
-    config_path = path or (CONFIG_DIR / "de_parliaments.yaml")
-    raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    return ParliamentConfigBundle.model_validate(raw)
+    if path is not None:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return ParliamentConfigBundle.model_validate(raw)
+
+    de_path = CONFIG_DIR / "de_parliaments.yaml"
+    eu_path = CONFIG_DIR / "europe_parliaments.yaml"
+    raws = [yaml.safe_load(de_path.read_text(encoding="utf-8"))]
+    if eu_path.exists():
+        raws.append(yaml.safe_load(eu_path.read_text(encoding="utf-8")))
+    return ParliamentConfigBundle.model_validate(_merge_parliament_yamls(raws))

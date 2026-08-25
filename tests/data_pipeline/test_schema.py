@@ -42,6 +42,27 @@ def test_load_de_parliaments_config():
     assert "DE-BY" in state_codes
 
 
+def test_europe_parliaments_merged():
+    bundle = load_parliament_config()
+    eu_ids = {
+        "at_nationalrat",
+        "nl_tweede_kamer",
+        "it_camera",
+        "es_congreso",
+        "pl_sejm",
+        "se_riksdag",
+        "pt_assembleia",
+        "fr_assemblee",
+    }
+    got = {p.id for p in bundle.parliaments}
+    assert eu_ids <= got
+    fr = next(s for s in bundle.election_systems if s.key == "fr_assemblee")
+    assert fr.seat_projection is False
+    at = next(s for s in bundle.election_systems if s.key == "at_nationalrat")
+    assert at.seats_total == 183
+    assert at.threshold_percent == 4.0
+
+
 def test_survey_requires_sonstige_as_party_id_convention():
     survey = Survey(
         id="s1",

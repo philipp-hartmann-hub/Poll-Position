@@ -58,6 +58,147 @@ party_positions:
   at:grune:
     left_right: 3.0
     european_party_family: Greens/EFA
+  at:others:
+    left_right: 5.0
+    european_party_family: null
+
+  nl:pvv:
+    left_right: 9.0
+    european_party_family: Patriots
+  nl:vvd:
+    left_right: 6.5
+    european_party_family: Renew
+  nl:gl_pvda:
+    left_right: 2.5
+    european_party_family: S&D
+  nl:cda:
+    left_right: 6.5
+    european_party_family: EPP
+  nl:d66:
+    left_right: 4.5
+    european_party_family: Renew
+  nl:nsc:
+    left_right: 6.0
+    european_party_family: EPP
+  nl:bbb:
+    left_right: 7.0
+    european_party_family: EPP
+  nl:sp:
+    left_right: 1.5
+    european_party_family: Left
+  nl:others:
+    left_right: 5.0
+    european_party_family: null
+
+  it:fdi:
+    left_right: 8.5
+    european_party_family: ECR
+  it:pd:
+    left_right: 3.5
+    european_party_family: S&D
+  it:m5s:
+    left_right: 4.0
+    european_party_family: NI
+  it:lega:
+    left_right: 8.5
+    european_party_family: Patriots
+  it:fi:
+    left_right: 6.5
+    european_party_family: EPP
+  it:avs:
+    left_right: 2.0
+    european_party_family: Left
+  it:others:
+    left_right: 5.0
+    european_party_family: null
+
+  es:pp:
+    left_right: 6.5
+    european_party_family: EPP
+  es:psoe:
+    left_right: 3.5
+    european_party_family: S&D
+  es:vox:
+    left_right: 8.5
+    european_party_family: ECR
+  es:sumar:
+    left_right: 2.0
+    european_party_family: Left
+  es:podemos:
+    left_right: 1.5
+    european_party_family: Left
+  es:others:
+    left_right: 5.0
+    european_party_family: null
+
+  pl:pis:
+    left_right: 8.0
+    european_party_family: ECR
+  pl:ko:
+    left_right: 5.0
+    european_party_family: EPP
+  pl:konf:
+    left_right: 9.0
+    european_party_family: NI
+  pl:lewica:
+    left_right: 2.5
+    european_party_family: S&D
+  pl:td:
+    left_right: 5.5
+    european_party_family: Renew
+  pl:others:
+    left_right: 5.0
+    european_party_family: null
+
+  se:s:
+    left_right: 3.5
+    european_party_family: S&D
+  se:m:
+    left_right: 6.5
+    european_party_family: EPP
+  se:sd:
+    left_right: 8.5
+    european_party_family: ECR
+  se:v:
+    left_right: 1.5
+    european_party_family: Left
+  se:c:
+    left_right: 5.5
+    european_party_family: Renew
+  se:kd:
+    left_right: 7.0
+    european_party_family: EPP
+  se:mp:
+    left_right: 3.0
+    european_party_family: Greens/EFA
+  se:l:
+    left_right: 6.0
+    european_party_family: Renew
+  se:others:
+    left_right: 5.0
+    european_party_family: null
+
+  pt:psd:
+    left_right: 6.5
+    european_party_family: EPP
+  pt:ps:
+    left_right: 3.5
+    european_party_family: S&D
+  pt:chega:
+    left_right: 9.0
+    european_party_family: Patriots
+  pt:cdu:
+    left_right: 1.5
+    european_party_family: Left
+  pt:il:
+    left_right: 6.0
+    european_party_family: Renew
+  pt:l:
+    left_right: 2.5
+    european_party_family: Greens/EFA
+  pt:others:
+    left_right: 5.0
+    european_party_family: null
 
 exclusions:
   - id: de_bundestag_default
@@ -102,4 +243,100 @@ exclusions:
         note: "Platzhalter — bei Bedarf anpassen"
       - party: at:grune
         excludes: [at:fpo]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: nl_national_default
+    parliament_id: nl_tweede_kamer
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Niederlande"
+    rules:
+      - party: nl:vvd
+        excludes: [nl:pvv]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: nl:gl_pvda
+        excludes: [nl:pvv]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: nl:d66
+        excludes: [nl:pvv]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: it_national_default
+    parliament_id: it_camera
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Italien"
+    rules:
+      - party: it:pd
+        excludes: [it:fdi]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: it:pd
+        excludes: [it:lega]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: it:avs
+        excludes: [it:fdi]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: es_national_default
+    parliament_id: es_congreso
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Spanien"
+    rules:
+      - party: es:psoe
+        excludes: [es:vox]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: es:sumar
+        excludes: [es:vox]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: es:pp
+        excludes: [es:sumar]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: pl_national_default
+    parliament_id: pl_sejm
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Polen"
+    rules:
+      - party: pl:ko
+        excludes: [pl:pis]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: pl:lewica
+        excludes: [pl:pis]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: pl:ko
+        excludes: [pl:konf]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: se_national_default
+    parliament_id: se_riksdag
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Schweden"
+    rules:
+      - party: se:s
+        excludes: [se:sd]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: se:mp
+        excludes: [se:sd]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: se:v
+        excludes: [se:sd]
+        note: "Platzhalter — bei Bedarf anpassen"
+
+  - id: pt_national_default
+    parliament_id: pt_assembleia
+    valid_from: null
+    valid_to: null
+    description: "Beispiel-Ausschlüsse Portugal"
+    rules:
+      - party: pt:ps
+        excludes: [pt:chega]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: pt:cdu
+        excludes: [pt:chega]
+        note: "Platzhalter — bei Bedarf anpassen"
+      - party: pt:l
+        excludes: [pt:chega]
         note: "Platzhalter — bei Bedarf anpassen"

@@ -292,6 +292,8 @@ def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tup
         system = next(
             s for s in bundle.election_systems if s.key == parliament.election_system_key
         )
+        if not system.seat_projection:
+            return {}, system.seats_total
         seats = allocate_seats(parliament, votes, election_system=system)
         return seats, system.seats_total
     seats = sainte_lague_schepers(votes, 100, 0.05)

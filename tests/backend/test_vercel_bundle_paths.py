@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
         "data_pipeline/config/coalition_rules.yaml",
         "data_pipeline/config/party_families.yaml",
         "data_pipeline/config/bundesrat.yaml",
+        "data_pipeline/config/europe_parliaments.yaml",
         "data_pipeline/reference/election_results.yaml",
         "backend/main.py",
         "analysis/coalitions.py",
@@ -39,3 +40,4 @@ def test_parliament_config_loadable():
 
     bundle = load_parliament_config()
     assert any(p.id == "de_bundestag" for p in bundle.parliaments)
+    assert any(p.id == "at_nationalrat" for p in bundle.parliaments)

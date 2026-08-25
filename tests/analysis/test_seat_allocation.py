@@ -5,6 +5,7 @@ Quellen:
 - BTW 2025: Die Bundeswahlleiterin (endgültiges Ergebnis)
 - Saarland 2022: Landeswahlleiterin Saarland (d’Hondt, 51 Sitze)
 - Thüringen 2024: Landeswahlleiter Thüringen / Bundeswahlleiterin (Hare/Niemeyer, 88 Sitze)
+- Nationalrat 2024: BMI / Bundeswahlbehörde (gültige Stimmen 4_882_888; Mandate 183)
 """
 
 from __future__ import annotations
@@ -111,6 +112,27 @@ THURINGEN_2024_VOTES: dict[str, float] = {
 }
 THURINGEN_2024_SEATS = {"AfD": 32, "CDU": 23, "BSW": 15, "LINKE": 12, "SPD": 6}
 THURINGEN_2024_TOTAL = 1_207_883
+
+# Nationalratswahl 2024 — gültige Stimmen 4_882_888 (Verlautbarung Bundeswahlbehörde 16.10.2024)
+# Mandate: FPÖ 57, ÖVP 51, SPÖ 41, NEOS 18, GRÜNE 16
+# https://www.bundeswahlen.gv.at/2024/nr/
+# https://www.bmi.gv.at/412/nationalratswahlen/nationalratswahl_2024/files/verlautbarung_der_bundeswahlbehoerde_16102024_bf.pdf
+# Sonstige nicht als eine Liste: jede Kleinpartei lag unter 4 %.
+AT_NRW_2024_VOTES: dict[str, float] = {
+    "at:fpo": 1_408_512,
+    "at:ovp": 1_282_734,
+    "at:spo": 1_032_233,
+    "at:neos": 446_379,
+    "at:grune": 402_109,
+}
+AT_NRW_2024_SEATS = {
+    "at:fpo": 57,
+    "at:ovp": 51,
+    "at:spo": 41,
+    "at:neos": 18,
+    "at:grune": 16,
+}
+AT_NRW_2024_TOTAL = 4_882_888
 
 
 def test_sainte_lague_bundestag_2025_official_seats():
@@ -257,3 +279,24 @@ def test_allocate_seats_dispatch_thueringen_hare():
     assert seats["AfD"] == 32
     assert seats["CDU"] == 23
     assert seats["BSW"] == 15
+
+
+def test_allocate_seats_austria_nationalrat_2024_official():
+    """Nationale d’Hondt-Näherung trifft die amtlichen 183 Mandate (Parteien ≥ 4 %)."""
+    bundle = load_parliament_config()
+    system = next(s for s in bundle.election_systems if s.key == "at_nationalrat")
+    assert system.seats_total == 183
+    assert system.threshold_percent == 4.0
+    assert system.allocation_method == AllocationMethod.DHONDT
+    seats = allocate_seats(system, AT_NRW_2024_VOTES, total_votes=AT_NRW_2024_TOTAL)
+    for party, n in AT_NRW_2024_SEATS.items():
+        assert seats[party] == n
+    assert sum(seats.values()) == 183
+
+
+def test_france_has_no_seat_projection():
+    bundle = load_parliament_config()
+    system = next(s for s in bundle.election_systems if s.key == "fr_assemblee")
+    assert system.seat_projection is False
+    assert system.seats_total == 577
+    assert system.approximation == "majority"

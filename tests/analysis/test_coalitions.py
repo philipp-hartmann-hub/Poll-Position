@@ -195,3 +195,19 @@ def test_majority_coalitions_compat_wrapper():
     combos = majority_coalitions(seats, max_parties=2)
     assert ("A", "B") in combos
     assert ("A",) not in combos
+
+
+def test_europe_placeholder_exclusion_sets_load():
+    cfg = load_coalition_rules()
+    for parliament_id in (
+        "at_nationalrat",
+        "nl_tweede_kamer",
+        "it_camera",
+        "es_congreso",
+        "pl_sejm",
+        "se_riksdag",
+        "pt_assembleia",
+    ):
+        rules = list_active_exclusion_rules(parliament_id, rules_config=cfg)
+        assert rules, f"erwartete Platzhalter-Regeln für {parliament_id}"
+        assert all("Platzhalter" in (r.note or "") for r in rules)

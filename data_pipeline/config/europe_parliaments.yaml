@@ -1,0 +1,205 @@
+# Poll-Position — Wahlrechts-Näherung für Wikipedia-Länder (ohne DE)
+#
+# WICHTIG: Sitze hier sind eine NATIONALE Näherung. ES/PL/PT (und IT gemischt)
+# verteilen in der Realität über Wahlkreise; FR ist Mehrheitswahl und hat
+# bewusst KEINE Sitzprojektion (seat_projection: false).
+#
+# Stand der Recherche: 2026-08-25
+
+version: 1
+as_of: "2026-08-25"
+
+sources_bibliography:
+  - "AT: Nationalrats-Wahlordnung 1992 (NRWO), BMI / bundeswahlen.gv.at — 183 Sitze, 4 %-Hürde"
+  - "NL: Kieswet, Kiesraad — 150 Sitze, Restmandate nach d’Hondt, Kiesdeler ≈ 0,67 %"
+  - "IT: Costituzione Art. 56; Legge 3 novembre 2017, n. 165 (Rosatellum) — 400 Sitze Camera"
+  - "ES: Constitución Art. 68; LOREG 5/1985 — 350 Sitze Congreso, d’Hondt, 3 % je Wahlkreis"
+  - "PL: Kodeks wyborczy — 460 Sitze Sejm, d’Hondt, 5 % (Koalitionen 8 %)"
+  - "SE: Vallagen (2005:837), Valmyndigheten — 349 Sitze, jämkad uddatalsmetod, 4 %"
+  - "PT: Lei n.º 14/79 (Lei Eleitoral da Assembleia da República), CNE — 230 Sitze, d’Hondt"
+  - "FR: Constitution Art. 24; Code électoral — 577 Sitze, Mehrheitswahl mit Stichwahl, keine VW"
+
+countries:
+  - iso_code: AT
+    name: Österreich
+  - iso_code: NL
+    name: Niederlande
+  - iso_code: IT
+    name: Italien
+  - iso_code: ES
+    name: Spanien
+  - iso_code: PL
+    name: Polen
+  - iso_code: SE
+    name: Schweden
+  - iso_code: PT
+    name: Portugal
+  - iso_code: FR
+    name: Frankreich
+
+election_systems:
+  - key: at_nationalrat
+    allocation_method: dhondt
+    threshold_percent: 4.0
+    seats_total: 183
+    seat_projection: true
+    approximation: national
+    notes: >
+      Gesetzlich 183 Sitze (NRWO). 4 %-Hürde oder ein Grundmandat im Regionalwahlkreis.
+      Drei Ermittlungsverfahren (Hare regional/Land, d’Hondt Bund). Nationale d’Hondt-Näherung.
+    sources:
+      - "https://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001199"
+      - "https://www.bmi.gv.at/412/nationalratswahlen/nationalratswahl_2024/nationalratswahl_2024_leichter_lesen.html"
+      - "https://www.bundeswahlen.gv.at/2024/nr/"
+
+  - key: nl_tweede_kamer
+    allocation_method: dhondt
+    threshold_percent: 0.67
+    seats_total: 150
+    seat_projection: true
+    approximation: national
+    notes: >
+      150 Sitze, eine nationale Liste. Keine Prozent-Sperrklausel; Restmandate nach d’Hondt
+      nur für Listen mit mindestens einer vollen Kiesdeler (1/150 ≈ 0,67 %).
+    sources:
+      - "https://wetten.overheid.nl/BWBR0004627"
+      - "https://www.kiesraad.nl/verkiezingen/tweede-kamer/uitslagen/zetelverdeling-over-partijen"
+
+  - key: it_camera
+    allocation_method: hare_niemeyer
+    threshold_percent: 3.0
+    seats_total: 400
+    seat_projection: true
+    approximation: mixed
+    notes: >
+      Camera dei Deputati: 400 Sitze (Costituzione Art. 56). Rosatellum (L. 165/2017):
+      gemischt FPTP + Verhältniswahl, PR-Hürde 3 % (Koalition 10 %). Nationale Hare-Näherung
+      ignoriert Wahlkreise und Koalitionsprämien.
+    sources:
+      - "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:costituzione:1947-12-27"
+      - "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:legge:2017-11-03;165"
+
+  - key: es_congreso
+    allocation_method: dhondt
+    threshold_percent: 3.0
+    seats_total: 350
+    seat_projection: true
+    approximation: district
+    notes: >
+      Congreso: 350 Sitze (LOREG Art. 162). d’Hondt in 52 Wahlkreisen, 3 %-Hürde je
+      Wahlkreis (nicht national). Nationale Rechnung unterschätzt regional konzentrierte Listen.
+    sources:
+      - "https://www.boe.es/eli/es/lo/1985/06/19/5"
+      - "https://www.boe.es/buscar/act.php?id=BOE-A-1985-11672"
+
+  - key: pl_sejm
+    allocation_method: dhondt
+    threshold_percent: 5.0
+    seats_total: 460
+    seat_projection: true
+    approximation: district
+    notes: >
+      Sejm: 460 Sitze, d’Hondt in Wahlkreisen. 5 % für Parteien, 8 % für Koalitionen
+      (Kodeks wyborczy). Nationale 5 %-Näherung, keine Wahlkreis-Ebene.
+    sources:
+      - "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20110210112"
+      - "https://pkw.gov.pl/"
+
+  - key: se_riksdag
+    allocation_method: sainte_lague_schepers
+    threshold_percent: 4.0
+    seats_total: 349
+    seat_projection: true
+    approximation: national
+    notes: >
+      Riksdag: 349 Sitze (310 Festmandate + 39 Ausgleich). 4 % national oder 12 % in einem
+      Wahlkreis. Amtlich jämkad uddatalsmetod (erster Divisor 1,4); hier unmodifiziertes
+      Sainte-Laguë/Schepers (1, 3, 5, …) als Näherung.
+    sources:
+      - "https://www.riksdagen.se/sv/sa-funkar-riksdagen/demokrati/val-till-riksdagen/"
+      - "https://www.val.se/"
+      - "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/vallag-2005837_sfs-2005-837/"
+
+  - key: pt_assembleia
+    allocation_method: dhondt
+    threshold_percent: 0.0
+    seats_total: 230
+    seat_projection: true
+    approximation: district
+    notes: >
+      Assembleia da República: 230 Sitze (Verfassung 180–230, gesetzlich 230). d’Hondt in
+      Wahlkreisen, keine nationale Prozent-Hürde. Nationale Näherung ohne Wahlkreis-Ebene.
+    sources:
+      - "https://www.cne.pt/"
+      - "https://diariodarepublica.pt/dr/legislacao-consolidada/lei/1979-345202"
+
+  - key: fr_assemblee
+    allocation_method: dhondt
+    threshold_percent: 0.0
+    seats_total: 577
+    seat_projection: false
+    approximation: majority
+    notes: >
+      Assemblée nationale: 577 Sitze (Constitution Art. 24). Uninominales Mehrheitswahlrecht
+      mit Stichwahl in Wahlkreisen — KEINE nationale Verhältniswahl. Keine Sitzprojektion
+      aus Umfragewerten.
+    sources:
+      - "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000571356"
+      - "https://www.assemblee-nationale.fr/dyn/votre-assemblee/role-et-pouvoirs-de-lassemblee-nationale"
+
+parliaments:
+  - id: at_nationalrat
+    country: AT
+    level: { kind: national }
+    name: Nationalrat
+    seats_total: 183
+    election_system_key: at_nationalrat
+
+  - id: nl_tweede_kamer
+    country: NL
+    level: { kind: national }
+    name: Tweede Kamer
+    seats_total: 150
+    election_system_key: nl_tweede_kamer
+
+  - id: it_camera
+    country: IT
+    level: { kind: national }
+    name: Camera dei Deputati
+    seats_total: 400
+    election_system_key: it_camera
+
+  - id: es_congreso
+    country: ES
+    level: { kind: national }
+    name: Congreso de los Diputados
+    seats_total: 350
+    election_system_key: es_congreso
+
+  - id: pl_sejm
+    country: PL
+    level: { kind: national }
+    name: Sejm
+    seats_total: 460
+    election_system_key: pl_sejm
+
+  - id: se_riksdag
+    country: SE
+    level: { kind: national }
+    name: Riksdag
+    seats_total: 349
+    election_system_key: se_riksdag
+
+  - id: pt_assembleia
+    country: PT
+    level: { kind: national }
+    name: Assembleia da República
+    seats_total: 230
+    election_system_key: pt_assembleia
+
+  - id: fr_assemblee
+    country: FR
+    level: { kind: national }
+    name: Assemblée nationale
+    seats_total: 577
+    election_system_key: fr_assemblee

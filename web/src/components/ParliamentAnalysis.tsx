@@ -32,9 +32,13 @@ import { labelPartyId, partyColor } from "@/lib/colors";
 export function ParliamentAnalysis({
   parliamentId,
   title,
+  disclaimer,
+  includeSeats = true,
 }: {
   parliamentId: string;
   title?: string;
+  disclaimer?: string;
+  includeSeats?: boolean;
 }) {
   const [averages, setAverages] = useState<AveragesResponse | null>(null);
   const [trends, setTrends] = useState<TrendSeriesResponse | null>(null);
@@ -55,9 +59,11 @@ export function ParliamentAnalysis({
         const [a, t, s, c, u] = await Promise.all([
           fetchAverages(parliamentId),
           fetchTrendSeries(parliamentId).catch(() => null),
-          fetchSeats(parliamentId),
-          fetchCoalitions(parliamentId),
-          fetchUncertainty(parliamentId, 200).catch(() => null),
+          includeSeats ? fetchSeats(parliamentId) : Promise.resolve(null),
+          includeSeats ? fetchCoalitions(parliamentId) : Promise.resolve(null),
+          includeSeats
+            ? fetchUncertainty(parliamentId, 200).catch(() => null)
+            : Promise.resolve(null),
         ]);
         if (cancelled) return;
         setAverages(a);
@@ -76,7 +82,7 @@ export function ParliamentAnalysis({
     return () => {
       cancelled = true;
     };
-  }, [parliamentId]);
+  }, [parliamentId, includeSeats]);
 
   if (loading) {
     return <p className="text-sm text-ink/50">Lade Analyse…</p>;
@@ -92,7 +98,8 @@ export function ParliamentAnalysis({
       </p>
     );
   }
-  if (!averages || !seats || !coalitions) return null;
+  if (!averages) return null;
+  if (includeSeats && (!seats || !coalitions)) return null;
 
   const chartData = averages.parties.map((p) => ({
     name: p.party_name,
@@ -108,7 +115,13 @@ export function ParliamentAnalysis({
         </h1>
       )}
 
-      <ThresholdWatch parliamentId={parliamentId} />
+      {disclaimer ? (
+        <p className="rounded-md border border-amber-700/25 bg-amber-50/80 px-3 py-2 text-sm text-ink/80">
+          {disclaimer}
+        </p>
+      ) : null}
+
+      {includeSeats ? <ThresholdWatch parliamentId={parliamentId} /> : null}
 
       <section>
         <h2 className="mb-3 font-display text-2xl text-ink">
@@ -177,31 +190,37 @@ export function ParliamentAnalysis({
         </div>
       </section>
 
-      <section>
-        <h2 className="mb-3 font-display text-2xl text-ink">Sitzprojektion</h2>
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
-            <Hemicycle seats={seats.seats_by_name} />
+      {includeSeats && seats ? (
+        <section>
+          <h2 className="mb-3 font-display text-2xl text-ink">Sitzprojektion</h2>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+              <Hemicycle seats={seats.seats_by_name} />
+            </div>
+            <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+              <SeatsBarChart seats={seats.seats_by_name} />
+              <p className="mt-2 text-sm text-ink/50">
+                Sitze gesamt: {seats.total_seats}
+              </p>
+            </div>
           </div>
-          <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
-            <SeatsBarChart seats={seats.seats_by_name} />
-            <p className="mt-2 text-sm text-ink/50">
-              Sitze gesamt: {seats.total_seats}
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
-      <CoalitionPanel
-        parliamentId={parliamentId}
-        initial={{
-          majority_threshold: coalitions.majority_threshold,
-          excluded_by_rules: coalitions.excluded_by_rules,
-          coalitions: coalitions.coalitions,
-        }}
-      />
+      {includeSeats && coalitions ? (
+        <CoalitionPanel
+          parliamentId={parliamentId}
+          initial={{
+            majority_threshold: coalitions.majority_threshold,
+            excluded_by_rules: coalitions.excluded_by_rules,
+            coalitions: coalitions.coalitions,
+          }}
+        />
+      ) : null}
 
-      {uncertainty && uncertainty.coalition_probabilities.length > 0 && (
+      {includeSeats &&
+        uncertainty &&
+        uncertainty.coalition_probabilities.length > 0 && (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
             Unsicherheit (Monte-Carlo)

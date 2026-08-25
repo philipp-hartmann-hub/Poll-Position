@@ -1,8 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { EuropeOverviewResponse } from "@/lib/api";
 import { familyColor } from "@/lib/colors";
+import { EUROPE_COUNTRIES, europeHref } from "@/lib/europe";
 
 /** Lon/lat → SVG (einfache Äquirectangular-Näherung für Mitteleuropa). */
 const CENTROIDS: Record<string, [number, number]> = {
@@ -25,6 +28,7 @@ function project(lon: number, lat: number): [number, number] {
 }
 
 export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<string | null>(
     data.countries.find((c) => c.country === "DE")?.country ??
       data.countries[0]?.country ??
@@ -49,10 +53,12 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
             const [x, y] = project(coords[0], coords[1]);
             const r = 18 + Math.min(c.family_share, 40) * 0.35;
             const active = selected === c.country;
+            const href = europeHref(c.country);
             return (
               <g
                 key={c.country}
-                onClick={() => setSelected(c.country)}
+                onClick={() => router.push(href)}
+                onMouseEnter={() => setSelected(c.country)}
                 style={{ cursor: "pointer" }}
               >
                 <circle
@@ -104,6 +110,17 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
               </dd>
             </div>
             <p className="text-xs text-ink/45">Stand: {data.as_of}</p>
+            <p>
+              <Link
+                href={europeHref(detail.country)}
+                className="text-sm text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"
+              >
+                Zur Länderseite
+                {EUROPE_COUNTRIES[detail.country.toLowerCase()]
+                  ? ` (${EUROPE_COUNTRIES[detail.country.toLowerCase()].name})`
+                  : ""}
+              </Link>
+            </p>
           </dl>
         ) : (
           <p className="mt-2 text-sm text-ink/50">Klicke ein Land auf der Karte.</p>
@@ -111,16 +128,15 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
         <ul className="mt-6 space-y-1 text-sm">
           {data.countries.map((c) => (
             <li key={c.country}>
-              <button
-                type="button"
-                onClick={() => setSelected(c.country)}
-                className={`w-full rounded-md px-2 py-1.5 text-left transition hover:bg-mist/50 ${
+              <Link
+                href={europeHref(c.country)}
+                className={`block w-full rounded-md px-2 py-1.5 text-left transition hover:bg-mist/50 ${
                   selected === c.country ? "bg-mist/70" : ""
                 }`}
               >
                 <span className="font-medium">{c.country}</span> — {c.top_family} /{" "}
                 {c.top_party_name}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>

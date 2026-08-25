@@ -22,6 +22,8 @@ export default function EuropaPage() {
       </h1>
       <p className="max-w-2xl text-ink/60">
         Einfärbung nach stärkster europäischer Parteienfamilie je Land.
+        Klick öffnet die Länderseite (Sitze wo das Wahlrecht eine nationale
+        Näherung zulässt; Frankreich nur Umfragen).
       </p>
       {error && (
         <p className="rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-accent">
