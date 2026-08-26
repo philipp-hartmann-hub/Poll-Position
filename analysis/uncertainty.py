@@ -175,15 +175,22 @@ def party_uncertainties_from_means(
     means: Mapping[str, float],
     *,
     sample_size: int,
-    house_variance: float = 1.0,
+    house_variance: float | Mapping[str, float] = 1.0,
 ) -> list[PartyUncertainty]:
-    """Hilfsbauer: gleiche n/Hausvarianz für alle Parteien."""
+    """Hilfsbauer: gleiche n für alle Parteien; house_variance pauschal (float)
+    oder individuell je Partei (Mapping, z. B. aus party_dispersion_for_parliament)."""
+
+    def _hv(pid: str) -> float:
+        if isinstance(house_variance, Mapping):
+            return float(house_variance.get(pid, 1.0))
+        return float(house_variance)
+
     return [
         PartyUncertainty(
             party_id=pid,
             mean_share=float(share),
             sample_size=sample_size,
-            house_variance=house_variance,
+            house_variance=_hv(pid),
         )
         for pid, share in means.items()
     ]

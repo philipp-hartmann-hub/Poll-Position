@@ -11,6 +11,7 @@ from analysis.averages import (
     PollObservationPoint,
     load_poll_points_from_warehouse,
     party_averages_for_parliament,
+    party_dispersion_for_parliament,
     party_trends_for_parliament,
 )
 from analysis.bundesrat import (
@@ -406,6 +407,11 @@ def _votes_from_averages(parliament_id: str) -> tuple[dict[str, float], dict[str
     return votes, names
 
 
+def _party_house_variance(parliament_id: str) -> dict[str, float]:
+    points = _load_points(parliament_id)
+    return party_dispersion_for_parliament(points, parliament_id=parliament_id)
+
+
 def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tuple[dict[str, int], int]:
     if not votes:
         return {}, 0
@@ -724,7 +730,11 @@ def uncertainty_payload(
             "mean_seats": {},
             "coalition_probabilities": [],
         }
-    parties = party_uncertainties_from_means(votes, sample_size=1000, house_variance=1.0)
+    parties = party_uncertainties_from_means(
+        votes,
+        sample_size=1000,
+        house_variance=_party_house_variance(parliament_id),
+    )
     seats, total = _allocate_for_parliament(parliament_id, votes)
     coal = coalitions_payload(
         parliament_id,
@@ -842,7 +852,11 @@ def threshold_watch_payload(
         return empty
 
     exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
-    parties = party_uncertainties_from_means(votes, sample_size=1000, house_variance=1.0)
+    parties = party_uncertainties_from_means(
+        votes,
+        sample_size=1000,
+        house_variance=_party_house_variance(parliament_id),
+    )
     rows = simulate_threshold_watch(
         parties,
         threshold_percent=threshold,
@@ -908,7 +922,9 @@ def party_forecast_payload(
 
     exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
     parties = party_uncertainties_from_means(
-        filtered, sample_size=1000, house_variance=1.0
+        filtered,
+        sample_size=1000,
+        house_variance=_party_house_variance(parliament_id),
     )
     rows = simulate_party_forecast(
         parties,

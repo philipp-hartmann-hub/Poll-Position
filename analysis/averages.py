@@ -153,6 +153,60 @@ def weighted_party_average(
     return avg, sum(weights), len(points)
 
 
+def weighted_variance(
+    shares: Sequence[float], weights: Sequence[float], mean: float
+) -> float:
+    total_w = sum(weights)
+    if total_w <= 0:
+        return 0.0
+    return sum(w * (s - mean) ** 2 for s, w in zip(shares, weights, strict=True)) / total_w
+
+
+def party_dispersion_for_parliament(
+    points: Sequence[PollObservationPoint],
+    *,
+    parliament_id: str,
+    reference_date: date | None = None,
+    config: AverageConfig | None = None,
+    min_observations: int = 3,
+    fallback_variance_pp2: float = 4.0,
+    floor_variance_pp2: float = 1.0,
+    cap_variance_pp2: float = 25.0,
+) -> dict[str, float]:
+    """
+    Empirische Streuung je Partei (Prozentpunkt^2) aus den einzelnen Umfrage-
+    Beobachtungen — ersetzt eine für alle Parteien gleiche Pauschal-Varianz in
+    der Monte-Carlo-Unsicherheit. Bei < min_observations Beobachtungen (zu
+    wenig, um Streuung zu schätzen) wird fallback_variance_pp2 verwendet.
+    Ergebnis wird auf [floor_variance_pp2, cap_variance_pp2] geklemmt, damit
+    weder zufällig übereinstimmende Institute falsche Präzision vorgaukeln
+    noch ein einzelner Ausreißer die Unsicherheit sprengt.
+    """
+    cfg = config or AverageConfig()
+    scoped = [p for p in points if p.parliament_id == parliament_id]
+    if not scoped:
+        return {}
+    ref = reference_date or max(p.as_of for p in scoped)
+    by_party: dict[str, list[PollObservationPoint]] = {}
+    for p in scoped:
+        by_party.setdefault(p.party_id, []).append(p)
+
+    out: dict[str, float] = {}
+    for party_id, party_points in by_party.items():
+        if len(party_points) < min_observations:
+            out[party_id] = fallback_variance_pp2
+            continue
+        weights = [
+            point_weight(p, reference_date=ref, config=cfg).total for p in party_points
+        ]
+        mean, _, _ = weighted_party_average(
+            party_points, reference_date=ref, config=cfg
+        )
+        var = weighted_variance([p.share for p in party_points], weights, mean)
+        out[party_id] = min(max(var, floor_variance_pp2), cap_variance_pp2)
+    return out
+
+
 def _tricube(u: float) -> float:
     """Tricube-Kernel für LOESS: (1 - |u|^3)^3 für |u| < 1."""
     au = abs(u)

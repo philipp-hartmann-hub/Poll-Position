@@ -105,3 +105,27 @@ def test_simulate_party_forecast_clear_leader_near_one():
     leader = next(r for r in rows if r.party_id == "leader")
     assert leader.probability_strongest > 0.95
     assert leader.probability_above_threshold > 0.99
+
+
+def test_party_uncertainties_from_means_accepts_float_and_mapping():
+    float_parties = party_uncertainties_from_means(
+        {"A": 40.0, "B": 30.0}, sample_size=1000, house_variance=2.5
+    )
+    assert all(p.house_variance == 2.5 for p in float_parties)
+
+    mapped = party_uncertainties_from_means(
+        {"A": 40.0, "B": 30.0},
+        sample_size=1000,
+        house_variance={"A": 3.0, "B": 7.0},
+    )
+    by_id = {p.party_id: p.house_variance for p in mapped}
+    assert by_id == {"A": 3.0, "B": 7.0}
+
+    missing = party_uncertainties_from_means(
+        {"A": 40.0, "C": 10.0},
+        sample_size=1000,
+        house_variance={"A": 3.0},
+    )
+    by_id = {p.party_id: p.house_variance for p in missing}
+    assert by_id["A"] == 3.0
+    assert by_id["C"] == 1.0  # Default für fehlende Mapping-Keys

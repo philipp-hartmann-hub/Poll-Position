@@ -14,11 +14,13 @@ from analysis.averages import (
     house_weight,
     loess_smooth,
     party_averages_for_parliament,
+    party_dispersion_for_parliament,
     point_weight,
     recency_weight,
     sample_weight,
     weighted_mean,
     weighted_party_average,
+    weighted_variance,
 )
 from data_pipeline.reference.election_results import (
     ElectionResult,
@@ -158,3 +160,55 @@ def test_election_results_yaml_loads_bundestag():
     assert bt.election_date == date(2025, 2, 23)
     assert bt.results["de:afd"] == pytest.approx(20.8)
     assert bt.results["de:cdu_csu"] == pytest.approx(28.52)
+
+
+def _points_for_party(shares: list[float], *, party_id: str = "de:spd") -> list[PollObservationPoint]:
+    ref = date(2026, 6, 1)
+    return [
+        PollObservationPoint(
+            parliament_id="de_bundestag",
+            party_id=party_id,
+            share=share,
+            as_of=ref - timedelta(days=i),
+            sample_size=1000,
+        )
+        for i, share in enumerate(shares)
+    ]
+
+
+def test_party_dispersion_fallback_when_too_few_observations():
+    points = _points_for_party([28.0, 30.0])  # < min_observations=3
+    out = party_dispersion_for_parliament(
+        points,
+        parliament_id="de_bundestag",
+        fallback_variance_pp2=4.0,
+    )
+    assert out["de:spd"] == 4.0
+
+
+def test_party_dispersion_with_spread_within_floor_cap():
+    points = _points_for_party([28.0, 30.0, 27.0, 31.0])
+    out = party_dispersion_for_parliament(
+        points,
+        parliament_id="de_bundestag",
+        floor_variance_pp2=1.0,
+        cap_variance_pp2=25.0,
+    )
+    var = out["de:spd"]
+    assert var > 0.0
+    assert 1.0 <= var <= 25.0
+    # ungewichtete Stichprobenvarianz grob > 1 (Streuung vorhanden)
+    assert var > 1.0
+
+
+def test_party_dispersion_identical_shares_clamped_to_floor():
+    points = _points_for_party([30.0, 30.0, 30.0, 30.0])
+    out = party_dispersion_for_parliament(
+        points,
+        parliament_id="de_bundestag",
+        floor_variance_pp2=1.0,
+        cap_variance_pp2=25.0,
+    )
+    assert out["de:spd"] == 1.0
+    # Roh-Varianz wäre 0, Clamp greift
+    assert weighted_variance([30.0] * 4, [1.0] * 4, 30.0) == 0.0
