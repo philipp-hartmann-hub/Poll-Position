@@ -289,8 +289,30 @@ async function fetchStaticOrApi<T>(
   return apiFetch<T>(apiPath, init);
 }
 
+/** Spiegel zu data_pipeline.export_static.static_path_segment (Artifact/NTFS). */
+function staticParliamentSegment(parliamentId: string): string {
+  return parliamentId.replace(/[":<>|*?\r\n\\/]/g, "_");
+}
+
 export function fetchParliaments(): Promise<Parliament[]> {
   return fetchStaticOrApi("/data/parliaments.json", "/api/parliaments");
+}
+
+export type GermanyMapLeader = {
+  party_id: string;
+  party_name: string;
+  average_share: number;
+};
+export type GermanyMapLeadersResponse = {
+  as_of: string;
+  leaders: Record<string, GermanyMapLeader | null>;
+};
+
+export function fetchGermanyMapLeaders(): Promise<GermanyMapLeadersResponse> {
+  return fetchStaticOrApi(
+    "/data/germany-map-leaders.json",
+    "/api/germany/map-leaders",
+  );
 }
 
 export function fetchAverages(
@@ -306,7 +328,7 @@ export function fetchAverages(
     return apiFetch(apiPath);
   }
   return fetchStaticOrApi(
-    `/data/${encodeURIComponent(parliamentId)}/averages.json`,
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/averages.json`,
     apiPath,
   );
 }
@@ -324,7 +346,7 @@ export function fetchTrendSeries(
     return apiFetch(apiPath);
   }
   return fetchStaticOrApi(
-    `/data/${encodeURIComponent(parliamentId)}/trend.json`,
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/trend.json`,
     apiPath,
   );
 }
@@ -344,7 +366,7 @@ export function fetchRawSurveys(
 export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
   return fetchStaticOrApi(
-    `/data/${encodeURIComponent(parliamentId)}/seats.json`,
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/seats.json`,
     `/api/seats?${q}`,
   );
 }
@@ -388,7 +410,7 @@ export function fetchCoalitions(
     return apiFetch(apiPath, { noStore: true });
   }
   return fetchStaticOrApi(
-    `/data/${encodeURIComponent(parliamentId)}/coalitions.json`,
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/coalitions.json`,
     apiPath,
   );
 }

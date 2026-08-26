@@ -1,4 +1,4 @@
-# Tägliche Daten-Pipeline: Connectors + Gold → MotherDuck (unabhängig vom Vercel-Deploy).
+# Tägliche Daten-Pipeline: Connectors + Gold → MotherDuck, Static-JSON → Git (Vercel).
 name: Daily Pipeline
 
 on:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: read
+      contents: write
 
     env:
       PYTHONUNBUFFERED: "1"
@@ -68,21 +68,13 @@ jobs:
         run: |
           set -euo pipefail
           echo "::group::Pipeline start $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          # Inkl. Static-Export nach web/public/data/ (nicht im Git;
-          # lokal/Fallback nutzt API. Prod: Blob oder Deploy-Hook später.)
+          # Static-Export nach web/public/data/ (IDs mit : → _ für Artifact/NTFS).
+          # Bot-Commit danach → Vercel-Deploy liefert die JSONs als public/ aus.
           uv run python -m data_pipeline.run
           echo "::endgroup::"
           echo "Pipeline erfolgreich beendet."
 
-      - name: Upload static JSON snapshot (Debug-Artifact)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-data-${{ github.run_id }}
-          path: web/public/data/
-          if-no-files-found: warn
-          retention-days: 7
-
+      # Smoke vor Commit/Artifact: nur bei erfolgreichem Warehouse-Stand committen.
       - name: Smoke-check MotherDuck warehouse
         if: success()
         run: |
@@ -112,8 +104,36 @@ jobs:
               raise SystemExit("FEHLER: Gold party_averages leer")
           PY
 
+      - name: Commit Static-JSON-Export (Vercel liest daraus statt live MotherDuck)
+        if: success()
+        run: |
+          git config user.name "poll-position-bot"
+          git config user.email "actions@github.com"
+          # Alt-Exports mit : im Pfad nie committen (Artifact/NTFS-ungültig)
+          if [ -d web/public/data ]; then
+            find web/public/data -depth -type d -name '*:*' -exec rm -rf {} +
+          fi
+          git add web/public/data
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen am Static-Export."
+          else
+            git commit -m "chore: aktualisiere Static-JSON-Export [skip ci]"
+            git push
+          fi
+
+      - name: Upload static JSON snapshot (Debug-Artifact)
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-data-${{ github.run_id }}
+          path: web/public/data/
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Upload bronze artifacts only (Debug)
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: bronze-${{ github.run_id }}

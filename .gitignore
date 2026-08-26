@@ -24,6 +24,3 @@ data/warehouse.duckdb.wal
 data/raw/**/*.parquet
 data/raw/**/last_update.txt
 !data/raw/.gitkeep
-
-# Pipeline-generierte Static-API-Snapshots (nicht committen; Deploy/Blob separat)
-web/public/data/

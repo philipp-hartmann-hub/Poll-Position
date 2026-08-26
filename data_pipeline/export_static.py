@@ -2,25 +2,26 @@
 
 Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
-- ``<parliament_id>/{averages,trend,seats,coalitions}.json``
+- optional ``germany-map-leaders.json`` (wenn Service vorhanden)
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions}.json``
 
-Diese Dateien gehören NICHT ins Git — sie entstehen beim Pipeline-Lauf.
+Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
+Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
+keine ungültigen Zeichen sehen. Die ID im JSON-Inhalt bleibt unverändert.
 
-Auslieferung in Produktion (Kurzfazit):
-- Vercel Blob: aus GHA mit ``BLOB_READ_WRITE_TOKEN`` machbar, Frontend müsste
-  Blob-URLs nutzen (zusätzliche Konfiguration).
-- Deploy-Hook / ``vercel deploy`` nach Export: bringt Dateien als ``public/``
-  in ein neues Deployment, braucht aber ``VERCEL_TOKEN`` und einen vollen
-  Rebuild — schwerer als nötig, solange die Function noch warm gehalten wird.
-- Zwischenlösung: Warm-Ping-Cron (``.github/workflows/warm-ping.yml``) hält
-  ``/health`` warm; Static-Fallback greift, sobald die JSONs per Deploy/Blob
-  erreichbar sind. Lokal: fehlende Dateien → 404 → API-Fallback.
+Alt-Verzeichnisse mit ungültigen Zeichen werden beim Export entfernt.
+
+Diese Dateien entstehen beim Pipeline-Lauf und werden von der Daily Pipeline
+nach ``main`` committed ([skip ci]), damit Vercel sie als ``public/data/``
+ausliefert. Lokal ohne Export: 404 → API-Fallback.
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import re
+import shutil
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,26 @@ log = logging.getLogger("data_pipeline.export_static")
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = ROOT / "web" / "public" / "data"
+
+# upload-artifact / NTFS-agnostisch: keine :, ", <, >, |, *, ?, CR, LF
+_UNSAFE_PATH_CHARS = re.compile(r'[":<>|*?\r\n\\/]')
+
+
+def static_path_segment(parliament_id: str) -> str:
+    """Filesystem-/Artifact-sicheres Verzeichnis für eine Parliament-ID."""
+    return _UNSAFE_PATH_CHARS.sub("_", parliament_id)
+
+
+def _purge_unsafe_dirs(out_dir: Path) -> None:
+    """Entfernt Alt-Exports mit artifact-ungültigen Verzeichnisnamen (z. B. ``:``)."""
+    if not out_dir.is_dir():
+        return
+    for child in list(out_dir.iterdir()):
+        if child.is_dir() and _UNSAFE_PATH_CHARS.search(child.name):
+            log.warning(
+                "Entferne artifact-ungültiges Static-Verzeichnis: %s", child.name
+            )
+            shutil.rmtree(child)
 
 
 def _json_default(obj: Any) -> Any:
@@ -69,8 +90,9 @@ def export_parliament_static(
             ),
         ),
     ]
+    segment = static_path_segment(parliament_id)
     for name, factory in writers:
-        dest = out_dir / parliament_id / f"{name}.json"
+        dest = out_dir / segment / f"{name}.json"
         try:
             payload = factory()
             _write_json(dest, payload)
@@ -89,6 +111,7 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
 
     target = out_dir or DEFAULT_OUT_DIR
     target.mkdir(parents=True, exist_ok=True)
+    _purge_unsafe_dirs(target)
     parliaments = services.list_parliaments()
     written = 0
 
@@ -99,6 +122,16 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
         log.info("Static-Export parliaments.json: ok (%d Einträge)", len(parliaments))
     except Exception:
         log.exception("Export parliaments.json fehlgeschlagen")
+
+    map_fn = getattr(services, "germany_map_leaders_payload", None)
+    if callable(map_fn):
+        map_path = target / "germany-map-leaders.json"
+        try:
+            _write_json(map_path, map_fn())
+            written += 1
+            log.info("Static-Export germany-map-leaders.json: ok")
+        except Exception:
+            log.exception("Export germany-map-leaders.json fehlgeschlagen")
 
     for row in parliaments:
         pid = str(row["id"])
