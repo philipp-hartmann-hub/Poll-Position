@@ -1,0 +1,118 @@
+{
+  "parliament_id": "de_sh_landtag",
+  "days": 365,
+  "parties": [
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 33.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 27.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 15.000000000000002
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 18.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 19.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 17.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 12.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 15.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 7.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:10",
+      "party_name": "SSW",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2026-04-13",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-07-14",
+          "trend_share": 4.0
+        }
+      ]
+    }
+  ]
+}

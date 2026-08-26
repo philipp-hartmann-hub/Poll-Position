@@ -1,0 +1,17 @@
+{
+  "parliament_id": "de_th_landtag",
+  "total_seats": 88,
+  "majority_threshold": 45,
+  "excluded_by_rules": 8,
+  "coalitions": [
+    {
+      "parties": [
+        "de:afd",
+        "de:bsw"
+      ],
+      "seats": 46,
+      "is_minimal_winning": true,
+      "compatibility_span": 7.0
+    }
+  ]
+}

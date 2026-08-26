@@ -1,0 +1,324 @@
+{
+  "parliament_id": "de_rp_landtag",
+  "days": 365,
+  "parties": [
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 27.857134423883085
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 28.721297329559064
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 29.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 28.310820302100073
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 28.507704784280214
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 28.515619887967443
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 28.531237597176677
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 28.529636206116397
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 28.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 21.28573115223383
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 19.55740534088188
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 18.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 19.0
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 19.24716163829144
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 19.251008555779602
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 19.261356791061473
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 19.270320024512497
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 24.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 22.428567211941544
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 22.860648664779532
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 26.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 27.122172455759067
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 27.024914198849757
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 27.02440547892132
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 27.01666539978176
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 27.01023992860254
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 19.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 9.428567211941544
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 9.86064866477953
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 10.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 8.68917969789993
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 8.755865684121765
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 8.759478980079082
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 8.775928988456387
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 8.789716302026358
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 11.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 4.999970483590805
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 8.024540653456715
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 7.03323769529097
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 6.7182060865969255
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 6.707297041236279
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 6.680430022112044
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 6.664905641800408
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 7.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 5.000000000000001
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 5.000000000000001
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 4.999999999999999
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 5.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 4.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 3.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:8",
+      "party_name": "Freie Wähler",
+      "points": [
+        {
+          "as_of": "2025-09-23",
+          "trend_share": 3.4285672119415436
+        },
+        {
+          "as_of": "2025-10-07",
+          "trend_share": 3.860648664779531
+        },
+        {
+          "as_of": "2026-01-20",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-02-24",
+          "trend_share": 4.844589848949965
+        },
+        {
+          "as_of": "2026-03-11",
+          "trend_share": 4.746147607859894
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 4.7421900560162795
+        },
+        {
+          "as_of": "2026-03-17",
+          "trend_share": 4.734381201411661
+        },
+        {
+          "as_of": "2026-03-19",
+          "trend_share": 4.735181896941801
+        },
+        {
+          "as_of": "2026-08-18",
+          "trend_share": 3.0
+        }
+      ]
+    }
+  ]
+}

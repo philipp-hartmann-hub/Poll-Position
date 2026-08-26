@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_be_abgeordnetenhaus",
+  "total_seats": 130,
+  "seats": {
+    "dawum:party:5": 31,
+    "dawum:party:101": 28,
+    "dawum:party:7": 27,
+    "dawum:party:4": 25,
+    "dawum:party:2": 19
+  },
+  "seats_by_name": {
+    "Linke": 31,
+    "CDU": 28,
+    "AfD": 27,
+    "Grüne": 25,
+    "SPD": 19
+  },
+  "reason": null
+}

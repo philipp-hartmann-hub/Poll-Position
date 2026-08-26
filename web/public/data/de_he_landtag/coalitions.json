@@ -1,0 +1,17 @@
+{
+  "parliament_id": "de_he_landtag",
+  "total_seats": 110,
+  "majority_threshold": 56,
+  "excluded_by_rules": 8,
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "seats": 57,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    }
+  ]
+}

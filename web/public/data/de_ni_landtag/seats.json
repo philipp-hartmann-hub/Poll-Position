@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_ni_landtag",
+  "total_seats": 135,
+  "seats": {
+    "dawum:party:101": 38,
+    "dawum:party:2": 38,
+    "dawum:party:7": 30,
+    "dawum:party:4": 18,
+    "dawum:party:5": 11
+  },
+  "seats_by_name": {
+    "CDU": 38,
+    "SPD": 38,
+    "AfD": 30,
+    "Grüne": 18,
+    "Linke": 11
+  },
+  "reason": null
+}

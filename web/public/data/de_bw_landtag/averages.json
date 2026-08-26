@@ -1,0 +1,78 @@
+{
+  "parliament_id": "de_bw_landtag",
+  "as_of": "2026-08-26",
+  "parties": [
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 29.06827531425603,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 32.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "average_share": 26.73664351368277,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 26.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 20.688825415244715,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 22.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 6.536588881066794,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 5.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 5.430986521301891,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 5.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 4.790570009641213,
+      "n_surveys": 10,
+      "swing": null,
+      "trend_share": 4.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "average_share": 3.0,
+      "n_surveys": 4,
+      "swing": null,
+      "trend_share": 3.0
+    },
+    {
+      "parliament_id": "de_bw_landtag",
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "average_share": 6.518847806575846,
+      "n_surveys": 10,
+      "swing": 2.818847806575846,
+      "trend_share": 6.0
+    }
+  ]
+}

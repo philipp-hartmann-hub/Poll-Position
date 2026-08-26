@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_bundestag",
+  "total_seats": 630,
+  "seats": {
+    "dawum:party:7": 202,
+    "dawum:party:1": 153,
+    "dawum:party:4": 103,
+    "dawum:party:2": 89,
+    "dawum:party:5": 83
+  },
+  "seats_by_name": {
+    "AfD": 202,
+    "CDU/CSU": 153,
+    "Grüne": 103,
+    "SPD": 89,
+    "Linke": 83
+  },
+  "reason": null
+}

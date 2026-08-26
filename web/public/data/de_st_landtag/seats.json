@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_st_landtag",
+  "total_seats": 83,
+  "seats": {
+    "dawum:party:7": 39,
+    "dawum:party:101": 21,
+    "dawum:party:5": 11,
+    "dawum:party:2": 7,
+    "dawum:party:4": 5
+  },
+  "seats_by_name": {
+    "AfD": 39,
+    "CDU": 21,
+    "Linke": 11,
+    "SPD": 7,
+    "Grüne": 5
+  },
+  "reason": null
+}

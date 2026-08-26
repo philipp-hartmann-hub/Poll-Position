@@ -1,0 +1,17 @@
+{
+  "parliament_id": "de_ni_landtag",
+  "total_seats": 135,
+  "majority_threshold": 68,
+  "excluded_by_rules": 8,
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "seats": 76,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    }
+  ]
+}

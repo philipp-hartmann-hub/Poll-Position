@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_bb_landtag",
+  "total_seats": 88,
+  "seats": {
+    "dawum:party:7": 36,
+    "dawum:party:2": 22,
+    "dawum:party:101": 12,
+    "dawum:party:5": 12,
+    "dawum:party:4": 6
+  },
+  "seats_by_name": {
+    "AfD": 36,
+    "SPD": 22,
+    "CDU": 12,
+    "Linke": 12,
+    "Grüne": 6
+  },
+  "reason": null
+}

@@ -1,0 +1,87 @@
+{
+  "parliament_id": "de_bundestag",
+  "as_of": "2026-08-26",
+  "parties": [
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 27.996220587618662,
+      "n_surveys": 242,
+      "swing": null,
+      "trend_share": 28.194296622233722
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:1",
+      "party_name": "CDU/CSU",
+      "average_share": 21.098256548800745,
+      "n_surveys": 242,
+      "swing": null,
+      "trend_share": 20.805146267817243
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 14.210424630094339,
+      "n_surveys": 242,
+      "swing": null,
+      "trend_share": 14.223575344583578
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 12.259217060369354,
+      "n_surveys": 242,
+      "swing": null,
+      "trend_share": 12.272698806753285
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 11.531011690155204,
+      "n_surveys": 242,
+      "swing": null,
+      "trend_share": 11.625545613032173
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 4.463516182663598,
+      "n_surveys": 229,
+      "swing": null,
+      "trend_share": 4.566809378459891
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "average_share": 3.263371696830352,
+      "n_surveys": 201,
+      "swing": null,
+      "trend_share": 3.1281738131610424
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "dawum:party:8",
+      "party_name": "Freie Wähler",
+      "average_share": 1.0827876584625329,
+      "n_surveys": 6,
+      "swing": null,
+      "trend_share": 1.0
+    },
+    {
+      "parliament_id": "de_bundestag",
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "average_share": 6.475313335078129,
+      "n_surveys": 242,
+      "swing": -7.224686664921871,
+      "trend_share": 6.510067735268769
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "parliament_id": "de_by_landtag",
+  "total_seats": 180,
+  "majority_threshold": 91,
+  "excluded_by_rules": 4,
+  "coalitions": [
+    {
+      "parties": [
+        "de:csu",
+        "de:gruene"
+      ],
+      "seats": 104,
+      "is_minimal_winning": true,
+      "compatibility_span": 4.0
+    },
+    {
+      "parties": [
+        "de:csu",
+        "de:fw"
+      ],
+      "seats": 101,
+      "is_minimal_winning": true,
+      "compatibility_span": null
+    }
+  ]
+}

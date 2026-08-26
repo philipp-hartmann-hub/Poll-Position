@@ -1,0 +1,58 @@
+{
+  "parliament_id": "de_sh_landtag",
+  "total_seats": 69,
+  "majority_threshold": 35,
+  "excluded_by_rules": 16,
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu",
+        "de:fdp",
+        "de:spd"
+      ],
+      "seats": 35,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd",
+        "de:ssw"
+      ],
+      "seats": 35,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "seats": 43,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.5
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:fdp",
+        "de:gruene"
+      ],
+      "seats": 36,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.5
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene",
+        "de:ssw"
+      ],
+      "seats": 36,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.5
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_he_landtag",
+  "total_seats": 110,
+  "seats": {
+    "dawum:party:101": 38,
+    "dawum:party:7": 28,
+    "dawum:party:2": 19,
+    "dawum:party:4": 16,
+    "dawum:party:5": 9
+  },
+  "seats_by_name": {
+    "CDU": 38,
+    "AfD": 28,
+    "SPD": 19,
+    "Grüne": 16,
+    "Linke": 9
+  },
+  "reason": null
+}

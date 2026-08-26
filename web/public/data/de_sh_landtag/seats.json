@@ -1,0 +1,23 @@
+{
+  "parliament_id": "de_sh_landtag",
+  "total_seats": 69,
+  "seats": {
+    "dawum:party:101": 20,
+    "dawum:party:7": 13,
+    "dawum:party:4": 12,
+    "dawum:party:2": 11,
+    "dawum:party:5": 5,
+    "dawum:party:10": 4,
+    "dawum:party:3": 4
+  },
+  "seats_by_name": {
+    "CDU": 20,
+    "AfD": 13,
+    "Grüne": 12,
+    "SPD": 11,
+    "Linke": 5,
+    "SSW": 4,
+    "FDP": 4
+  },
+  "reason": null
+}

@@ -1,0 +1,19 @@
+{
+  "parliament_id": "de_hb_buergerschaft",
+  "total_seats": 87,
+  "seats": {
+    "dawum:party:101": 21,
+    "dawum:party:2": 20,
+    "dawum:party:7": 17,
+    "dawum:party:4": 15,
+    "dawum:party:5": 14
+  },
+  "seats_by_name": {
+    "CDU": 21,
+    "SPD": 20,
+    "AfD": 17,
+    "Grüne": 15,
+    "Linke": 14
+  },
+  "reason": null
+}

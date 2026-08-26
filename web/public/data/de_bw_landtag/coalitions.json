@@ -1,0 +1,17 @@
+{
+  "parliament_id": "de_bw_landtag",
+  "total_seats": 120,
+  "majority_threshold": 61,
+  "excluded_by_rules": 8,
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "seats": 76,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.5
+    }
+  ]
+}

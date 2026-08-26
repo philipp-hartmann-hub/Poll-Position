@@ -1,0 +1,124 @@
+{
+  "parliament_id": "de_sn_landtag",
+  "days": 365,
+  "parties": [
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 35.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 42.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 29.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 21.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 10.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 9.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 9.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 7.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-05-20",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:8",
+      "party_name": "Freie Wähler",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 2.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2026-01-04",
+          "trend_share": 1.0
+        }
+      ]
+    }
+  ]
+}

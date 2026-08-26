@@ -1,0 +1,17 @@
+{
+  "parliament_id": "de_rp_landtag",
+  "total_seats": 101,
+  "seats": {
+    "dawum:party:101": 34,
+    "dawum:party:7": 30,
+    "dawum:party:2": 23,
+    "dawum:party:4": 14
+  },
+  "seats_by_name": {
+    "CDU": 34,
+    "AfD": 30,
+    "SPD": 23,
+    "Grüne": 14
+  },
+  "reason": null
+}

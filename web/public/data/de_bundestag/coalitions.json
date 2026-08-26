@@ -1,0 +1,18 @@
+{
+  "parliament_id": "de_bundestag",
+  "total_seats": 630,
+  "majority_threshold": 316,
+  "excluded_by_rules": 12,
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "seats": 345,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.7
+    }
+  ]
+}

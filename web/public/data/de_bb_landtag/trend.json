@@ -1,0 +1,208 @@
+{
+  "parliament_id": "de_bb_landtag",
+  "days": 365,
+  "parties": [
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 34.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 35.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 34.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 34.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 37.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 24.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 22.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 25.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 24.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 22.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 13.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 14.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 13.000000000000002
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 14.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 12.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 9.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 9.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 12.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 7.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 9.0
+        },
+        {
+          "as_of": "2025-12-08",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-01-14",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-03-18",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-06-22",
+          "trend_share": 4.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:14",
+      "party_name": "BVB/FW",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 2.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2025-09-16",
+          "trend_share": 2.0
+        }
+      ]
+    }
+  ]
+}

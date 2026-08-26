@@ -1,0 +1,28 @@
+{
+  "parliament_id": "de_be_abgeordnetenhaus",
+  "total_seats": 130,
+  "majority_threshold": 66,
+  "excluded_by_rules": 10,
+  "coalitions": [
+    {
+      "parties": [
+        "de:gruene",
+        "de:linke",
+        "de:spd"
+      ],
+      "seats": 75,
+      "is_minimal_winning": true,
+      "compatibility_span": 2.5
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "seats": 72,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.5
+    }
+  ]
+}

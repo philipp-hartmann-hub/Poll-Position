@@ -1,0 +1,26 @@
+{
+  "parliament_id": "de_hh_buergerschaft",
+  "total_seats": 121,
+  "majority_threshold": 61,
+  "excluded_by_rules": 4,
+  "coalitions": [
+    {
+      "parties": [
+        "de:gruene",
+        "de:spd"
+      ],
+      "seats": 64,
+      "is_minimal_winning": true,
+      "compatibility_span": 0.5
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "seats": 63,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    }
+  ]
+}

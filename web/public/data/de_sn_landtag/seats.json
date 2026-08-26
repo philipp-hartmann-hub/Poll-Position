@@ -1,0 +1,21 @@
+{
+  "parliament_id": "de_sn_landtag",
+  "total_seats": 120,
+  "seats": {
+    "dawum:party:7": 55,
+    "dawum:party:101": 28,
+    "dawum:party:5": 12,
+    "dawum:party:23": 9,
+    "dawum:party:2": 8,
+    "dawum:party:4": 8
+  },
+  "seats_by_name": {
+    "AfD": 55,
+    "CDU": 28,
+    "Linke": 12,
+    "BSW": 9,
+    "SPD": 8,
+    "Grüne": 8
+  },
+  "reason": null
+}
