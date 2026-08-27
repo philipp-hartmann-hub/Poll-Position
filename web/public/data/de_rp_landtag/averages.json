@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_rp_landtag",
-  "as_of": "2026-08-26",
+  "as_of": "2026-08-27",
   "parties": [
     {
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 28.000980791256588,
+      "average_share": 28.000980791256584,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 28.0
@@ -15,7 +15,7 @@
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 23.990520732975465,
+      "average_share": 23.99052073297546,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 24.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 5.000030611376596,
+      "average_share": 5.000030611376597,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 5.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 3.0034549684361367,
+      "average_share": 3.003454968436137,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 3.0

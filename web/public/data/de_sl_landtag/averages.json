@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_sl_landtag",
-  "as_of": "2026-08-26",
+  "as_of": "2026-08-27",
   "parties": [
     {
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 27.000000000000004,
+      "average_share": 27.0,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 27.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 23.0,
+      "average_share": 22.999999999999996,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 23.0
