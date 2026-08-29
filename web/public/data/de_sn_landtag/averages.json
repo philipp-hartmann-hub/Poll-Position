@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_sn_landtag",
-  "as_of": "2026-08-28",
+  "as_of": "2026-08-29",
   "parties": [
     {
       "parliament_id": "de_sn_landtag",
@@ -24,7 +24,7 @@
       "parliament_id": "de_sn_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 9.001878719456208,
+      "average_share": 9.001878719456206,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 9.0
@@ -33,7 +33,7 @@
       "parliament_id": "de_sn_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 7.001878719456208,
+      "average_share": 7.001878719456207,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 7.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_sn_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 6.0,
+      "average_share": 5.999999999999999,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 6.0
@@ -51,7 +51,7 @@
       "parliament_id": "de_sn_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 6.0,
+      "average_share": 5.999999999999999,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 6.0
