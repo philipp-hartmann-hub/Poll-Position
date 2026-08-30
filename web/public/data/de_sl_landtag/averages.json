@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_sl_landtag",
-  "as_of": "2026-08-29",
+  "as_of": "2026-08-30",
   "parties": [
     {
       "parliament_id": "de_sl_landtag",
@@ -15,7 +15,7 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 25.000000000000004,
+      "average_share": 25.0,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 25.0
