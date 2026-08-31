@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_sh_landtag",
-  "as_of": "2026-08-30",
+  "as_of": "2026-08-31",
   "parties": [
     {
       "parliament_id": "de_sh_landtag",
@@ -33,7 +33,7 @@
       "parliament_id": "de_sh_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 14.966477611666763,
+      "average_share": 14.966477611666766,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 15.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_sh_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 5.977651741111177,
+      "average_share": 5.977651741111178,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 6.0

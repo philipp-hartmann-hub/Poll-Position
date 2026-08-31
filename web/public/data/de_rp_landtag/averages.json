@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_rp_landtag",
-  "as_of": "2026-08-30",
+  "as_of": "2026-08-31",
   "parties": [
     {
       "parliament_id": "de_rp_landtag",
@@ -60,7 +60,7 @@
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 3.003454968436137,
+      "average_share": 3.0034549684361367,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 3.0
@@ -69,7 +69,7 @@
       "parliament_id": "de_rp_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 3.0000000783322838,
+      "average_share": 3.0000000783322833,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 3.0

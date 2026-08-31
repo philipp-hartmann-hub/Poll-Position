@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_hh_buergerschaft",
-  "as_of": "2026-08-30",
+  "as_of": "2026-08-31",
   "parties": [
     {
       "parliament_id": "de_hh_buergerschaft",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 30.977926791520893,
+      "average_share": 30.97792679152089,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 31.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_hh_buergerschaft",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 11.955853583041781,
+      "average_share": 11.955853583041783,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 12.0
@@ -60,9 +60,9 @@
       "parliament_id": "de_hh_buergerschaft",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 7.0220732084791075,
+      "average_share": 7.022073208479108,
       "n_surveys": 2,
-      "swing": 4.822073208479107,
+      "swing": 4.822073208479108,
       "trend_share": 7.0
     }
   ]
