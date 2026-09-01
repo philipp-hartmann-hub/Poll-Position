@@ -10,7 +10,7 @@
         "de:linke",
         "de:spd"
       ],
-      "seats": 75,
+      "seats": 74,
       "is_minimal_winning": true,
       "compatibility_span": 2.5
     },
