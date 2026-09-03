@@ -5,15 +5,15 @@
     "dawum:party:7": 203,
     "dawum:party:1": 151,
     "dawum:party:4": 104,
-    "dawum:party:2": 89,
-    "dawum:party:5": 83
+    "dawum:party:2": 88,
+    "dawum:party:5": 84
   },
   "seats_by_name": {
     "AfD": 203,
     "CDU/CSU": 151,
     "Grüne": 104,
-    "SPD": 89,
-    "Linke": 83
+    "SPD": 88,
+    "Linke": 84
   },
   "reason": null
 }
