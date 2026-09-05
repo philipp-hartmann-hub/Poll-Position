@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_hb_buergerschaft",
-  "as_of": "2026-09-04",
+  "as_of": "2026-09-05",
   "parties": [
     {
       "parliament_id": "de_hb_buergerschaft",
@@ -33,7 +33,7 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 15.0,
+      "average_share": 14.999999999999998,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 15.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 13.998955212976623,
+      "average_share": 13.998955212976625,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 14.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "dawum:party:16",
       "party_name": "BD",
-      "average_share": 2.9999999999999996,
+      "average_share": 3.0,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 3.0
@@ -69,7 +69,7 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 2.9999999999999996,
+      "average_share": 3.0,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 3.0
@@ -78,9 +78,9 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 3.005223935116873,
+      "average_share": 3.0052239351168732,
       "n_surveys": 2,
-      "swing": -3.6947760648831274,
+      "swing": -3.694776064883127,
       "trend_share": 3.0
     }
   ]
