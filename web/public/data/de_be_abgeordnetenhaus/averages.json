@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_be_abgeordnetenhaus",
-  "as_of": "2026-09-05",
+  "as_of": "2026-09-06",
   "parties": [
     {
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 19.768559343066602,
+      "average_share": 19.768559343066606,
       "n_surveys": 25,
       "swing": null,
       "trend_share": 19.49008991944567
@@ -33,7 +33,7 @@
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 16.10233063893032,
+      "average_share": 16.102330638930322,
       "n_surveys": 25,
       "swing": null,
       "trend_share": 15.953857808559068
@@ -42,7 +42,7 @@
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 12.93646680345753,
+      "average_share": 12.936466803457531,
       "n_surveys": 25,
       "swing": null,
       "trend_share": 12.942839345997772
@@ -51,7 +51,7 @@
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.5959675846973416,
+      "average_share": 3.595967584697342,
       "n_surveys": 25,
       "swing": null,
       "trend_share": 3.703241221016566
@@ -60,7 +60,7 @@
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 3.384084817761754,
+      "average_share": 3.3840848177617535,
       "n_surveys": 22,
       "swing": null,
       "trend_share": 3.5099201578365378
