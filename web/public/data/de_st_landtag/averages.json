@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_st_landtag",
-  "as_of": "2026-09-10",
+  "as_of": "2026-09-11",
   "parties": [
     {
       "parliament_id": "de_st_landtag",
@@ -15,7 +15,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 22.544667275723988,
+      "average_share": 22.544667275723985,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 22.579459049111257
@@ -24,7 +24,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 12.089589621422272,
+      "average_share": 12.08958962142227,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 11.896571715297329
@@ -33,7 +33,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 7.9041911154320115,
+      "average_share": 7.90419111543201,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 8.273792189798698
@@ -42,7 +42,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 5.531307825721955,
+      "average_share": 5.531307825721953,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 5.758629416055517
@@ -51,7 +51,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.9309641447215484,
+      "average_share": 3.9309641447215475,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 3.8599616423903367
@@ -60,7 +60,7 @@
       "parliament_id": "de_st_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 2.8932193771823616,
+      "average_share": 2.893219377182361,
       "n_surveys": 14,
       "swing": null,
       "trend_share": 2.781415027109525
@@ -69,9 +69,9 @@
       "parliament_id": "de_st_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 3.5133119177158307,
+      "average_share": 3.5133119177158303,
       "n_surveys": 16,
-      "swing": -3.786688082284169,
+      "swing": -3.7866880822841695,
       "trend_share": 3.374419366951261
     }
   ]

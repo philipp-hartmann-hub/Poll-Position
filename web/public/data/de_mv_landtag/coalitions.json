@@ -2,6 +2,17 @@
   "parliament_id": "de_mv_landtag",
   "total_seats": 71,
   "majority_threshold": 36,
-  "excluded_by_rules": 8,
-  "coalitions": []
+  "excluded_by_rules": 12,
+  "coalitions": [
+    {
+      "parties": [
+        "de:gruene",
+        "de:linke",
+        "de:spd"
+      ],
+      "seats": 37,
+      "is_minimal_winning": true,
+      "compatibility_span": 2.5
+    }
+  ]
 }
