@@ -3,24 +3,6 @@
   "days": 365,
   "parties": [
     {
-      "party_id": "dawum:party:101",
-      "party_name": "CDU",
-      "points": [
-        {
-          "as_of": "2025-11-17",
-          "trend_share": 26.0
-        },
-        {
-          "as_of": "2026-01-29",
-          "trend_share": 27.0
-        },
-        {
-          "as_of": "2026-04-21",
-          "trend_share": 25.0
-        }
-      ]
-    },
-    {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
       "points": [
@@ -35,6 +17,32 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 25.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 26.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2025-11-17",
+          "trend_share": 26.0
+        },
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 27.0
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 25.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 22.0
         }
       ]
     },
@@ -53,6 +61,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 20.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 21.0
         }
       ]
     },
@@ -71,6 +83,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 12.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 15.0
         }
       ]
     },
@@ -89,6 +105,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 6.0
         }
       ]
     },
@@ -107,6 +127,28 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 5.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2025-11-17",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 3.0
         }
       ]
     },
@@ -125,20 +167,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 4.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:23",
-      "party_name": "BSW",
-      "points": [
-        {
-          "as_of": "2025-11-17",
-          "trend_share": 3.0
         },
         {
-          "as_of": "2026-04-21",
-          "trend_share": 3.0
+          "as_of": "2026-09-08",
+          "trend_share": 2.0
         }
       ]
     }

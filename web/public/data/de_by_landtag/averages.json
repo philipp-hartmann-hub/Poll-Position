@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_by_landtag",
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-12",
   "parties": [
     {
       "parliament_id": "de_by_landtag",
@@ -33,7 +33,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 11.997169213208656,
+      "average_share": 11.997169213208657,
       "n_surveys": 17,
       "swing": null,
       "trend_share": 12.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 2.999655245313096,
+      "average_share": 2.9996552453130962,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 3.0
@@ -69,7 +69,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 1.9999989335062462,
+      "average_share": 1.9999989335062465,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 2.0
@@ -87,9 +87,9 @@
       "parliament_id": "de_by_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 3.2020621720205775,
+      "average_share": 3.202062172020578,
       "n_surveys": 17,
-      "swing": -6.397937827979423,
+      "swing": -6.397937827979422,
       "trend_share": 3.0
     }
   ]
