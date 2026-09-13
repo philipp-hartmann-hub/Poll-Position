@@ -6,6 +6,7 @@ import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { fetchAverages } from "@/lib/api";
 import { partyColor } from "@/lib/colors";
+import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { DE_PARLIAMENTS } from "@/lib/deParliaments";
 
 const WIDTH = 560;
@@ -169,8 +170,9 @@ export function GermanyMap() {
               d={d}
               fill={fill}
               fillOpacity={active ? 0.95 : 0.82}
-              stroke={active ? "#0f1c2e" : "#f3efe6"}
-              strokeWidth={active ? 1.6 : 0.8}
+              stroke={active ? INK : leader?.partyName != null ? INK : PAPER}
+              strokeOpacity={active ? 1 : leader?.partyName != null ? 0.35 : 1}
+              strokeWidth={active ? 1.6 : 0.9}
               style={{ cursor: parl ? "pointer" : "default" }}
               onMouseEnter={(e) => {
                 setHoverId(stateCode);
@@ -203,7 +205,7 @@ export function GermanyMap() {
           {hoverLeader?.partyName ? (
             <p className="mt-0.5 text-ink/70">
               <span
-                className="mr-1.5 inline-block h-2 w-2 rounded-full"
+                className={`mr-1.5 ${PARTY_SWATCH_CLASS} h-2 w-2`}
                 style={{ background: partyColor(hoverLeader.partyName) }}
               />
               {hoverLeader.partyName}

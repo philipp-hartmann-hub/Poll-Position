@@ -10,6 +10,7 @@ import {
 import { TrendLineChart } from "@/components/charts";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
 import { partyColor } from "@/lib/colors";
+import { ACCENT, PARTY_SWATCH_CLASS, SEA } from "@/lib/theme";
 import {
   Bar,
   BarChart,
@@ -97,8 +98,8 @@ export function SurveysSection({ parliamentId }: { parliamentId: string }) {
             <YAxis unit="%" tick={{ fontSize: 11 }} width={40} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="Mittel" fill="#1a5f7a" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="Trend" fill="#c45c26" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Mittel" fill={SEA} radius={[3, 3, 0, 0]} />
+            <Bar dataKey="Trend" fill={ACCENT} radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -118,10 +119,10 @@ export function SurveysSection({ parliamentId }: { parliamentId: string }) {
               <tr key={p.party_id} className="border-t border-ink/5">
                 <td className="px-3 py-2">
                   <span
-                    className="mr-2 inline-block h-2 w-2 rounded-full"
-                    style={{ background: partyColor(p.party_name) }}
-                  />
-                  {p.party_name}
+                      className={`mr-2 ${PARTY_SWATCH_CLASS} h-2 w-2`}
+                      style={{ background: partyColor(p.party_name) }}
+                    />
+                    {p.party_name}
                 </td>
                 <td className="px-3 py-2 tabular-nums">
                   {p.average_share.toFixed(1)}

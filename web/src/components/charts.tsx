@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { displayPartyName, partyColor, relabelSeatMap } from "@/lib/colors";
 import { leftRightPosition } from "@/lib/partyPositions";
+import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 type TrendPoint = { as_of: string; [party: string]: string | number };
 
@@ -92,7 +93,7 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
           <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-25} textAnchor="end" height={50} />
           <YAxis tick={{ fontSize: 11 }} width={36} />
           <Tooltip />
-          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="value" radius={[4, 4, 0, 0]} stroke={INK} strokeOpacity={0.3} strokeWidth={1}>
             {data.map((d) => (
               <Cell key={d.name} fill={partyColor(d.name)} />
             ))}
@@ -103,17 +104,25 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
   );
 }
 
+export type HemicycleStyle = "official" | "projection";
+
 /** Halbkreis-Flächen (Donut): Keile proportional zu Sitzen, links→rechts. */
 export function Hemicycle({
   seats,
   highlightParties,
   size = "md",
+  style = "official",
 }: {
   seats: Record<string, number>;
   /** Wenn gesetzt: nur diese Parteien voll sichtbar, übrige mit Opacity 0.25 */
   highlightParties?: string[];
   /** Kompakte Variante für Nebeneinander-Vergleiche */
   size?: "sm" | "md";
+  /**
+   * ``official``: volle Partei-Farben (amtliches Ergebnis).
+   * ``projection``: leichte Schraffur + gestrichelter Rand (Umfrage).
+   */
+  style?: HemicycleStyle;
 }) {
   const labeled = relabelSeatMap(seats);
   const highlightLabeled = highlightParties?.map((p) =>
@@ -144,11 +153,35 @@ export function Hemicycle({
       ? "mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-ink/80"
       : "mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-ink/80";
 
+  const isProjection = style === "projection";
+  const hatchId = "hemicycle-proj-hatch";
+
   return (
     <div className="w-full">
       <div className={`${chartH} w-full`}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+            {isProjection ? (
+              <defs>
+                <pattern
+                  id={hatchId}
+                  width="7"
+                  height="7"
+                  patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(40)"
+                >
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="7"
+                    stroke={INK}
+                    strokeWidth="1.25"
+                    strokeOpacity="0.22"
+                  />
+                </pattern>
+              </defs>
+            ) : null}
             <Pie
               data={data}
               dataKey="value"
@@ -160,8 +193,10 @@ export function Hemicycle({
               innerRadius="55%"
               outerRadius="100%"
               paddingAngle={0.6}
-              stroke="#f3efe6"
-              strokeWidth={1}
+              stroke={isProjection ? INK : PAPER}
+              strokeWidth={isProjection ? 1.25 : 1}
+              strokeDasharray={isProjection ? "3.5 2.5" : undefined}
+              strokeOpacity={isProjection ? 0.55 : 1}
               isAnimationActive={false}
             >
               {data.map((d) => {
@@ -173,10 +208,32 @@ export function Hemicycle({
                     key={d.name}
                     fill={partyColor(d.name)}
                     fillOpacity={dimmed ? 0.25 : 1}
+                    stroke={INK}
+                    strokeOpacity={0.3}
+                    strokeWidth={0.75}
                   />
                 );
               })}
             </Pie>
+            {isProjection ? (
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="100%"
+                startAngle={180}
+                endAngle={0}
+                innerRadius="55%"
+                outerRadius="100%"
+                paddingAngle={0.6}
+                fill={`url(#${hatchId})`}
+                stroke="none"
+                isAnimationActive={false}
+                legendType="none"
+                tooltipType="none"
+              />
+            ) : null}
             <Tooltip
               formatter={(value: number, name: string, item) => {
                 const pct = Number(item?.payload?.pct ?? 0).toFixed(1);
@@ -196,11 +253,11 @@ export function Hemicycle({
               style={{ opacity: dimmed ? 0.35 : 1 }}
             >
               <span
-                className="inline-block h-2.5 w-2.5 rounded-full"
+                className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
                 style={{ background: partyColor(name) }}
               />
               <span className="font-medium">{name}</span>
-              <span className="text-ink/50">{n}</span>
+              <span className="tabular-nums text-ink/50">{n}</span>
             </li>
           );
         })}

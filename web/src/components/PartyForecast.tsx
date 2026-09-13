@@ -7,6 +7,7 @@ import {
 } from "@/lib/api";
 import { displayPartyName, partyColor } from "@/lib/colors";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 function ForecastTile({
   party,
@@ -23,7 +24,7 @@ function ForecastTile({
     <div className="rounded-2xl border border-accent/25 bg-accent/5 px-4 py-4 transition hover:border-accent/50">
       <p className="flex items-center gap-2 text-sm font-medium text-ink">
         <span
-          className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+          className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
           style={{ background: partyColor(name) }}
         />
         {name}

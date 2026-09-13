@@ -62,9 +62,16 @@ export function OverviewSection({
                 </h3>
                 <p className="mb-3 text-xs text-ink/55">
                   Stand: {lastElection.label} ({lastElection.election_date}) ·{" "}
-                  {lastElection.total_seats} Sitze
+                  <span className="font-display tabular-nums">
+                    {lastElection.total_seats}
+                  </span>{" "}
+                  Sitze
                 </p>
-                <Hemicycle seats={lastElection.seats_by_name} size="sm" />
+                <Hemicycle
+                  seats={lastElection.seats_by_name}
+                  size="sm"
+                  style="official"
+                />
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
@@ -77,10 +84,17 @@ export function OverviewSection({
                   Sitzprojektion nach aktuellen Umfragen
                 </h3>
                 <p className="mb-3 text-xs text-ink/55">
-                  Hochrechnung · {pollSeats.total_seats} Sitze (gesetzliche
-                  Größe)
+                  Hochrechnung ·{" "}
+                  <span className="font-display tabular-nums">
+                    {pollSeats.total_seats}
+                  </span>{" "}
+                  Sitze (gesetzliche Größe)
                 </p>
-                <Hemicycle seats={pollSeats.seats_by_name} size="sm" />
+                <Hemicycle
+                  seats={pollSeats.seats_by_name}
+                  size="sm"
+                  style="projection"
+                />
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">

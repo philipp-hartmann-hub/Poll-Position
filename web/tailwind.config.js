@@ -10,9 +10,9 @@ module.exports = {
       colors: {
         ink: "#0f1c2e",
         paper: "#f3efe6",
-        mist: "#d9e2ec",
-        accent: "#c45c26",
-        sea: "#1a5f7a",
+        mist: "#ece4d3",
+        accent: "#b8701a",
+        sea: "#0a6e50",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
@@ -20,7 +20,7 @@ module.exports = {
       },
       backgroundImage: {
         "grid-fade":
-          "radial-gradient(ellipse at 20% 0%, rgba(26,95,122,0.12), transparent 50%), radial-gradient(ellipse at 90% 20%, rgba(196,92,38,0.1), transparent 45%)",
+          "radial-gradient(ellipse at 20% 0%, rgba(10,110,80,0.12), transparent 50%), radial-gradient(ellipse at 90% 20%, rgba(184,112,26,0.1), transparent 45%)",
       },
     },
   },

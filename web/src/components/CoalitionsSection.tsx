@@ -146,7 +146,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
                       </span>
                     ) : null}
                   </span>
-                  <span className="tabular-nums font-medium">
+                  <span className="font-display tabular-nums font-medium text-ink">
                     {(c.majority_probability * 100).toFixed(0)} %
                   </span>
                 </li>

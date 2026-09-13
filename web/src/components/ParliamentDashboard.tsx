@@ -17,6 +17,7 @@ import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
 import { ThresholdWatch } from "@/components/ThresholdWatch";
 import { labelPartyId, partyColor } from "@/lib/colors";
+import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 type TagKey = "umfragen" | "koalitionen" | "prognose" | "institute";
 
@@ -48,9 +49,16 @@ function SeatCompareBlock({
           </h3>
           <p className="mb-3 text-xs text-ink/55">
             {lastElection.label} ({lastElection.election_date}) ·{" "}
-            {lastElection.total_seats} Sitze
+            <span className="font-display tabular-nums">
+              {lastElection.total_seats}
+            </span>{" "}
+            Sitze
           </p>
-          <Hemicycle seats={lastElection.seats_by_name} size="sm" />
+          <Hemicycle
+            seats={lastElection.seats_by_name}
+            size="sm"
+            style="official"
+          />
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
@@ -63,9 +71,17 @@ function SeatCompareBlock({
             Sitzprojektion nach Umfragen
           </h3>
           <p className="mb-3 text-xs text-ink/55">
-            Hochrechnung · {pollSeats.total_seats} Sitze
+            Hochrechnung ·{" "}
+            <span className="font-display tabular-nums">
+              {pollSeats.total_seats}
+            </span>{" "}
+            Sitze
           </p>
-          <Hemicycle seats={pollSeats.seats_by_name} size="sm" />
+          <Hemicycle
+            seats={pollSeats.seats_by_name}
+            size="sm"
+            style="projection"
+          />
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
@@ -99,7 +115,7 @@ function IncumbentCoalitionCard({ gov }: { gov: IncumbentGov | null }) {
               className="inline-flex items-center gap-1.5 rounded-md border border-ink/10 bg-mist/40 px-2 py-1 text-xs font-medium text-ink"
             >
               <span
-                className="inline-block h-2.5 w-2.5 rounded-full"
+                className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
                 style={{ background: partyColor(name) }}
               />
               {name}

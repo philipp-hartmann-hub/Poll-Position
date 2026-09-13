@@ -195,7 +195,9 @@ export function CoalitionPanel({
                     <td className="px-3 py-2">
                       {c.parties.map(labelPartyId).join(" + ")}
                     </td>
-                    <td className="px-3 py-2 tabular-nums">{c.seats}</td>
+                    <td className="px-3 py-2 font-display tabular-nums">
+                      {c.seats}
+                    </td>
                     <td className="px-3 py-2 tabular-nums">
                       {c.compatibility_span?.toFixed(1) ?? "—"}
                     </td>

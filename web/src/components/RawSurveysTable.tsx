@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchRawSurveys, type RawSurveysResponse } from "@/lib/api";
 import { partyColor } from "@/lib/colors";
+import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 const PAGE_SIZE = 20;
 
@@ -89,7 +90,7 @@ export function RawSurveysTable({ parliamentId }: { parliamentId: string }) {
                           {s.results.map((r) => (
                             <span key={r.party_id} className="whitespace-nowrap">
                               <span
-                                className="mr-1 inline-block h-1.5 w-1.5 rounded-full"
+                                className={`mr-1 ${PARTY_SWATCH_CLASS} h-1.5 w-1.5`}
                                 style={{ background: partyColor(r.party_name) }}
                               />
                               {r.party_name} {r.share.toFixed(1)}
