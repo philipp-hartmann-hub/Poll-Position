@@ -164,6 +164,8 @@ def dhondt(
     *,
     total_votes: float | None = None,
     exempt_party_ids: Sequence[str] = (),
+    constituency_wins: Mapping[str, int] | None = None,
+    grundmandat_seats: int | None = None,
 ) -> dict[str, int]:
     """d’Hondt: Höchstzahlen votes / (s + 1), Divisorenfolge 1, 2, 3, …"""
     _validate_inputs(votes, seats)
@@ -178,6 +180,8 @@ def dhondt(
         threshold,
         total_votes=total,
         exempt_party_ids=exempt_party_ids,
+        constituency_wins=constituency_wins,
+        grundmandat_seats=grundmandat_seats,
     )
     allocation = _empty_allocation(votes)
     if not eligible:
@@ -196,6 +200,8 @@ def hare_niemeyer(
     *,
     total_votes: float | None = None,
     exempt_party_ids: Sequence[str] = (),
+    constituency_wins: Mapping[str, int] | None = None,
+    grundmandat_seats: int | None = None,
 ) -> dict[str, int]:
     """
     Hare/Niemeyer (Quota-Verfahren mit Restausgleich nach größten Bruchteilen).
@@ -214,6 +220,8 @@ def hare_niemeyer(
         threshold,
         total_votes=total,
         exempt_party_ids=exempt_party_ids,
+        constituency_wins=constituency_wins,
+        grundmandat_seats=grundmandat_seats,
     )
     allocation = _empty_allocation(votes)
     if not eligible:
@@ -394,6 +402,8 @@ def allocate_seats(
             thr,
             total_votes=total_votes,
             exempt_party_ids=minority,
+            constituency_wins=constituency_wins,
+            grundmandat_seats=system.grundmandat_seats,
         )
     if method == AllocationMethod.HARE_NIEMEYER:
         return hare_niemeyer(
@@ -402,5 +412,7 @@ def allocate_seats(
             thr,
             total_votes=total_votes,
             exempt_party_ids=minority,
+            constituency_wins=constituency_wins,
+            grundmandat_seats=system.grundmandat_seats,
         )
     raise ValueError(f"Unbekanntes allocation_method: {method}")

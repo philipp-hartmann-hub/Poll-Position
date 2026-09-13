@@ -948,6 +948,20 @@ def test_europe_overview(client):
     assert any(c["country"] == "DE" for c in body["countries"])
 
 
+def test_government(client):
+    r = client.get("/api/government")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["bundesregierung"] is not None
+    assert set(body["bundesregierung"]["parties"]) >= {"de:cdu", "de:csu", "de:spd"}
+    assert isinstance(body["known_parties"], list)
+    assert len(body["known_parties"]) >= 1
+    assert isinstance(body["poll_presets"], list)
+    # Presets sind nach majority_probability absteigend sortiert
+    probs = [p["majority_probability"] for p in body["poll_presets"]]
+    assert probs == sorted(probs, reverse=True)
+
+
 def test_bundesrat_status(client):
     r = client.get("/api/bundesrat/status")
     assert r.status_code == 200

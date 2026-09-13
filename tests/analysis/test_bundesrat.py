@@ -6,6 +6,7 @@ import pytest
 
 from analysis.bundesrat import (
     choices_for_coalition,
+    choices_from_party_stance,
     coalition_key,
     group_votes_by_coalition,
     informal_coalition_label,
@@ -108,6 +109,34 @@ def test_choices_for_coalition_union_alias(bundesrat_cfg):
     via_union = choices_for_coalition(cfg, ["de:cdu_csu", "de:spd"])
     via_split = choices_for_coalition(cfg, ["de:cdu", "de:csu", "de:spd"])
     assert via_union == via_split
+
+
+def test_choices_from_party_stance_empty_all_abstain(bundesrat_cfg):
+    choices = choices_from_party_stance(bundesrat_cfg, {})
+    assert len(choices) == 16
+    assert all(v == "abstain" for v in choices.values())
+
+
+def test_choices_from_party_stance_all_gov_yes_default(bundesrat_cfg):
+    """Saarland: nur SPD — bei SPD=yes → default."""
+    choices = choices_from_party_stance(bundesrat_cfg, {"de:spd": "yes"})
+    assert choices["de_sl_landtag"] == "default"
+    # Hamburg SPD+Grüne: nur SPD gesetzt → Enthaltung
+    assert choices["de_hh_buergerschaft"] == "abstain"
+
+
+def test_choices_from_party_stance_mixed_abstain(bundesrat_cfg):
+    """Hessen CDU+SPD mit gemischtem Stance → abstain."""
+    choices = choices_from_party_stance(
+        bundesrat_cfg,
+        {"de:cdu": "yes", "de:spd": "no"},
+    )
+    assert choices["de_he_landtag"] == "abstain"
+
+
+def test_choices_from_party_stance_all_gov_no_reject(bundesrat_cfg):
+    choices = choices_from_party_stance(bundesrat_cfg, {"de:spd": "no"})
+    assert choices["de_sl_landtag"] == "reject"
 
 
 def test_group_votes_by_coalition_current_16_states(bundesrat_cfg):

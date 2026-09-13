@@ -329,6 +329,11 @@ def get_europe_overview() -> schemas.EuropeOverviewResponse:
     )
 
 
+@app.get("/api/government", response_model=schemas.GovernmentResponse)
+def get_government() -> schemas.GovernmentResponse:
+    return schemas.GovernmentResponse.model_validate(services.government_payload())
+
+
 @app.get("/api/bundesrat/status", response_model=schemas.BundesratStatusResponse)
 def get_bundesrat_status() -> schemas.BundesratStatusResponse:
     return schemas.BundesratStatusResponse.model_validate(

@@ -128,12 +128,27 @@ def parse_coalition_key(key: str) -> tuple[str, ...]:
     return tuple(sorted(parts))
 
 
-def _expand_party_ids(parties: Sequence[str]) -> set[str]:
+def expand_party_ids(parties: Sequence[str]) -> set[str]:
     """Union (de:cdu_csu) und explizite CDU+CSU decken Landes-CDU/CSU ab."""
     out = set(parties)
     if "de:cdu_csu" in out or ({"de:cdu", "de:csu"} <= out):
         out.update({"de:cdu", "de:csu", "de:cdu_csu"})
     return out
+
+
+def known_government_party_ids(config: BundesratConfig) -> set[str]:
+    """Alle Partei-IDs aus Landesregierungen und amtierender Bundesregierung."""
+    out: set[str] = set()
+    for state in config.states:
+        out.update(state.government_parties)
+    if config.bundesregierung:
+        out.update(config.bundesregierung.parties)
+    return out
+
+
+def party_display_label(party_id: str) -> str:
+    """Kurzname für UI (Fallback: Roh-ID)."""
+    return _PARTY_DISPLAY.get(party_id, party_id)
 
 
 def normalize_parties_for_color(parties: Sequence[str]) -> frozenset[str]:
@@ -159,9 +174,9 @@ def informal_coalition_label(parties: Sequence[str]) -> str:
     if len(norm) == 1:
         only = next(iter(norm))
         if only == "union" and raw:
-            name = _PARTY_DISPLAY.get(raw[0], raw[0])
+            name = party_display_label(raw[0])
         else:
-            name = _PARTY_DISPLAY.get(only, only)
+            name = party_display_label(only) if only != "union" else "Union"
         return f"Alleinregierung ({name})"
     known = _INFORMAL_COALITION_NAMES.get(norm)
     if known:
@@ -188,7 +203,63 @@ def informal_coalition_label(parties: Sequence[str]) -> str:
             return (len(order), p)
 
     ordered = sorted(raw, key=_raw_sort)
-    return " + ".join(_PARTY_DISPLAY.get(p, p) for p in ordered)
+    return " + ".join(party_display_label(p) for p in ordered)
+
+
+def _stance_for_party(
+    party_id: str,
+    party_stance: Mapping[str, str],
+) -> Literal["yes", "no"] | None:
+    """Effektives Stimmverhalten einer Partei inkl. CDU/CSU-Alias; sonst None."""
+    direct = (party_stance.get(party_id) or "").strip().lower()
+    if direct in {"yes", "no"}:
+        return direct  # type: ignore[return-value]
+
+    party_ids = expand_party_ids([party_id])
+    found: set[str] = set()
+    for key, raw in party_stance.items():
+        val = (raw or "").strip().lower()
+        if val not in {"yes", "no"}:
+            continue
+        if party_ids & expand_party_ids([key]):
+            found.add(val)
+    if found == {"yes"}:
+        return "yes"
+    if found == {"no"}:
+        return "no"
+    return None
+
+
+def choices_from_party_stance(
+    config: BundesratConfig,
+    party_stance: Mapping[str, str],
+) -> dict[str, str]:
+    """
+    Pro Land: Ja/Nein/Enthaltung aus bundesweitem Partei-Stimmverhalten.
+
+    ``party_stance`` mappt Partei-ID → ``"yes"`` / ``"no"`` (alles andere oder
+    fehlend = neutral). Pro Land:
+
+    - alle Regierungsparteien ``yes`` → ``default`` (Ja mit amtierender Regierung)
+    - alle ``no`` → ``reject``
+    - sonst (inkl. leerem ``party_stance``) → ``abstain``
+
+    Enthaltung ist der Ausgangszustand, nicht Zustimmung.
+    """
+    choices: dict[str, str] = {}
+    for state in config.states:
+        gov = list(state.government_parties)
+        if not gov:
+            choices[state.parliament_id] = "abstain"
+            continue
+        stances = [_stance_for_party(p, party_stance) for p in gov]
+        if all(s == "yes" for s in stances):
+            choices[state.parliament_id] = "default"
+        elif all(s == "no" for s in stances):
+            choices[state.parliament_id] = "reject"
+        else:
+            choices[state.parliament_id] = "abstain"
+    return choices
 
 
 def choices_for_coalition(
@@ -202,7 +273,7 @@ def choices_for_coalition(
     - Teilüberschneidung → ``abstain`` (Art. 51 Abs. 3 GG)
     - Keine Überschneidung → ``reject``
     """
-    coal = _expand_party_ids(coalition_parties)
+    coal = expand_party_ids(coalition_parties)
     choices: dict[str, str] = {}
     for state in config.states:
         gov = set(state.government_parties)

@@ -8,9 +8,9 @@ export default function BundesratPage() {
         Bundesrat
       </h1>
       <p className="max-w-2xl text-ink/60">
-        Einheitliche Landesstimmen (3–6) für eine angenommene Abstimmung —
-        Default sind die amtierenden Regierungen, Alternativen aus Landtags-
-        Umfrage-Koalitionen oder Enthaltung/Nein.
+        Bundesweites Partei-Stimmverhalten (Ja / Enthaltung / Nein) steuert die
+        einheitliche Landesstimme — Ausgangspunkt ist Enthaltung. Landes-
+        Overrides und Umfrage-Presets überschreiben die Automatik.
       </p>
       <BundesratSandbox />
     </div>

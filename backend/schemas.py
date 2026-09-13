@@ -356,6 +356,25 @@ class BundesratFederalGovernmentOut(BaseModel):
     label: str
 
 
+class GovernmentPartyOut(BaseModel):
+    id: str
+    label: str
+
+
+class GovernmentPollPresetOut(BaseModel):
+    parties: list[str]
+    label: str
+    majority_probability: float
+    n_majority: int = 0
+    n_simulations: int = 0
+
+
+class GovernmentResponse(BaseModel):
+    bundesregierung: BundesratFederalGovernmentOut | None = None
+    known_parties: list[GovernmentPartyOut] = Field(default_factory=list)
+    poll_presets: list[GovernmentPollPresetOut] = Field(default_factory=list)
+
+
 class BundesratMajorityCheckResponse(BaseModel):
     as_of: str
     total_votes: int

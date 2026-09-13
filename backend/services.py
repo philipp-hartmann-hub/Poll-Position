@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import time
 from datetime import date, datetime, timedelta
-from typing import Any, Sequence
+from typing import Any, Mapping, Sequence
 
 from analysis.averages import (
     PollObservationPoint,
@@ -18,8 +18,11 @@ from analysis.bundesrat import (
     choices_for_coalition,
     coalition_key,
     group_votes_by_coalition,
+    informal_coalition_label,
+    known_government_party_ids,
     load_bundesrat_config,
     parse_coalition_key,
+    party_display_label,
     simulate_bundesrat,
 )
 from analysis.coalitions import (
@@ -416,7 +419,12 @@ def _party_house_variance(parliament_id: str) -> dict[str, float]:
     return party_dispersion_for_parliament(points, parliament_id=parliament_id)
 
 
-def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tuple[dict[str, int], int]:
+def _allocate_for_parliament(
+    parliament_id: str,
+    votes: dict[str, float],
+    *,
+    constituency_wins: Mapping[str, int] | None = None,
+) -> tuple[dict[str, int], int]:
     if not votes:
         return {}, 0
     bundle = load_parliament_config()
@@ -427,7 +435,12 @@ def _allocate_for_parliament(parliament_id: str, votes: dict[str, float]) -> tup
         )
         if not system.seat_projection:
             return {}, system.seats_total
-        seats = allocate_seats(parliament, votes, election_system=system)
+        seats = allocate_seats(
+            parliament,
+            votes,
+            election_system=system,
+            constituency_wins=constituency_wins,
+        )
         return seats, system.seats_total
     seats = sainte_lague_schepers(votes, 100, 0.05)
     return seats, sum(seats.values())
@@ -538,7 +551,17 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
     except Exception:
         pass
 
-    seats, total = _allocate_for_parliament(parliament_id, votes)
+    _parliament, system = _election_system_for(parliament_id)
+    constituency_wins: dict[str, int] | None = None
+    if election.grundmandat_party_ids:
+        gm = (system.grundmandat_seats if system else None) or 1
+        constituency_wins = {pid: gm for pid in election.grundmandat_party_ids}
+
+    seats, total = _allocate_for_parliament(
+        parliament_id,
+        votes,
+        constituency_wins=constituency_wins,
+    )
     seats = {
         pid: n
         for pid, n in seats.items()
@@ -1300,6 +1323,66 @@ BUNDESRAT_DISCLAIMER = (
 )
 
 _ALLOWED_STANCES = frozenset({"default", "abstain", "enthaltung", "nein", "reject", "no"})
+
+
+def government_payload() -> dict[str, Any]:
+    """
+    Amtierende Bundesregierung + Umfrage-Koalitions-Presets (Bundestag).
+
+    Presets stammen aus ``uncertainty_payload("de_bundestag")``, gefiltert auf
+    ``n_majority > 0`` (inkl. Alleinregierungen).
+    """
+    cfg = load_bundesrat_config()
+    fed = cfg.bundesregierung
+    bundesregierung = None
+    if fed is not None:
+        bundesregierung = {
+            "stand": fed.stand,
+            "parties": list(fed.parties),
+            "label": fed.label,
+        }
+
+    known = sorted(
+        known_government_party_ids(cfg),
+        key=lambda pid: (party_display_label(pid).lower(), pid),
+    )
+    known_parties = [
+        {"id": pid, "label": party_display_label(pid)} for pid in known
+    ]
+
+    presets: list[dict[str, Any]] = []
+    try:
+        unc = uncertainty_payload("de_bundestag")
+        for row in unc.get("coalition_probabilities") or []:
+            if int(row.get("n_majority") or 0) <= 0:
+                continue
+            parties = [
+                p
+                for p in (row.get("parties") or [])
+                if p and not is_residual_party_id(str(p))
+            ]
+            if not parties:
+                continue
+            presets.append(
+                {
+                    "parties": parties,
+                    "label": informal_coalition_label(parties),
+                    "majority_probability": float(
+                        row.get("majority_probability") or 0.0
+                    ),
+                    "n_majority": int(row.get("n_majority") or 0),
+                    "n_simulations": int(row.get("n_simulations") or 0),
+                }
+            )
+        presets.sort(key=lambda p: (-p["majority_probability"], p["label"]))
+    except Exception:
+        presets = []
+
+    return {
+        "bundesregierung": bundesregierung,
+        "known_parties": known_parties,
+        "poll_presets": presets,
+    }
 
 
 def _bundesrat_coalition_options(parliament_id: str) -> list[dict[str, Any]]:

@@ -2,26 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
-import {
-  fetchBundesratMajorityCheck,
   fetchBundesratStatus,
+  fetchGovernment,
   postBundesratSimulate,
-  type BundesratCoalitionBalanceSlice,
   type BundesratLand,
   type BundesratLandVote,
-  type BundesratMajorityCheckItem,
-  type BundesratMajorityCheckResponse,
   type BundesratStatusResponse,
+  type GovernmentPollPreset,
+  type GovernmentResponse,
 } from "@/lib/api";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { BundesratMap } from "@/components/BundesratMap";
+import {
+  choicesFromPartyStance,
+  mergeLandOverrides,
+} from "@/lib/bundesratChoices";
 import {
   ABSTAIN_COLOR,
   NO_COLOR,
@@ -29,18 +24,7 @@ import {
 } from "@/lib/bundesratColors";
 import { labelPartyId } from "@/lib/colors";
 
-const SLICE_COLORS = [
-  "#1a5f7a",
-  "#c45c26",
-  "#2f6f4e",
-  "#5c4a7a",
-  "#a33b2c",
-  "#8a6d3b",
-  "#3d6b8a",
-  "#6b5b4a",
-  "#4a7a6b",
-  "#7a4a5c",
-];
+type PartyStance = Record<string, "yes" | "no">;
 
 function StanceBadge({ stance }: { stance: string }) {
   const map: Record<string, { label: string; className: string }> = {
@@ -70,14 +54,16 @@ function StanceBadge({ stance }: { stance: string }) {
   );
 }
 
-function VoteBar({
+function VoteCounter({
   yes,
   no,
   abstain,
   total,
   majoritySimple,
   majorityTwoThirds,
-  compact = false,
+  hasMajority,
+  hasTwoThirds,
+  busy,
 }: {
   yes: number;
   no: number;
@@ -85,7 +71,9 @@ function VoteBar({
   total: number;
   majoritySimple: number;
   majorityTwoThirds: number;
-  compact?: boolean;
+  hasMajority: boolean;
+  hasTwoThirds: boolean;
+  busy: boolean;
 }) {
   const t = Math.max(total, 1);
   const yesPct = (yes / t) * 100;
@@ -93,13 +81,23 @@ function VoteBar({
   const absPct = (abstain / t) * 100;
   const markSimple = (majoritySimple / t) * 100;
   const markTwoThirds = (majorityTwoThirds / t) * 100;
-  const h = compact ? 14 : 28;
 
   return (
-    <div className={compact ? "space-y-1" : "space-y-2"}>
+    <div className="flex h-full flex-col justify-center space-y-4">
+      <div>
+        <p className="text-xs uppercase tracking-wide text-ink/45">Stimmen</p>
+        <p className="mt-1 font-display text-3xl tabular-nums text-ink">
+          {yes}
+          <span className="text-lg text-ink/40"> / {total}</span>
+        </p>
+        <p className="mt-1 text-sm text-ink/55">
+          Ja · Nein {no} · Enthaltung {abstain}
+          {busy ? " · …" : ""}
+        </p>
+      </div>
+
       <div
-        className="relative w-full overflow-hidden rounded-md border border-ink/10 bg-white/70"
-        style={{ height: h }}
+        className="relative h-7 w-full overflow-hidden rounded-md border border-ink/10 bg-white/70"
         role="img"
         aria-label={`Ja ${yes}, Nein ${no}, Enthaltung ${abstain} von ${total}`}
       >
@@ -119,150 +117,135 @@ function VoteBar({
           title={`Zwei Drittel ${majorityTwoThirds}`}
         />
       </div>
-      {!compact && (
-        <div className="relative h-4 text-[10px] text-ink/50">
-          <span
-            className="absolute -translate-x-1/2"
-            style={{ left: `${markSimple}%` }}
-          >
-            {majoritySimple}
-          </span>
-          <span
-            className="absolute -translate-x-1/2"
-            style={{ left: `${markTwoThirds}%` }}
-          >
-            {majorityTwoThirds}
-          </span>
-          <span className="absolute right-0"> {total}</span>
-        </div>
-      )}
-      {!compact && (
-        <div className="flex flex-wrap gap-3 text-xs text-ink/60">
-          <span>
+
+      <div className="relative h-4 text-[10px] text-ink/50">
+        <span
+          className="absolute -translate-x-1/2"
+          style={{ left: `${markSimple}%` }}
+        >
+          {majoritySimple}
+        </span>
+        <span
+          className="absolute -translate-x-1/2"
+          style={{ left: `${markTwoThirds}%` }}
+        >
+          {majorityTwoThirds}
+        </span>
+        <span className="absolute right-0">{total}</span>
+      </div>
+
+      <ul className="space-y-2 text-sm">
+        <li className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2 text-ink/70">
             <span
-              className="mr-1 inline-block h-2 w-2 rounded-sm"
+              className="inline-block h-2.5 w-2.5 rounded-sm"
               style={{ background: YES_COLOR }}
             />
-            Ja {yes}
+            Ja
           </span>
-          <span>
+          <span className="tabular-nums font-medium text-ink">{yes}</span>
+        </li>
+        <li className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2 text-ink/70">
             <span
-              className="mr-1 inline-block h-2 w-2 rounded-sm"
+              className="inline-block h-2.5 w-2.5 rounded-sm"
               style={{ background: NO_COLOR }}
             />
-            Nein {no}
+            Nein
           </span>
-          <span>
+          <span className="tabular-nums font-medium text-ink">{no}</span>
+        </li>
+        <li className="flex items-center justify-between gap-3">
+          <span className="flex items-center gap-2 text-ink/70">
             <span
-              className="mr-1 inline-block h-2 w-2 rounded-sm"
+              className="inline-block h-2.5 w-2.5 rounded-sm"
               style={{ background: ABSTAIN_COLOR }}
             />
-            Enthaltung {abstain}
+            Enthaltung
           </span>
-        </div>
-      )}
+          <span className="tabular-nums font-medium text-ink">{abstain}</span>
+        </li>
+      </ul>
+
+      <div className="space-y-1 border-t border-ink/10 pt-3 text-sm">
+        <p
+          className={
+            hasMajority ? "font-medium text-emerald-800" : "text-ink/55"
+          }
+        >
+          Absolute Mehrheit (≥{majoritySimple}/69):{" "}
+          {hasMajority ? "ja" : "nein"}
+        </p>
+        <p
+          className={
+            hasTwoThirds ? "font-medium text-emerald-800" : "text-ink/55"
+          }
+        >
+          Zwei Drittel (≥{majorityTwoThirds}/69):{" "}
+          {hasTwoThirds ? "ja" : "nein"}
+        </p>
+      </div>
     </div>
   );
 }
 
-function CoalitionBalancePie({
-  slices,
+function PartyStanceChip({
+  partyId,
+  label,
+  value,
+  onChange,
 }: {
-  slices: BundesratCoalitionBalanceSlice[];
+  partyId: string;
+  label: string;
+  value: "yes" | "no" | null;
+  onChange: (next: "yes" | "no" | null) => void;
 }) {
-  const data = slices.map((s, i) => ({
-    ...s,
-    name: s.matches_federal ? `${s.label} ★` : s.label,
-    fill: SLICE_COLORS[i % SLICE_COLORS.length],
-  }));
+  const btn = (
+    stance: "yes" | "no" | null,
+    text: string,
+    activeClass: string,
+  ) => (
+    <button
+      type="button"
+      aria-pressed={value === stance}
+      onClick={() => onChange(stance)}
+      className={
+        value === stance
+          ? `rounded px-1.5 py-0.5 text-[11px] font-medium ${activeClass}`
+          : "rounded px-1.5 py-0.5 text-[11px] text-ink/45 hover:bg-ink/5"
+      }
+    >
+      {text}
+    </button>
+  );
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey="votes"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={48}
-              outerRadius={88}
-              paddingAngle={1}
-              stroke="#f3efe6"
-              strokeWidth={2}
-            >
-              {data.map((entry) => (
-                <Cell
-                  key={entry.key}
-                  fill={entry.fill}
-                  stroke={entry.matches_federal ? "#0f1c2e" : "#f3efe6"}
-                  strokeWidth={entry.matches_federal ? 3 : 2}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value: number, _n, item) => [
-                `${value} Stimmen`,
-                String(item?.payload?.label ?? ""),
-              ]}
-            />
-            <Legend
-              layout="vertical"
-              align="right"
-              verticalAlign="middle"
-              wrapperStyle={{ fontSize: 12 }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      <ul className="space-y-1.5 self-center text-sm">
-        {data.map((s) => (
-          <li
-            key={s.key}
-            className={
-              s.matches_federal
-                ? "flex items-baseline justify-between gap-2 rounded-md border border-ink/25 bg-mist/40 px-2 py-1.5 font-medium"
-                : "flex items-baseline justify-between gap-2 px-2 py-1 text-ink/75"
-            }
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-sm"
-                style={{ background: s.fill }}
-              />
-              {s.label}
-              {s.matches_federal ? (
-                <span className="text-xs font-normal text-ink/50">
-                  ★ amtierende Bundesregierung
-                </span>
-              ) : null}
-            </span>
-            <span className="tabular-nums text-ink/60">{s.votes}</span>
-          </li>
-        ))}
-      </ul>
+    <div
+      className="inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-white/70 px-2 py-1.5"
+      data-party={partyId}
+    >
+      <span className="mr-1 text-xs font-medium text-ink">{label}</span>
+      {btn("yes", "Ja", "bg-emerald-100 text-emerald-900")}
+      {btn(null, "Enth.", "bg-stone-200 text-stone-800")}
+      {btn("no", "Nein", "bg-red-100 text-red-900")}
     </div>
   );
 }
 
-function samePartySet(a: string[], b: string[]): boolean {
-  if (a.length !== b.length) return false;
-  const sb = new Set(b);
-  return a.every((p) => sb.has(p));
-}
-
-function rowKey(item: BundesratMajorityCheckItem): string {
-  if (item.is_incumbent) return "incumbent";
-  return item.parties.slice().sort().join("+");
+function autoLabel(choice: string): string {
+  if (choice === "default") return "Ja (Regierung)";
+  if (choice === "reject") return "Nein";
+  if (choice === "abstain") return "Enthaltung";
+  return choice;
 }
 
 export function BundesratSandbox() {
   const [status, setStatus] = useState<BundesratStatusResponse | null>(null);
-  const [majorityCheck, setMajorityCheck] =
-    useState<BundesratMajorityCheckResponse | null>(null);
-  const [choices, setChoices] = useState<Record<string, string>>({});
+  const [government, setGovernment] = useState<GovernmentResponse | null>(null);
+  const [partyStance, setPartyStance] = useState<PartyStance>({});
+  const [landOverrides, setLandOverrides] = useState<Record<string, string>>(
+    {},
+  );
   const [votes, setVotes] = useState<BundesratLandVote[] | null>(null);
   const [yes, setYes] = useState(0);
   const [no, setNo] = useState(0);
@@ -271,29 +254,15 @@ export function BundesratSandbox() {
   const [hasTwoThirds, setHasTwoThirds] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [pollPresetKey, setPollPresetKey] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([
-      fetchBundesratStatus(),
-      fetchBundesratMajorityCheck(8).catch(() => null),
-    ])
-      .then(([data, check]) => {
+    void Promise.all([fetchBundesratStatus(), fetchGovernment()])
+      .then(([st, gov]) => {
         if (cancelled) return;
-        setStatus(data);
-        setMajorityCheck(check);
-        setVotes(data.simulation.by_land);
-        setYes(data.simulation.yes_votes);
-        setNo(data.simulation.no_votes);
-        setAbstain(data.simulation.abstain_votes);
-        setHasMajority(data.simulation.has_majority);
-        setHasTwoThirds(data.simulation.has_two_thirds);
-        const initial: Record<string, string> = {};
-        for (const land of data.laender) {
-          initial[land.parliament_id] = "default";
-        }
-        setChoices(initial);
+        setStatus(st);
+        setGovernment(gov);
       })
       .catch((e) => {
         if (!cancelled) setError(e instanceof Error ? e.message : "Fehler");
@@ -303,18 +272,28 @@ export function BundesratSandbox() {
     };
   }, []);
 
-  const choiceKey = useMemo(() => JSON.stringify(choices), [choices]);
+  const autoChoices = useMemo(() => {
+    if (!status) return {};
+    return choicesFromPartyStance(status.laender, partyStance);
+  }, [status, partyStance]);
+
+  const mergedChoices = useMemo(
+    () => mergeLandOverrides(autoChoices, landOverrides),
+    [autoChoices, landOverrides],
+  );
+
+  const choiceKey = useMemo(
+    () => JSON.stringify(mergedChoices),
+    [mergedChoices],
+  );
 
   useEffect(() => {
-    if (!status || choiceKey === "{}") return;
+    if (!status) return;
     const parsed = JSON.parse(choiceKey) as Record<string, string>;
-    const nonDefault = Object.fromEntries(
-      Object.entries(parsed).filter(([, v]) => v !== "default"),
-    );
     const t = setTimeout(() => {
       setBusy(true);
       setError(null);
-      void postBundesratSimulate(nonDefault)
+      void postBundesratSimulate(parsed)
         .then((sim) => {
           setVotes(sim.by_land);
           setYes(sim.yes_votes);
@@ -325,41 +304,44 @@ export function BundesratSandbox() {
         })
         .catch((e) => setError(e instanceof Error ? e.message : "Fehler"))
         .finally(() => setBusy(false));
-    }, 200);
+    }, 180);
     return () => clearTimeout(t);
   }, [choiceKey, status]);
 
-  function setLandChoice(land: BundesratLand, value: string) {
-    setSelectedKey(null);
-    setChoices((prev) => ({ ...prev, [land.parliament_id]: value }));
+  function setPartyValue(partyId: string, next: "yes" | "no" | null) {
+    setPollPresetKey("");
+    setPartyStance((prev) => {
+      const out = { ...prev };
+      if (next === null) delete out[partyId];
+      else out[partyId] = next;
+      return out;
+    });
   }
 
-  function applyMajorityCheckRow(item: BundesratMajorityCheckItem) {
-    if (!status) return;
-    setSelectedKey(rowKey(item));
-    const next: Record<string, string> = {};
-    for (const land of status.laender) {
-      const auto = item.choices[land.parliament_id] ?? "default";
-      if (auto === "abstain" || auto === "reject") {
-        next[land.parliament_id] = auto;
-        continue;
-      }
-      const match = land.coalition_options.find((opt) =>
-        samePartySet(opt.parties, item.parties),
-      );
-      next[land.parliament_id] = match?.key ?? "default";
-    }
-    setChoices(next);
+  function applyFederalGovernment() {
+    const parties = government?.bundesregierung?.parties ?? [];
+    const next: PartyStance = {};
+    for (const p of parties) next[p] = "yes";
+    setPartyStance(next);
+    setLandOverrides({});
+    setPollPresetKey("");
   }
 
-  function resetToIncumbentGovernments() {
-    if (!status) return;
-    setSelectedKey(null);
-    const next: Record<string, string> = {};
-    for (const land of status.laender) {
-      next[land.parliament_id] = "default";
-    }
-    setChoices(next);
+  function applyPollPreset(preset: GovernmentPollPreset) {
+    const next: PartyStance = {};
+    for (const p of preset.parties) next[p] = "yes";
+    setPartyStance(next);
+    setLandOverrides({});
+    setPollPresetKey(preset.parties.slice().sort().join("+"));
+  }
+
+  function setLandOverride(land: BundesratLand, value: string) {
+    setLandOverrides((prev) => {
+      const out = { ...prev };
+      if (!value || value === "auto") delete out[land.parliament_id];
+      else out[land.parliament_id] = value;
+      return out;
+    });
   }
 
   if (!status) {
@@ -371,187 +353,88 @@ export function BundesratSandbox() {
   }
 
   const voteById = new Map((votes ?? []).map((v) => [v.parliament_id, v]));
-  const balance = majorityCheck?.coalition_balance ?? [];
+  const chipParties =
+    government?.known_parties?.length ?
+      government.known_parties
+    : Array.from(
+        new Set(status.laender.flatMap((l) => l.default_government)),
+      ).map((id) => ({ id, label: labelPartyId(id) }));
+
+  const presets = government?.poll_presets ?? [];
 
   return (
     <div className="space-y-8">
       <p className="rounded-md border border-amber-700/25 bg-amber-50/80 px-3 py-2 text-sm text-ink/80">
-        {status.disclaimer} Stand der Defaults: {status.as_of}.
+        {status.disclaimer} Stand der Landesregierungen: {status.as_of}.
+        Ausgangspunkt ist Enthaltung, bis Parteien auf Ja oder Nein gesetzt
+        werden.
       </p>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl text-ink">Aktuelle Stimmenlage</h2>
-        <VoteBar
-          yes={yes}
-          no={no}
-          abstain={abstain}
-          total={status.total_votes}
-          majoritySimple={status.majority_threshold}
-          majorityTwoThirds={status.two_thirds_threshold}
-        />
-        <div className="flex flex-wrap gap-3 text-sm">
-          <span
-            className={
-              hasMajority ? "font-medium text-emerald-800" : "text-ink/55"
-            }
+        <h2 className="font-display text-xl text-ink">
+          Partei-Stimmverhalten
+          <InfoTooltip text="Bundesweite Voreinstellung: Stimmen alle Regierungsparteien eines Landes mit Ja, gibt das Land Ja ab; alle Nein → Nein; sonst Enthaltung (Art. 51 Abs. 3 GG). Landes-Overrides darunter überschreiben das." />
+        </h2>
+
+        <div className="flex flex-wrap gap-2">
+          {chipParties.map((p) => (
+            <PartyStanceChip
+              key={p.id}
+              partyId={p.id}
+              label={p.label}
+              value={partyStance[p.id] ?? null}
+              onChange={(next) => setPartyValue(p.id, next)}
+            />
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-end gap-3 pt-1">
+          <button
+            type="button"
+            onClick={applyFederalGovernment}
+            className="rounded-md border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink transition hover:border-sea/40 hover:bg-mist/40"
           >
-            Absolute Mehrheit (≥{status.majority_threshold}):{" "}
-            {hasMajority ? "ja" : "nein"}
-          </span>
-          <span
-            className={
-              hasTwoThirds ? "font-medium text-emerald-800" : "text-ink/55"
-            }
-          >
-            Zwei Drittel (≥{status.two_thirds_threshold}):{" "}
-            {hasTwoThirds ? "ja" : "nein"}
-          </span>
-          <span className="text-ink/40">
-            von {status.total_votes} Stimmen
-            {busy ? " · berechnet …" : ""}
-          </span>
+            Aktuelle Bundesregierung
+            {government?.bundesregierung?.label
+              ? ` (${government.bundesregierung.label})`
+              : ""}
+          </button>
+
+          <label className="min-w-[14rem] flex-1 text-sm">
+            <span className="mb-1 block text-ink/50">Nach Umfragen</span>
+            <select
+              className="w-full rounded-md border border-ink/15 bg-white px-3 py-2 text-ink"
+              value={pollPresetKey}
+              onChange={(e) => {
+                const key = e.target.value;
+                if (!key) {
+                  setPollPresetKey("");
+                  return;
+                }
+                const preset = presets.find(
+                  (p) => p.parties.slice().sort().join("+") === key,
+                );
+                if (preset) applyPollPreset(preset);
+              }}
+            >
+              <option value="">Koalition wählen …</option>
+              {presets.map((p) => {
+                const key = p.parties.slice().sort().join("+");
+                const pct = Math.round(p.majority_probability * 100);
+                return (
+                  <option key={key} value={key}>
+                    {p.label} ({pct} %)
+                  </option>
+                );
+              })}
+            </select>
+          </label>
         </div>
       </section>
 
-      {balance.length > 0 && (
-        <section className="space-y-3">
-          <h2 className="font-display text-xl text-ink">
-            Kräfteverhältnis nach Koalitionsfarbe
-          </h2>
-          <p className="max-w-2xl text-sm text-ink/55">
-            Stimmen der Länder nach Regierungs-Kombination (Reihenfolge egal;
-            CDU/CSU als Union). ★ markiert die Farbe der amtierenden
-            Bundesregierung
-            {majorityCheck?.federal_government
-              ? ` (${majorityCheck.federal_government.label})`
-              : ""}
-            .
-          </p>
-          <CoalitionBalancePie slices={balance} />
-        </section>
-      )}
-
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
 
-      {majorityCheck && majorityCheck.coalitions.length > 0 && (
-        <section className="space-y-3">
-          <h2 className="font-display text-xl text-ink">
-            Hätte diese Koalition eine Bundesrats-Mehrheit?
-            <InfoTooltip text="Modellannahme nach Art. 51 Abs. 3 GG: volle Übereinstimmung mit der Landesregierung → Ja, Teilüberschneidung → Enthaltung, keine Übereinstimmung → Nein. Keine Umfrage zum Abstimmungsverhalten, sondern eine Ableitung aus den amtierenden bzw. simulierten Landesregierungen." />
-          </h2>
-          <p className="max-w-2xl text-sm text-ink/55">
-            Automatisch nach Art. 51 Abs. 3 GG: volle Übereinstimmung mit der
-            Landesregierung → Ja, Teilüberschneidung → Enthaltung, keine →
-            Nein. Klick übernimmt die Wahl in die Tabelle darunter.
-          </p>
-          <ul className="space-y-2">
-            {majorityCheck.coalitions.map((row) => {
-              const key = rowKey(row);
-              const active = selectedKey === key;
-              const title =
-                row.label?.trim() ||
-                row.parties.map(labelPartyId).join(" + ");
-              return (
-                <li key={key}>
-                  <button
-                    type="button"
-                    onClick={() => applyMajorityCheckRow(row)}
-                    className={
-                      row.is_incumbent
-                        ? active
-                          ? "w-full rounded-lg border-2 border-sea bg-sea/10 px-3 py-3 text-left shadow-sm transition"
-                          : "w-full rounded-lg border-2 border-ink/20 bg-gradient-to-br from-mist/50 to-white/80 px-3 py-3 text-left shadow-sm transition hover:border-sea/50"
-                        : active
-                          ? "w-full rounded-lg border border-sea/40 bg-mist/50 px-3 py-2.5 text-left transition"
-                          : "w-full rounded-lg border border-ink/10 bg-white/50 px-3 py-2.5 text-left transition hover:border-sea/30 hover:bg-mist/30"
-                    }
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-sm font-medium text-ink">
-                        {title}
-                        {row.is_incumbent ? (
-                          <span className="ml-2 inline-flex rounded-full bg-ink px-2 py-0.5 text-xs font-medium text-paper">
-                            Amtierende Bundesregierung
-                          </span>
-                        ) : (
-                          <span className="ml-2 text-xs font-normal text-ink/45">
-                            BT {row.bundestag_seats} Sitze
-                          </span>
-                        )}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        <span
-                          className={
-                            row.has_majority
-                              ? "rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-900"
-                              : "rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-900"
-                          }
-                        >
-                          Mehrheit {row.has_majority ? "✓" : "✗"}
-                        </span>
-                        <span
-                          className={
-                            row.has_two_thirds
-                              ? "rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-900"
-                              : "rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-900"
-                          }
-                        >
-                          Zwei Drittel {row.has_two_thirds ? "✓" : "✗"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      <VoteBar
-                        yes={row.yes_votes}
-                        no={row.no_votes}
-                        abstain={row.abstain_votes}
-                        total={majorityCheck.total_votes}
-                        majoritySimple={majorityCheck.majority_threshold}
-                        majorityTwoThirds={majorityCheck.two_thirds_threshold}
-                        compact
-                      />
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      )}
-
-      <section className="space-y-3">
-        <label className="block max-w-xl text-sm">
-          <span className="mb-1 block text-ink/50">Szenario</span>
-          <select
-            className="w-full rounded-md border border-ink/15 bg-white px-3 py-2 text-ink"
-            value={selectedKey ?? ""}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (!v) {
-                resetToIncumbentGovernments();
-                return;
-              }
-              const row = majorityCheck?.coalitions.find(
-                (r) => rowKey(r) === v,
-              );
-              if (row) applyMajorityCheckRow(row);
-            }}
-          >
-            <option value="">Amtierende Landesregierungen</option>
-            {(majorityCheck?.coalitions ?? []).map((row) => {
-              const key = rowKey(row);
-              const title =
-                row.label?.trim() ||
-                row.parties.map(labelPartyId).join(" + ");
-              return (
-                <option key={key} value={key}>
-                  {title}
-                  {row.is_incumbent ? " (Bundesregierung)" : ""}
-                </option>
-              );
-            })}
-          </select>
-        </label>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-stretch">
         <BundesratMap
           laender={status.laender}
           votes={votes ?? []}
@@ -561,17 +444,30 @@ export function BundesratSandbox() {
               ?.scrollIntoView({ behavior: "smooth", block: "center" })
           }
         />
+        <div className="rounded-xl border border-ink/10 bg-gradient-to-b from-mist/20 to-white/60 p-4">
+          <VoteCounter
+            yes={yes}
+            no={no}
+            abstain={abstain}
+            total={status.total_votes}
+            majoritySimple={status.majority_threshold}
+            majorityTwoThirds={status.two_thirds_threshold}
+            hasMajority={hasMajority}
+            hasTwoThirds={hasTwoThirds}
+            busy={busy}
+          />
+        </div>
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl text-ink">Länder im Detail</h2>
+        <h2 className="font-display text-xl text-ink">Länder</h2>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[40rem] border-collapse text-sm">
+          <table className="w-full min-w-[42rem] border-collapse text-sm">
             <thead>
               <tr className="border-b border-ink/15 text-left text-ink/50">
                 <th className="py-2 pr-3 font-medium">Land</th>
                 <th className="py-2 pr-3 font-medium">Stimmen</th>
-                <th className="py-2 pr-3 font-medium">Wahl</th>
+                <th className="py-2 pr-3 font-medium">Override</th>
                 <th className="py-2 pr-3 font-medium">Regierung</th>
                 <th className="py-2 font-medium">Stimme</th>
               </tr>
@@ -579,7 +475,8 @@ export function BundesratSandbox() {
             <tbody>
               {status.laender.map((land) => {
                 const vote = voteById.get(land.parliament_id);
-                const choice = choices[land.parliament_id] ?? "default";
+                const override = landOverrides[land.parliament_id] ?? "auto";
+                const auto = autoChoices[land.parliament_id] ?? "abstain";
                 return (
                   <tr
                     key={land.parliament_id}
@@ -592,12 +489,14 @@ export function BundesratSandbox() {
                     <td className="py-2.5 pr-3 tabular-nums">{land.votes}</td>
                     <td className="py-2.5 pr-3">
                       <select
-                        className="max-w-[16rem] rounded border border-ink/15 bg-white px-2 py-1 text-ink"
-                        value={choice}
-                        onChange={(e) => setLandChoice(land, e.target.value)}
+                        className="max-w-[18rem] rounded border border-ink/15 bg-white px-2 py-1 text-ink"
+                        value={override}
+                        onChange={(e) =>
+                          setLandOverride(land, e.target.value)
+                        }
                       >
-                        <option value="default">
-                          Amtierend: {land.default_government_label}
+                        <option value="auto">
+                          Automatisch ({autoLabel(auto)})
                         </option>
                         {land.coalition_options.map((opt) => (
                           <option key={opt.key} value={opt.key}>
@@ -606,15 +505,16 @@ export function BundesratSandbox() {
                             {opt.seats} Sitze)
                           </option>
                         ))}
-                        <option value="abstain">Enthaltung</option>
+                        <option value="default">Ja</option>
                         <option value="reject">Nein</option>
+                        <option value="abstain">Enthaltung</option>
                       </select>
                     </td>
                     <td className="py-2.5 pr-3 text-ink/70">
                       {vote?.government_label ?? land.default_government_label}
                     </td>
                     <td className="py-2.5">
-                      <StanceBadge stance={vote?.stance ?? "yes"} />
+                      <StanceBadge stance={vote?.stance ?? "abstain"} />
                     </td>
                   </tr>
                 );

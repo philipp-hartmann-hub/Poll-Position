@@ -17,6 +17,13 @@ class ElectionResult(BaseModel):
     label: str
     source: str | None = None
     results: dict[str, float] = Field(..., min_length=1)
+    grundmandat_party_ids: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Parteien, die über die Grundmandatsklausel (Direktmandate) "
+            "trotz unterschrittenem Stimmenanteil an der Sitzzuteilung teilnehmen"
+        ),
+    )
 
 
 class ElectionResultsBundle(BaseModel):

@@ -584,6 +584,33 @@ export type BundesratMajorityCheckResponse = {
   coalitions: BundesratMajorityCheckItem[];
 };
 
+export type GovernmentParty = {
+  id: string;
+  label: string;
+};
+
+export type GovernmentPollPreset = {
+  parties: string[];
+  label: string;
+  majority_probability: number;
+  n_majority: number;
+  n_simulations: number;
+};
+
+export type GovernmentResponse = {
+  bundesregierung: {
+    stand: string;
+    parties: string[];
+    label: string;
+  } | null;
+  known_parties: GovernmentParty[];
+  poll_presets: GovernmentPollPreset[];
+};
+
+export function fetchGovernment(): Promise<GovernmentResponse> {
+  return apiFetch("/api/government");
+}
+
 export function fetchBundesratStatus(): Promise<BundesratStatusResponse> {
   return apiFetch("/api/bundesrat/status");
 }

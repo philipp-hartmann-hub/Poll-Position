@@ -5,6 +5,7 @@ Quellen:
 - BTW 2025: Die Bundeswahlleiterin (endgültiges Ergebnis)
 - Saarland 2022: Landeswahlleiterin Saarland (d’Hondt, 51 Sitze)
 - Thüringen 2024: Landeswahlleiter Thüringen / Bundeswahlleiterin (Hare/Niemeyer, 88 Sitze)
+- Sachsen 2024: Landeswahlleiter Sachsen / Landtag Sachsen (Sainte-Laguë, Grundmandat Linke)
 - Nationalrat 2024: BMI / Bundeswahlbehörde (gültige Stimmen 4_882_888; Mandate 183)
 """
 
@@ -232,14 +233,8 @@ def test_allocate_seats_dispatch_bundestag_config():
     bundle = load_parliament_config()
     bt = next(p for p in bundle.parliaments if p.id == "de_bundestag")
     system = next(s for s in bundle.election_systems if s.key == bt.election_system_key)
-    seats = allocate_seats(
-        bt,
-        BTW_2025_VOTES,
-        election_system=system,
-        total_votes=BTW_2025_TOTAL,
-        # SSW-ID in Config ist de:ssw — Stimmen-Key hier "SSW"
-    )
-    # minority_exempt in YAML: [] — SSW braucht Exemption; daher explizit mit System-Kopie
+    assert "de:ssw" in system.minority_exempt_party_ids
+    # YAML: minority_exempt_party_ids=["de:ssw"]; Stimmen-Key hier "SSW" — System-Kopie
     system_ssw = ElectionSystem(
         key=system.key,
         allocation_method=system.allocation_method,
@@ -259,6 +254,82 @@ def test_allocate_seats_dispatch_bundestag_config():
     assert seats["CDU"] == 164
     assert seats["SSW"] == 1
     assert sum(seats.values()) == 630
+
+
+# Sachsen LTW 2024 — Listenstimmenanteile (amtlich); Sitze ohne FW-Einzelmandat-Sonderfall
+# Amtlich: CDU 41, AfD 40, BSW 15, SPD 10, Grüne 7, Linke 6, FW 1 (= 120)
+# Linke 4,5 % + 2 Direktmandate → Grundmandatsklausel (§6 Abs. 1 SächsWahlG)
+# Proportionalmodell ohne FW-Direktmandat: Linke 6 wie amtlich; CDU erhält den FW-Sitz.
+SACHSEN_2024_VOTES: dict[str, float] = {
+    "de:cdu": 31.9,
+    "de:afd": 30.6,
+    "de:bsw": 11.8,
+    "de:spd": 7.3,
+    "de:gruene": 5.1,
+    "de:linke": 4.5,
+    "de:fw": 2.3,
+    "de:freie_sachsen": 2.2,
+    "de:fdp": 0.9,
+    "de:sonstige": 3.4,
+}
+
+
+def test_sachsen_2024_linke_grundmandat_official_seats():
+    """
+    Linke unter 5 %, aber mit 2 Wahlkreisen über die Grundmandatsklausel → 6 Sitze (amtlich).
+
+    Ohne constituency_wins schließt die 5 %-Hürde sie aus.
+    Freie Wähler (1 Direktmandat < grundmandat_seats=2) bleiben unter der Hürde —
+    das amtliche FW-Einzelmandat bildet unser Proportionalmodell nicht ab.
+    """
+    bundle = load_parliament_config()
+    sn = next(p for p in bundle.parliaments if p.id == "de_sn_landtag")
+    system = next(s for s in bundle.election_systems if s.key == sn.election_system_key)
+    assert system.grundmandat_seats == 2
+    assert system.allocation_method == AllocationMethod.SAINTE_LAGUE_SCHEPERS
+
+    without = allocate_seats(sn, SACHSEN_2024_VOTES, election_system=system)
+    assert without["de:linke"] == 0
+
+    seats = allocate_seats(
+        sn,
+        SACHSEN_2024_VOTES,
+        election_system=system,
+        constituency_wins={"de:linke": 2},
+    )
+    assert seats["de:linke"] == 6  # amtlich (Landtag Sachsen / Landeswahlleiter)
+    assert seats["de:afd"] == 40
+    assert seats["de:bsw"] == 15
+    assert seats["de:spd"] == 10
+    assert seats["de:gruene"] == 7
+    assert seats["de:fw"] == 0
+    assert sum(seats.values()) == 120
+
+
+def test_dhondt_and_hare_niemeyer_respect_constituency_wins():
+    """Synthetisch: Partei unter der Hürde, aber mit genug Direktmandaten → Sitze."""
+    votes = {"A": 50.0, "B": 40.0, "C": 10.0}
+    assert dhondt(votes, 100, threshold=0.12)["C"] == 0
+    assert hare_niemeyer(votes, 100, threshold=0.12)["C"] == 0
+
+    dh = dhondt(
+        votes,
+        100,
+        threshold=0.12,
+        constituency_wins={"C": 1},
+        grundmandat_seats=1,
+    )
+    hn = hare_niemeyer(
+        votes,
+        100,
+        threshold=0.12,
+        constituency_wins={"C": 1},
+        grundmandat_seats=1,
+    )
+    assert dh["C"] > 0
+    assert hn["C"] > 0
+    assert sum(dh.values()) == 100
+    assert sum(hn.values()) == 100
 
 
 def test_allocate_seats_dispatch_saarland_dhondt():
