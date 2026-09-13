@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { fetchParliaments, type Parliament } from "@/lib/api";
@@ -8,15 +7,6 @@ import {
   DE_PARLIAMENTS,
   parliamentIdFromPath,
 } from "@/lib/deParliaments";
-import { ParliamentIdProvider } from "./parliament-context";
-
-const TABS = [
-  { slug: "", label: "Übersicht" },
-  { slug: "sitze", label: "Sitze" },
-  { slug: "koalitionen", label: "Koalitionen" },
-  { slug: "institute", label: "Institute" },
-  { slug: "szenario", label: "Szenario" },
-] as const;
 
 function sortDeParliaments(list: Parliament[]): Parliament[] {
   return [...list]
@@ -36,13 +26,6 @@ function mergeDeParliaments(apiList: Parliament[]): Parliament[] {
     byId.set(p.id, { ...byId.get(p.id), ...p });
   }
   return sortDeParliaments([...byId.values()]);
-}
-
-function currentTabSlug(pathname: string, parliamentId: string): string {
-  const prefix = `/parlament/${parliamentId}`;
-  if (pathname === prefix || pathname === `${prefix}/`) return "";
-  if (!pathname.startsWith(`${prefix}/`)) return "";
-  return pathname.slice(prefix.length + 1).split("/")[0] ?? "";
 }
 
 /** Hinweistext für nächste Wahl; bei abgelaufenem Datum null (nichts anzeigen). */
@@ -82,8 +65,7 @@ export function ParliamentLayoutClient({
   const router = useRouter();
   const pathname = usePathname();
   // URL ist maßgeblich — Layout-Props können bei Client-Navigation kurz hinken.
-  const parliamentId =
-    parliamentIdFromPath(pathname) ?? parliamentIdProp;
+  const parliamentId = parliamentIdFromPath(pathname) ?? parliamentIdProp;
 
   const [parliaments, setParliaments] = useState<Parliament[]>(() =>
     sortDeParliaments(DE_PARLIAMENTS),
@@ -94,7 +76,9 @@ export function ParliamentLayoutClient({
     void fetchParliaments()
       .then((list) => setParliaments(mergeDeParliaments(list)))
       .catch((e) =>
-        setLoadError(e instanceof Error ? e.message : "Parlamente laden fehlgeschlagen"),
+        setLoadError(
+          e instanceof Error ? e.message : "Parlamente laden fehlgeschlagen",
+        ),
       );
   }, []);
 
@@ -104,91 +88,60 @@ export function ParliamentLayoutClient({
     return { bund: bundList, laender: stateList };
   }, [parliaments]);
 
-  const tabSlug = currentTabSlug(pathname, parliamentId);
   const knownId = parliaments.some((p) => p.id === parliamentId);
   const currentParliament = parliaments.find((p) => p.id === parliamentId);
   const electionHint = nextElectionHint(currentParliament);
 
   function onParliamentChange(nextId: string) {
     if (!nextId || nextId === parliamentId) return;
-    const suffix = tabSlug ? `/${tabSlug}` : "";
-    router.push(`/parlament/${nextId}${suffix}`);
+    router.push(`/parlament/${nextId}`);
   }
 
   return (
-    <ParliamentIdProvider parliamentId={parliamentId}>
-      <div className="space-y-6">
-        <div className="flex max-w-xl flex-col gap-1 sm:flex-row sm:items-end sm:gap-4">
-          <label className="block min-w-0 flex-1 text-sm">
-            <span className="mb-1 block text-ink/50">Parlament wählen</span>
-            <select
-              className="w-full rounded-md border border-ink/15 bg-white px-3 py-2"
-              value={parliamentId}
-              onChange={(e) => onParliamentChange(e.target.value)}
-            >
-              {!knownId && <option value={parliamentId}>{parliamentId}</option>}
-              {bund.length > 0 && (
-                <optgroup label="Bund">
-                  {bund.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-              {laender.length > 0 && (
-                <optgroup label="Länder">
-                  {laender.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
-          </label>
-          {electionHint ? (
-            <p className="pb-2 text-xs text-ink/55 sm:max-w-[14rem] sm:pb-2.5">
-              {electionHint}
-            </p>
-          ) : null}
-        </div>
-
-        {loadError && (
-          <p className="text-sm text-ink/45">
-            Live-Liste nicht erreichbar — lokale Auswahl wird genutzt.
+    <div className="space-y-6">
+      <div className="flex max-w-xl flex-col gap-1 sm:flex-row sm:items-end sm:gap-4">
+        <label className="block min-w-0 flex-1 text-sm">
+          <span className="mb-1 block text-ink/50">Parlament wählen</span>
+          <select
+            className="w-full rounded-md border border-ink/15 bg-white px-3 py-2"
+            value={parliamentId}
+            onChange={(e) => onParliamentChange(e.target.value)}
+          >
+            {!knownId && <option value={parliamentId}>{parliamentId}</option>}
+            {bund.length > 0 && (
+              <optgroup label="Bund">
+                {bund.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {laender.length > 0 && (
+              <optgroup label="Länder">
+                {laender.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+          </select>
+        </label>
+        {electionHint ? (
+          <p className="pb-2 text-xs text-ink/55 sm:max-w-[14rem] sm:pb-2.5">
+            {electionHint}
           </p>
-        )}
-
-        <nav
-          className="flex flex-wrap gap-1 border-b border-ink/10"
-          aria-label="Parlament-Bereiche"
-        >
-          {TABS.map((tab) => {
-            const href =
-              tab.slug === ""
-                ? `/parlament/${parliamentId}`
-                : `/parlament/${parliamentId}/${tab.slug}`;
-            const active = tabSlug === tab.slug;
-            return (
-              <Link
-                key={tab.slug || "uebersicht"}
-                href={href}
-                className={
-                  active
-                    ? "border-b-2 border-sea px-3 py-2 text-sm font-medium text-ink"
-                    : "border-b-2 border-transparent px-3 py-2 text-sm text-ink/60 transition hover:text-ink"
-                }
-                aria-current={active ? "page" : undefined}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div>{children}</div>
+        ) : null}
       </div>
-    </ParliamentIdProvider>
+
+      {loadError && (
+        <p className="text-sm text-ink/45">
+          Live-Liste nicht erreichbar — lokale Auswahl wird genutzt.
+        </p>
+      )}
+
+      <div>{children}</div>
+    </div>
   );
 }

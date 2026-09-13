@@ -7,14 +7,39 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/",
+        destination: "/parlament/de_bundestag",
+        permanent: false,
+      },
+      {
         source: "/deutschland/bund",
         destination: "/parlament/de_bundestag",
         permanent: true,
       },
       {
         source: "/szenario",
-        destination: "/parlament/de_bundestag/szenario",
-        permanent: true,
+        destination: "/parlament/de_bundestag",
+        permanent: false,
+      },
+      {
+        source: "/parlament/:id/sitze",
+        destination: "/parlament/:id",
+        permanent: false,
+      },
+      {
+        source: "/parlament/:id/koalitionen",
+        destination: "/parlament/:id",
+        permanent: false,
+      },
+      {
+        source: "/parlament/:id/institute",
+        destination: "/parlament/:id",
+        permanent: false,
+      },
+      {
+        source: "/parlament/:id/szenario",
+        destination: "/parlament/:id",
+        permanent: false,
       },
     ];
   },

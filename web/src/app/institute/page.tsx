@@ -14,12 +14,12 @@ export default function InstitutePage() {
           weichen Institute voneinander ab (House Effects).
         </p>
         <p className="max-w-2xl text-sm text-ink/55">
-          Detailansicht je Parlament unter{" "}
+          House Effects je Parlament im Tag „Institute“ unter{" "}
           <Link
-            href="/parlament/de_bundestag/institute"
+            href="/parlament/de_bundestag"
             className="text-sea underline-offset-2 hover:underline"
           >
-            Parlament → Institute
+            Parlament
           </Link>
           .
         </p>

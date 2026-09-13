@@ -1,10 +1,10 @@
-import { OverviewSection } from "@/components/OverviewSection";
+import { ParliamentDashboard } from "@/components/ParliamentDashboard";
 
-export default async function ParlamentUebersichtPage({
+export default async function ParlamentPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <OverviewSection parliamentId={id} />;
+  return <ParliamentDashboard parliamentId={id} />;
 }

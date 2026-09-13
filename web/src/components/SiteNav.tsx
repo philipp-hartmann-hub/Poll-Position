@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { features } from "@/lib/features";
 
 const links = [
-  { href: "/", label: "Übersicht", match: "exact" as const },
   {
     href: "/parlament/de_bundestag",
     label: "Deutschland",
@@ -26,9 +25,8 @@ const links = [
 function isActive(
   pathname: string,
   href: string,
-  match: "exact" | "prefix" | "parlament" | "laender",
+  match: "prefix" | "parlament" | "laender",
 ): boolean {
-  if (match === "exact") return pathname === href;
   if (match === "laender") {
     return pathname === href || pathname.startsWith(`${href}/`);
   }
@@ -44,7 +42,10 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="font-display text-xl tracking-tight text-ink">
+        <Link
+          href="/parlament/de_bundestag"
+          className="font-display text-xl tracking-tight text-ink"
+        >
           Poll-Position
         </Link>
         <nav className="flex flex-wrap gap-1 text-sm">
