@@ -375,6 +375,20 @@ class GovernmentResponse(BaseModel):
     poll_presets: list[GovernmentPollPresetOut] = Field(default_factory=list)
 
 
+class StagingElectionDraftOut(BaseModel):
+    path: str
+    parliament_id: str | None = None
+    election_date: str | None = None
+    label: str | None = None
+    source_url: str | None = None
+    grundmandat_candidates: list[str] = Field(default_factory=list)
+
+
+class DataFreshnessResponse(BaseModel):
+    staging_election_drafts: list[StagingElectionDraftOut] = Field(default_factory=list)
+    government_age_warnings: list[str] = Field(default_factory=list)
+
+
 class BundesratMajorityCheckResponse(BaseModel):
     as_of: str
     total_votes: int

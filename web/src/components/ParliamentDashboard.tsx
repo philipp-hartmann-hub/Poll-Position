@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
+import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
@@ -223,6 +224,8 @@ export function ParliamentDashboard({
 
   return (
     <div className="space-y-8">
+      <DataFreshnessBanner />
+
       <section className="space-y-4">
         <h2 className="font-display text-2xl text-ink">
           Sitze & aktuelle Regierung

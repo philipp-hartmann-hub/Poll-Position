@@ -334,6 +334,13 @@ def get_government() -> schemas.GovernmentResponse:
     return schemas.GovernmentResponse.model_validate(services.government_payload())
 
 
+@app.get("/api/data-freshness", response_model=schemas.DataFreshnessResponse)
+def get_data_freshness() -> schemas.DataFreshnessResponse:
+    return schemas.DataFreshnessResponse.model_validate(
+        services.data_freshness_payload()
+    )
+
+
 @app.get("/api/bundesrat/status", response_model=schemas.BundesratStatusResponse)
 def get_bundesrat_status() -> schemas.BundesratStatusResponse:
     return schemas.BundesratStatusResponse.model_validate(

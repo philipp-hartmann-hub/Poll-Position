@@ -962,6 +962,16 @@ def test_government(client):
     assert probs == sorted(probs, reverse=True)
 
 
+def test_data_freshness(client):
+    r = client.get("/api/data-freshness")
+    assert r.status_code == 200
+    body = r.json()
+    assert "staging_election_drafts" in body
+    assert "government_age_warnings" in body
+    assert isinstance(body["staging_election_drafts"], list)
+    assert isinstance(body["government_age_warnings"], list)
+
+
 def test_bundesrat_status(client):
     r = client.get("/api/bundesrat/status")
     assert r.status_code == 200

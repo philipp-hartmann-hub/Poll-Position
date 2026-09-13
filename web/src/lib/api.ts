@@ -611,6 +611,24 @@ export function fetchGovernment(): Promise<GovernmentResponse> {
   return apiFetch("/api/government");
 }
 
+export type StagingElectionDraft = {
+  path: string;
+  parliament_id?: string | null;
+  election_date?: string | null;
+  label?: string | null;
+  source_url?: string | null;
+  grundmandat_candidates?: string[];
+};
+
+export type DataFreshnessResponse = {
+  staging_election_drafts: StagingElectionDraft[];
+  government_age_warnings: string[];
+};
+
+export function fetchDataFreshness(): Promise<DataFreshnessResponse> {
+  return apiFetch("/api/data-freshness");
+}
+
 export function fetchBundesratStatus(): Promise<BundesratStatusResponse> {
   return apiFetch("/api/bundesrat/status");
 }

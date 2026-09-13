@@ -1,4 +1,5 @@
 import { BundesratSandbox } from "@/components/BundesratSandbox";
+import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 
 export default function BundesratPage() {
   return (
@@ -12,6 +13,7 @@ export default function BundesratPage() {
         einheitliche Landesstimme — Ausgangspunkt ist Enthaltung. Landes-
         Overrides und Umfrage-Presets überschreiben die Automatik.
       </p>
+      <DataFreshnessBanner />
       <BundesratSandbox />
     </div>
   );

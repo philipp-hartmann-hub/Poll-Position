@@ -433,3 +433,69 @@ PARSERS: dict[str, Callable[[str], list[IntermediatePoll]]] = {
     "sweden": parse_sweden,
     "portugal": parse_portugal,
 }
+
+
+_ELECTION_ROW_RE = re.compile(
+    r"(?i)^\s*("
+    r"landtagswahl|bürgerschaftswahl|buergerschaftswahl|"
+    r"bundestagswahl|abgeordnetenhauswahl|"
+    r"wahl\s+zum\s+abgeordnetenhaus|"
+    r"wahlergebnis|endgültiges\s+ergebnis|endgueltiges\s+ergebnis|"
+    r"vorläufiges\s+ergebnis|vorlaeufiges\s+ergebnis|"
+    r"ergebnis"
+    r")\b"
+)
+
+
+def parse_election_result_table(html: str) -> dict[str, float] | None:
+    """
+    Extrahiert Parteianteile (%) aus einer Wikipedia-Wahlergebnis-Tabelle.
+
+    Sucht in ``wikitable``-Tabellen eine Ergebniszeile (z. B. „Landtagswahl 2026“)
+    und mappt die Partei-Spaltenköpfe auf Prozentwerte via ``_party_label`` /
+    ``_parse_percent``. Ohne auswertbare Tabelle: ``None`` (kein Raise).
+    """
+    if not html or not html.strip():
+        return None
+    soup = BeautifulSoup(html, "html.parser")
+    tables = soup.find_all("table", class_=lambda c: c and "wikitable" in str(c))
+    best: dict[str, float] | None = None
+
+    for table in tables:
+        rows = table.find_all("tr")
+        if len(rows) < 2:
+            continue
+        header_cells = rows[0].find_all(["th", "td"])
+        party_cols: list[tuple[int, str]] = []
+        for idx, cell in enumerate(header_cells):
+            label = _party_label(cell)
+            if not label:
+                continue
+            low = label.lower().strip()
+            if _is_meta(low) or low in SKIP_PARTY_HEADERS:
+                continue
+            if low in {"institut", "institute", "datum", "date", "partei", "listen"}:
+                continue
+            party_cols.append((idx, label))
+        if len(party_cols) < 3:
+            continue
+
+        for row in rows[1:]:
+            cells = row.find_all(["th", "td"])
+            if not cells:
+                continue
+            first = _cell_text(cells[0])
+            if not first or not _ELECTION_ROW_RE.search(first):
+                continue
+            results: dict[str, float] = {}
+            for col_idx, label in party_cols:
+                if col_idx >= len(cells):
+                    continue
+                pct = _parse_percent(_cell_text(cells[col_idx]))
+                if pct is None:
+                    continue
+                results[label] = pct
+            if len(results) >= 3 and (best is None or len(results) > len(best)):
+                best = results
+
+    return best

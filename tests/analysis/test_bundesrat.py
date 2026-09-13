@@ -165,3 +165,34 @@ def test_group_votes_by_coalition_current_16_states(bundesrat_cfg):
         ["de:cdu", "de:gruene"]
     )
     assert informal_coalition_label(["de:csu", "de:spd"]) == "Schwarz-Rot"
+
+
+def test_check_government_config_age_current_vs_old(bundesrat_cfg):
+    from datetime import date, timedelta
+
+    from analysis.bundesrat import check_government_config_age
+
+    as_of = date(2026, 9, 14)
+    # Stand 2026-08-25 → 20 Tage < 60
+    assert check_government_config_age(bundesrat_cfg, max_age_days=60, as_of=as_of) == []
+
+    old = bundesrat_cfg.model_copy(
+        update={
+            "stand": "2026-01-01",
+            "bundesregierung": bundesrat_cfg.bundesregierung.model_copy(
+                update={"stand": "2025-12-01"}
+            )
+            if bundesrat_cfg.bundesregierung
+            else None,
+        }
+    )
+    warnings = check_government_config_age(old, max_age_days=60, as_of=as_of)
+    assert len(warnings) == 2
+    assert any("Bundesrat-Länderstand" in w for w in warnings)
+    assert any("Bundesregierung" in w for w in warnings)
+    # Frische Schwelle: selbst aktueller Stand wäre alt bei max_age_days=0
+    assert check_government_config_age(
+        bundesrat_cfg,
+        max_age_days=0,
+        as_of=as_of + timedelta(days=1),
+    )

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Literal, Mapping, Sequence
 
@@ -204,6 +205,39 @@ def informal_coalition_label(parties: Sequence[str]) -> str:
 
     ordered = sorted(raw, key=_raw_sort)
     return " + ".join(party_display_label(p) for p in ordered)
+
+
+def check_government_config_age(
+    config: BundesratConfig,
+    max_age_days: int = 60,
+    as_of: date | None = None,
+) -> list[str]:
+    """
+    Warnungen, wenn Config-``stand`` (Länder-Root oder Bundesregierung)
+    älter als ``max_age_days`` ist.
+    """
+    as_of = as_of or date.today()
+    warnings: list[str] = []
+
+    def _check(label: str, stand_raw: str | None) -> None:
+        if not stand_raw:
+            return
+        try:
+            stand = date.fromisoformat(str(stand_raw).strip()[:10])
+        except ValueError:
+            warnings.append(f"{label}: ungültiges Stand-Datum {stand_raw!r}")
+            return
+        age = (as_of - stand).days
+        if age > max_age_days:
+            warnings.append(
+                f"{label}: Stand {stand.isoformat()} ist {age} Tage alt "
+                f"(Schwelle {max_age_days} Tage)"
+            )
+
+    _check("Bundesrat-Länderstand", config.stand)
+    if config.bundesregierung is not None:
+        _check("Bundesregierung", config.bundesregierung.stand)
+    return warnings
 
 
 def _stance_for_party(

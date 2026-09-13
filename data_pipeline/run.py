@@ -23,6 +23,37 @@ ADAPTERS = [
 ]
 
 
+def _run_freshness_checks(*, as_of: date) -> None:
+    """Fehlertolerant: Wahlergebnis-Watch + Regierungs-Stand-Alter."""
+    try:
+        from data_pipeline.sources.election_watch import run_election_watch
+
+        run_election_watch(as_of=as_of)
+    except Exception:
+        log.exception("Election-Watch-Schritt fehlgeschlagen — Pipeline läuft weiter")
+
+    try:
+        from analysis.bundesrat import check_government_config_age, load_bundesrat_config
+
+        cfg = load_bundesrat_config()
+        for msg in check_government_config_age(cfg, as_of=as_of):
+            log.warning("Regierungskonfig: %s", msg)
+    except Exception:
+        log.exception("Regierungskonfig-Alterscheck fehlgeschlagen — weiter")
+
+    # Optional, Best-Effort: Diff Ministerpräsidenten-Liste vs. Config
+    try:
+        from data_pipeline.sources.election_watch import (
+            maybe_scrape_ministerpraesidenten_diff,
+        )
+
+        notes = maybe_scrape_ministerpraesidenten_diff()
+        for note in notes:
+            log.warning("Regierungs-Scraper: %s", note)
+    except Exception:
+        log.exception("Ministerpräsidenten-Scraper fehlgeschlagen — weiter")
+
+
 def main() -> int:
     """Führt alle Connectoren und Gold-Refresh aus. Rückgabe: 0 ok, 1 Fehler."""
     today = date.today()
@@ -61,6 +92,8 @@ def main() -> int:
                     result.results_new,
                     len(result.surveys),
                 )
+
+        _run_freshness_checks(as_of=today)
 
         n_avg, n_tr = refresh_gold_averages(reference_date=today)
         log.info("Gold: party_averages=%d party_trends=%d", n_avg, n_tr)

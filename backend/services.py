@@ -15,6 +15,7 @@ from analysis.averages import (
     party_trends_for_parliament,
 )
 from analysis.bundesrat import (
+    check_government_config_age,
     choices_for_coalition,
     coalition_key,
     group_votes_by_coalition,
@@ -1382,6 +1383,29 @@ def government_payload() -> dict[str, Any]:
         "bundesregierung": bundesregierung,
         "known_parties": known_parties,
         "poll_presets": presets,
+    }
+
+
+def data_freshness_payload() -> dict[str, Any]:
+    """Offene Staging-Wahlergebnis-Entwürfe + Regierungs-Stand-Warnungen."""
+    staging: list[dict[str, Any]] = []
+    try:
+        from data_pipeline.sources.election_watch import list_staging_drafts
+
+        staging = list_staging_drafts()
+    except Exception:
+        staging = []
+
+    gov_warnings: list[str] = []
+    try:
+        cfg = load_bundesrat_config()
+        gov_warnings = check_government_config_age(cfg)
+    except Exception:
+        gov_warnings = []
+
+    return {
+        "staging_election_drafts": staging,
+        "government_age_warnings": gov_warnings,
     }
 
 

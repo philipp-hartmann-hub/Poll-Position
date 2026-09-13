@@ -18,12 +18,15 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: write
+      issues: write
 
     env:
       PYTHONUNBUFFERED: "1"
       # Secrets: Settings → Secrets and variables → Actions (nie im Repo committen)
       MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
       MOTHERDUCK_DATABASE: ${{ secrets.MOTHERDUCK_DATABASE }}
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - name: Checkout
@@ -114,8 +117,11 @@ jobs:
             find web/public/data -depth -type d -name '*:*' -exec rm -rf {} +
           fi
           git add web/public/data
+          # Election-/Regierungs-Entwürfe zur manuellen Prüfung
+          mkdir -p data/staging/election_results data/staging/government
+          git add data/staging
           if git diff --cached --quiet; then
-            echo "Keine Änderungen am Static-Export."
+            echo "Keine Änderungen am Static-Export / Staging."
           else
             git commit -m "chore: aktualisiere Static-JSON-Export [skip ci]"
             git push
