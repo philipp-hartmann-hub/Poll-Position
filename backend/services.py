@@ -5,7 +5,7 @@ from __future__ import annotations
 import copy
 import time
 from datetime import date, datetime, timedelta
-from typing import Any
+from typing import Any, Sequence
 
 from analysis.averages import (
     PollObservationPoint,
@@ -22,7 +22,11 @@ from analysis.bundesrat import (
     parse_coalition_key,
     simulate_bundesrat,
 )
-from analysis.coalitions import list_active_exclusion_rules, possible_majorities
+from analysis.coalitions import (
+    list_active_exclusion_rules,
+    majority_threshold,
+    possible_majorities,
+)
 from analysis.house_effects import (
     aggregate_institute_leaderboard,
     backtest_institutes,
@@ -715,6 +719,76 @@ def _present_parties_for_exclusion_ui(parliament_id: str) -> set[str]:
     return present
 
 
+def _expanded_coalition_candidates(
+    parliament_id: str,
+    votes: dict[str, float],
+    names: dict[str, str],
+    *,
+    total_seats: int,
+    max_parties: int = 4,
+    majority_band_points: float = 10.0,
+    apply_exclusions: bool = True,
+    disabled_rule_ids: list[str] | None = None,
+) -> list[tuple[str, ...]]:
+    """
+    Zusätzliche Koalitions-Kandidaten (kanonische Partei-IDs) für die
+    Unsicherheits-Simulation, über die deterministischen Top-8 aus
+    coalitions_payload() hinaus.
+
+    1. Nahe der Sperrklausel: eine NOMINALE Sitzverteilung ohne Hürde
+       (threshold_percent=0, sonst identisches Zuteilungsverfahren) macht
+       Parteien sichtbar, die im Punkt-Schätzwert 0 Sitze haben und daher
+       nie in possible_majorities() auftauchen. Koalitionen, die eine
+       solche Partei enthalten, werden hier zusätzlich ermittelt.
+    2. Alleinregierung "falls sinnvoll": eine einzelne Partei, deren
+       NOMINALE Sitzzahl mindestens (50 − majority_band_points) % der
+       Kammer erreicht, wird zusätzlich als 1-Partei-Kandidat aufgenommen
+       — auch wenn sie im Punkt-Schätzwert noch keine Mehrheit hat.
+       Kleinere Parteien werden bewusst nicht einbezogen.
+
+    Rein additiv zu den deterministischen Top-8; ob ein Kandidat am Ende
+    in der Antwort auftaucht, entscheidet uncertainty_payload() über
+    n_majority > 0.
+    """
+    if not votes or total_seats <= 0:
+        return []
+
+    parliament, system = _election_system_for(parliament_id)
+    if parliament and system:
+        nominal_system = system.model_copy(update={"threshold_percent": 0.0})
+        nominal_seats = allocate_seats(
+            parliament, votes, election_system=nominal_system
+        )
+    else:
+        nominal_seats = sainte_lague_schepers(votes, total_seats, 0.0)
+
+    canon_nominal = _seats_to_canonical(nominal_seats, names)
+    if not canon_nominal:
+        return []
+
+    result = possible_majorities(
+        canon_nominal,
+        total_seats,
+        max_parties=max_parties,
+        parliament_id=parliament_id,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
+    )
+    candidates: list[tuple[str, ...]] = [c.parties for c in result.coalitions]
+
+    thr = majority_threshold(total_seats)
+    seat_margin = max(0, round(majority_band_points / 100 * total_seats))
+    have_singleton = {c[0] for c in candidates if len(c) == 1}
+    for pid, seats_n in canon_nominal.items():
+        if pid in have_singleton:
+            continue
+        if seats_n >= thr - seat_margin:
+            candidates.append((pid,))
+
+    candidates.sort(key=lambda c: -sum(canon_nominal.get(p, 0) for p in c))
+    return candidates
+
+
 def uncertainty_payload(
     parliament_id: str,
     *,
@@ -749,11 +823,36 @@ def uncertainty_payload(
         if name in SHORT_TO_CANONICAL
     }
     id_to_canon = {v: k for k, v in canon_to_id.items()}
+
     mapped: list[tuple[str, ...]] = []
+    mapped_set: set[tuple[str, ...]] = set()
+    deterministic_ids: set[tuple[str, ...]] = set()
+
+    def _add_candidate(canon_parties: Sequence[str]) -> None:
+        ids = tuple(sorted(canon_to_id[p] for p in canon_parties if p in canon_to_id))
+        if not ids or len(ids) != len(canon_parties) or ids in mapped_set:
+            return
+        mapped_set.add(ids)
+        mapped.append(ids)
+
     for c in coal["coalitions"][:8]:
-        ids = tuple(sorted(canon_to_id[p] for p in c["parties"] if p in canon_to_id))
-        if len(ids) == len(c["parties"]):
-            mapped.append(ids)
+        before = len(mapped)
+        _add_candidate(c["parties"])
+        if len(mapped) > before:
+            deterministic_ids.add(mapped[-1])
+
+    if total and total > 0:
+        expanded = _expanded_coalition_candidates(
+            parliament_id,
+            votes,
+            names,
+            total_seats=total,
+            apply_exclusions=apply_exclusions,
+            disabled_rule_ids=disabled_rule_ids,
+        )
+        for combo in expanded:
+            _add_candidate(combo)
+        mapped = mapped[:20]
 
     bundle = load_parliament_config()
     parliament = next((p for p in bundle.parliaments if p.id == parliament_id), None)
@@ -787,6 +886,7 @@ def uncertainty_payload(
                 "n_simulations": c.n_simulations,
             }
             for c in result.coalition_probabilities
+            if c.parties in deterministic_ids or c.n_majority > 0
         ],
     }
 

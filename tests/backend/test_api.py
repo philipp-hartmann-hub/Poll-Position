@@ -658,6 +658,137 @@ def test_uncertainty_payload_canonical_coalition_ids(api_warehouse):
             assert not pid.startswith("dawum:party:"), pid
 
 
+def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
+    """~46 % der Sitze → 1-Parteien-Kandidat; ~25 % → nicht."""
+    from backend import services
+
+    total = 100
+    names = {
+        "big": "CDU/CSU",
+        "mid": "SPD",
+        "small": "Grüne",
+        "tiny": "FDP",
+    }
+
+    # Sainte-Lague ohne Hürde: Anteile so wählen, dass big ~46 Sitze bekommt
+    votes_near = {"big": 46.0, "mid": 28.0, "small": 16.0, "tiny": 10.0}
+    monkeypatch.setattr(
+        services,
+        "_election_system_for",
+        lambda _pid: (None, None),
+    )
+    near = services._expanded_coalition_candidates(
+        "toy",
+        votes_near,
+        names,
+        total_seats=total,
+        apply_exclusions=False,
+    )
+    assert ("de:cdu_csu",) in near
+
+    votes_small = {"big": 25.0, "mid": 30.0, "small": 25.0, "tiny": 20.0}
+    far = services._expanded_coalition_candidates(
+        "toy",
+        votes_small,
+        names,
+        total_seats=total,
+        apply_exclusions=False,
+    )
+    assert ("de:cdu_csu",) not in far
+    assert all(len(c) != 1 or c[0] != "de:cdu_csu" for c in far)
+
+
+def test_expanded_coalition_candidates_includes_subthreshold_party(monkeypatch):
+    """Partei knapp unter 5 % erscheint in nominalen Koalitionen (Hürde=0)."""
+    from backend import services
+
+    # FDP bei 4.5 % — mit Hürde 0 Sitze, ohne Hürde sichtbar
+    votes = {
+        "cdu": 34.0,
+        "spd": 28.0,
+        "gru": 14.0,
+        "afd": 19.5,
+        "fdp": 4.5,
+    }
+    names = {
+        "cdu": "CDU/CSU",
+        "spd": "SPD",
+        "gru": "Grüne",
+        "afd": "AfD",
+        "fdp": "FDP",
+    }
+    monkeypatch.setattr(
+        services,
+        "_election_system_for",
+        lambda _pid: (None, None),
+    )
+    expanded = services._expanded_coalition_candidates(
+        "toy",
+        votes,
+        names,
+        total_seats=100,
+        apply_exclusions=False,
+    )
+    assert any("de:fdp" in c for c in expanded), expanded
+
+
+def test_uncertainty_payload_surfaces_near_majority_singleton(monkeypatch, api_warehouse):
+    """Alleinregierung-Kandidat mit ~46 %-Sitzanteil erscheint mit n_majority > 0."""
+    from backend import services
+
+    # Starke Partei knapp unter Mehrheit, Rest klein — oft Alleinregierung in MC
+    votes = {
+        "leader": 48.0,
+        "a": 18.0,
+        "b": 17.0,
+        "c": 17.0,
+    }
+    names = {
+        "leader": "CDU/CSU",
+        "a": "SPD",
+        "b": "Grüne",
+        "c": "AfD",
+    }
+    monkeypatch.setattr(
+        services, "_votes_from_averages", lambda _pid: (votes, names)
+    )
+    monkeypatch.setattr(
+        services, "_party_house_variance", lambda _pid: {k: 4.0 for k in votes}
+    )
+    monkeypatch.setattr(
+        services,
+        "_allocate_for_parliament",
+        lambda _pid, v: (
+            services.sainte_lague_schepers(v, 100, 0.05),
+            100,
+        ),
+    )
+    monkeypatch.setattr(
+        services,
+        "coalitions_payload",
+        lambda *_a, **_k: {
+            "parliament_id": "de_bundestag",
+            "total_seats": 100,
+            "majority_threshold": 51,
+            "coalitions": [],
+        },
+    )
+    monkeypatch.setattr(
+        services,
+        "_election_system_for",
+        lambda _pid: (None, None),
+    )
+
+    payload = services.uncertainty_payload("de_bundestag", n_simulations=200)
+    singles = [
+        e
+        for e in payload["coalition_probabilities"]
+        if e["parties"] == ["de:cdu_csu"]
+    ]
+    assert singles, payload["coalition_probabilities"]
+    assert singles[0]["n_majority"] > 0
+
+
 def test_threshold_watch_payload_band_and_exempt(monkeypatch):
     from types import SimpleNamespace
 

@@ -133,12 +133,19 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
           </p>
           {uncertainty && uncertainty.coalition_probabilities.length > 0 ? (
             <ul className="space-y-2 text-sm">
-              {uncertainty.coalition_probabilities.slice(0, 8).map((c, i) => (
+              {uncertainty.coalition_probabilities.slice(0, 10).map((c, i) => (
                 <li
                   key={i}
                   className="flex items-center justify-between rounded-lg border border-ink/10 bg-white/40 px-3 py-2"
                 >
-                  <span>{c.parties.map(labelPartyId).join(" + ")}</span>
+                  <span>
+                    {c.parties.map(labelPartyId).join(" + ")}
+                    {c.parties.length === 1 ? (
+                      <span className="ml-2 rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
+                        Alleinregierung
+                      </span>
+                    ) : null}
+                  </span>
                   <span className="tabular-nums font-medium">
                     {(c.majority_probability * 100).toFixed(0)} %
                   </span>
