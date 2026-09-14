@@ -129,3 +129,32 @@ def test_party_uncertainties_from_means_accepts_float_and_mapping():
     by_id = {p.party_id: p.house_variance for p in missing}
     assert by_id["A"] == 3.0
     assert by_id["C"] == 1.0  # Default für fehlende Mapping-Keys
+
+
+def test_redundant_threshold_party_does_not_inherit_majority_probability():
+    """
+    A+B allein schon meist Mehrheit; C sperrklausel-nah; D absorbiert Sitze,
+    wenn C scheitert. A+B+C darf nicht die A+B-Quote erben (minimal winning).
+    """
+    means = {"A": 33.0, "B": 30.0, "C": 5.2, "D": 31.8}
+    parties = party_uncertainties_from_means(
+        means,
+        sample_size=8000,
+        house_variance={"A": 0.15, "B": 0.15, "C": 2.5, "D": 0.2},
+    )
+
+    def alloc(votes: dict[str, float]) -> dict[str, int]:
+        return sainte_lague_schepers(votes, 100, threshold=0.05)
+
+    result = simulate_uncertainty(
+        parties,
+        [("A", "B"), ("A", "B", "C")],
+        allocate=alloc,
+        total_seats=100,
+        config=UncertaintyConfig(n_simulations=500, seed=19, renormalize=True),
+    )
+    probs = {c.parties: c.majority_probability for c in result.coalition_probabilities}
+    ab = probs[("A", "B")]
+    abc = probs[("A", "B", "C")]
+    assert ab > 0.9
+    assert abc < ab - 0.5

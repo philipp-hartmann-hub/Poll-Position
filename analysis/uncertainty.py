@@ -7,7 +7,7 @@ import random
 from dataclasses import dataclass
 from typing import Callable, Mapping, Sequence
 
-from analysis.coalitions import has_majority
+from analysis.coalitions import is_minimal_winning
 from analysis.seat_allocation import sainte_lague_schepers
 
 
@@ -94,7 +94,15 @@ def default_seat_allocator(
 class CoalitionProbability:
     parties: tuple[str, ...]
     majority_probability: float
-    """Anteil der Simulationen mit strikter Mehrheit (> 50 %)."""
+    """
+    Anteil der Simulationen, in denen die Koalition **minimal winning** ist:
+    strikte Mehrheit (> 50 %) und keine echte Teilmenge der genannten Parteien
+    hätte allein schon eine Mehrheit (siehe ``is_minimal_winning``).
+
+    Dadurch erbt eine Koalition mit redundantem Zusatzpartner (z. B. Partei unter
+    der Sperrklausel mit 0 Sitzen) nicht die Mehrheitsquote der kleineren
+    Kernkoalition.
+    """
 
     n_majority: int
     n_simulations: int
@@ -120,7 +128,8 @@ def simulate_uncertainty(
     Monte-Carlo: Anteile ziehen → Sitzzuteilung → Mehrheitswahrscheinlichkeiten.
 
     `coalitions` sind feste Parteimengen (z. B. aus possible_majorities), deren
-    Mehrheitsquote über die Simulationen geschätzt wird.
+    Quote als **minimal winning** über die Simulationen geschätzt wird
+    (Mehrheit und keine überflüssige Teilmenge).
     """
     cfg = config or UncertaintyConfig()
     if cfg.n_simulations < 1:
@@ -145,7 +154,7 @@ def simulate_uncertainty(
         seat_runs.append(seats)
         chamber = total_seats if total_seats is not None else sum(seats.values())
         for key in coalition_hits:
-            if has_majority(seats, list(key), total_seats=chamber):
+            if is_minimal_winning(seats, list(key), total_seats=chamber):
                 coalition_hits[key] += 1
 
     # Mittlere Sitze
