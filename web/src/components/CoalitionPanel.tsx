@@ -137,7 +137,7 @@ export function CoalitionPanel({
           rules.map((r) => (
             <label
               key={r.id}
-              className="flex items-start gap-2 rounded-lg border border-ink/10 bg-white/50 px-3 py-2 text-sm"
+              className="flex items-start gap-2 rounded-lg border border-ink/10 bg-mist/50 px-3 py-2 text-sm"
             >
               <input
                 type="checkbox"
@@ -158,7 +158,7 @@ export function CoalitionPanel({
       </p>
       {error && <p className="text-sm text-accent">{error}</p>}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <Hemicycle
             seats={seatsByName}
             highlightParties={highlightParties ?? undefined}

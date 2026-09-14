@@ -46,7 +46,7 @@ export function RawSurveysTable({ parliamentId }: { parliamentId: string }) {
 
   return (
     <details
-      className="rounded-lg border border-ink/10 bg-white/40"
+      className="rounded-lg border border-ink/10 bg-mist/40"
       open={open}
       onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}
     >

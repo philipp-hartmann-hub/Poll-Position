@@ -103,7 +103,7 @@ export function ParliamentLayoutClient({
         <label className="block min-w-0 flex-1 text-sm">
           <span className="mb-1 block text-ink/50">Parlament wählen</span>
           <select
-            className="w-full rounded-md border border-ink/15 bg-white px-3 py-2"
+            className="w-full rounded-md border border-ink/15 bg-mist px-3 py-2"
             value={parliamentId}
             onChange={(e) => onParliamentChange(e.target.value)}
           >

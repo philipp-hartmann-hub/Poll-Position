@@ -43,7 +43,7 @@ function SeatCompareBlock({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {lastElection ? (
-        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <h3 className="text-sm font-semibold text-ink">
             Ergebnis der letzten Wahl
           </h3>
@@ -66,7 +66,7 @@ function SeatCompareBlock({
         </div>
       )}
       {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <h3 className="text-sm font-semibold text-ink">
             Sitzprojektion nach Umfragen
           </h3>
@@ -101,7 +101,7 @@ function IncumbentCoalitionCard({ gov }: { gov: IncumbentGov | null }) {
     );
   }
   return (
-    <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+    <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
       <p className="text-xs uppercase tracking-wide text-ink/45">
         Aktuelle Regierung
       </p>
@@ -279,7 +279,7 @@ export function ParliamentDashboard({
               className={
                 active
                   ? "rounded-md border border-sea/40 bg-sea/10 px-3 py-1.5 text-sm font-medium text-ink"
-                  : "rounded-md border border-ink/15 bg-white px-3 py-1.5 text-sm text-ink/65 transition hover:border-ink/25 hover:text-ink"
+                  : "rounded-md border border-ink/15 bg-mist px-3 py-1.5 text-sm text-ink/65 transition hover:border-ink/25 hover:text-ink"
               }
             >
               {tag.label}

@@ -29,7 +29,7 @@ export function InstituteLeaderboard() {
   }, []);
 
   return (
-    <section className="space-y-4 rounded-2xl border border-ink/10 bg-white/60 p-5 shadow-sm">
+    <section className="space-y-4 rounded-2xl border border-ink/10 bg-mist/60 p-5 shadow-sm">
       <h2 className="font-display text-2xl text-ink md:text-3xl">
         Wer lag zuletzt am genauesten?
       </h2>

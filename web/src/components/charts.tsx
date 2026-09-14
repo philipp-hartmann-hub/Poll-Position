@@ -35,10 +35,20 @@ export function TrendChart({
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={series} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#0f1c2e22" />
-          <XAxis dataKey="as_of" tick={{ fontSize: 11 }} minTickGap={32} />
-          <YAxis tick={{ fontSize: 11 }} unit="%" width={40} />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={`${INK}22`} />
+          <XAxis
+            dataKey="as_of"
+            tick={{ fontSize: 11, fill: INK }}
+            minTickGap={32}
+          />
+          <YAxis tick={{ fontSize: 11, fill: INK }} unit="%" width={40} />
+          <Tooltip
+            contentStyle={{
+              background: PAPER,
+              border: `1px solid ${INK}26`,
+              borderRadius: 8,
+            }}
+          />
           <Legend />
           {parties.map((p) => (
             <Line
@@ -89,10 +99,22 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#0f1c2e22" />
-          <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-25} textAnchor="end" height={50} />
-          <YAxis tick={{ fontSize: 11 }} width={36} />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={`${INK}22`} />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: INK }}
+            angle={-25}
+            textAnchor="end"
+            height={50}
+          />
+          <YAxis tick={{ fontSize: 11, fill: INK }} width={36} />
+          <Tooltip
+            contentStyle={{
+              background: PAPER,
+              border: `1px solid ${INK}26`,
+              borderRadius: 8,
+            }}
+          />
           <Bar dataKey="value" radius={[4, 4, 0, 0]} stroke={INK} strokeOpacity={0.3} strokeWidth={1}>
             {data.map((d) => (
               <Cell key={d.name} fill={partyColor(d.name)} />
@@ -235,6 +257,11 @@ export function Hemicycle({
               />
             ) : null}
             <Tooltip
+              contentStyle={{
+                background: PAPER,
+                border: `1px solid ${INK}26`,
+                borderRadius: 8,
+              }}
               formatter={(value: number, name: string, item) => {
                 const pct = Number(item?.payload?.pct ?? 0).toFixed(1);
                 return [`${value} Sitze (${pct} %)`, name];

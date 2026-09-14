@@ -8,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#0f1c2e",
-        paper: "#f3efe6",
-        mist: "#ece4d3",
-        accent: "#b8701a",
-        sea: "#0a6e50",
+        ink: "#e8eaed",
+        paper: "#17191d",
+        mist: "#23262b",
+        accent: "#d77842",
+        sea: "#26d997",
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
@@ -20,7 +20,7 @@ module.exports = {
       },
       backgroundImage: {
         "grid-fade":
-          "radial-gradient(ellipse at 20% 0%, rgba(10,110,80,0.12), transparent 50%), radial-gradient(ellipse at 90% 20%, rgba(184,112,26,0.1), transparent 45%)",
+          "radial-gradient(ellipse at 20% 0%, rgba(38,217,151,0.10), transparent 50%), radial-gradient(ellipse at 90% 20%, rgba(215,120,66,0.10), transparent 45%)",
       },
     },
   },

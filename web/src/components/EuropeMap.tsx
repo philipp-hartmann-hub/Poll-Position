@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { EuropeOverviewResponse } from "@/lib/api";
 import { familyColor } from "@/lib/colors";
 import { EUROPE_COUNTRIES, europeHref } from "@/lib/europe";
+import { INK, MIST } from "@/lib/theme";
 
 /** Lon/lat → SVG (einfache Äquirectangular-Näherung für Mitteleuropa). */
 const CENTROIDS: Record<string, [number, number]> = {
@@ -43,7 +44,7 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-      <div className="overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/40 to-white/60 p-2">
+      <div className="overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/40 to-mist/60 p-2">
         <svg viewBox="0 0 800 520" className="h-auto w-full" role="img">
           <title>Europa nach Parteienfamilie</title>
           <rect width="800" height="520" fill="transparent" />
@@ -67,7 +68,7 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
                   r={r}
                   fill={familyColor(c.top_family)}
                   fillOpacity={active ? 0.95 : 0.75}
-                  stroke={active ? "#0f1c2e" : "#fff"}
+                  stroke={active ? INK : MIST}
                   strokeWidth={active ? 2.5 : 1.5}
                 />
                 <text

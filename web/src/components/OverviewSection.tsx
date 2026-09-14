@@ -56,7 +56,7 @@ export function OverviewSection({
           </h2>
           <div className="grid gap-6 md:grid-cols-2">
             {lastElection ? (
-              <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+              <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
                 <h3 className="text-sm font-semibold text-ink">
                   Ergebnis der letzten Wahl
                 </h3>
@@ -79,7 +79,7 @@ export function OverviewSection({
               </div>
             )}
             {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
-              <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+              <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
                 <h3 className="text-sm font-semibold text-ink">
                   Sitzprojektion nach aktuellen Umfragen
                 </h3>

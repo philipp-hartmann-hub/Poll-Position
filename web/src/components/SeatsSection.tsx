@@ -51,10 +51,10 @@ export function SeatsSection({ parliamentId }: { parliamentId: string }) {
     <section>
       <h2 className="mb-3 font-display text-2xl text-ink">Sitzprojektion</h2>
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <Hemicycle seats={seats.seats_by_name} style="projection" />
         </div>
-        <div className="rounded-xl border border-ink/10 bg-white/50 p-4">
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <SeatsBarChart seats={seats.seats_by_name} />
           <p className="mt-2 text-sm text-ink/50">
             Sitze gesamt:{" "}

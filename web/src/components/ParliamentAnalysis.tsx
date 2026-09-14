@@ -25,7 +25,7 @@ export function ParliamentAnalysis({
       )}
 
       {disclaimer ? (
-        <p className="rounded-md border border-amber-700/25 bg-amber-50/80 px-3 py-2 text-sm text-ink/80">
+        <p className="rounded-md border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-sm text-ink/80">
           {disclaimer}
         </p>
       ) : null}

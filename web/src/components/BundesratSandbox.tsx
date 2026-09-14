@@ -30,15 +30,15 @@ function StanceBadge({ stance }: { stance: string }) {
   const map: Record<string, { label: string; className: string }> = {
     yes: {
       label: "Ja",
-      className: "bg-emerald-100 text-emerald-900 ring-emerald-700/20",
+      className: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
     },
     no: {
       label: "Nein",
-      className: "bg-red-100 text-red-900 ring-red-700/20",
+      className: "bg-red-500/15 text-red-300 ring-red-500/30",
     },
     abstain: {
       label: "Enthaltung",
-      className: "bg-stone-200 text-stone-800 ring-stone-500/25",
+      className: "bg-stone-500/20 text-stone-300 ring-stone-400/25",
     },
   };
   const m = map[stance] ?? {
@@ -97,7 +97,7 @@ function VoteCounter({
       </div>
 
       <div
-        className="relative h-7 w-full overflow-hidden rounded-md border border-ink/10 bg-white/70"
+        className="relative h-7 w-full overflow-hidden rounded-md border border-ink/10 bg-mist/70"
         role="img"
         aria-label={`Ja ${yes}, Nein ${no}, Enthaltung ${abstain} von ${total}`}
       >
@@ -170,7 +170,7 @@ function VoteCounter({
       <div className="space-y-1 border-t border-ink/10 pt-3 text-sm">
         <p
           className={
-            hasMajority ? "font-medium text-emerald-800" : "text-ink/55"
+            hasMajority ? "font-medium text-emerald-300" : "text-ink/55"
           }
         >
           Absolute Mehrheit (≥{majoritySimple}/69):{" "}
@@ -178,7 +178,7 @@ function VoteCounter({
         </p>
         <p
           className={
-            hasTwoThirds ? "font-medium text-emerald-800" : "text-ink/55"
+            hasTwoThirds ? "font-medium text-emerald-300" : "text-ink/55"
           }
         >
           Zwei Drittel (≥{majorityTwoThirds}/69):{" "}
@@ -221,13 +221,13 @@ function PartyStanceChip({
 
   return (
     <div
-      className="inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-white/70 px-2 py-1.5"
+      className="inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-mist/70 px-2 py-1.5"
       data-party={partyId}
     >
       <span className="mr-1 text-xs font-medium text-ink">{label}</span>
-      {btn("yes", "Ja", "bg-emerald-100 text-emerald-900")}
-      {btn(null, "Enth.", "bg-stone-200 text-stone-800")}
-      {btn("no", "Nein", "bg-red-100 text-red-900")}
+      {btn("yes", "Ja", "bg-emerald-500/15 text-emerald-300")}
+      {btn(null, "Enth.", "bg-stone-500/20 text-stone-300")}
+      {btn("no", "Nein", "bg-red-500/15 text-red-300")}
     </div>
   );
 }
@@ -364,7 +364,7 @@ export function BundesratSandbox() {
 
   return (
     <div className="space-y-8">
-      <p className="rounded-md border border-amber-700/25 bg-amber-50/80 px-3 py-2 text-sm text-ink/80">
+      <p className="rounded-md border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-sm text-ink/80">
         {status.disclaimer} Stand der Landesregierungen: {status.as_of}.
         Ausgangspunkt ist Enthaltung, bis Parteien auf Ja oder Nein gesetzt
         werden.
@@ -392,7 +392,7 @@ export function BundesratSandbox() {
           <button
             type="button"
             onClick={applyFederalGovernment}
-            className="rounded-md border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink transition hover:border-sea/40 hover:bg-mist/40"
+            className="rounded-md border border-ink/15 bg-mist px-3 py-2 text-sm font-medium text-ink transition hover:border-sea/40 hover:bg-mist/40"
           >
             Aktuelle Bundesregierung
             {government?.bundesregierung?.label
@@ -403,7 +403,7 @@ export function BundesratSandbox() {
           <label className="min-w-[14rem] flex-1 text-sm">
             <span className="mb-1 block text-ink/50">Nach Umfragen</span>
             <select
-              className="w-full rounded-md border border-ink/15 bg-white px-3 py-2 text-ink"
+              className="w-full rounded-md border border-ink/15 bg-mist px-3 py-2 text-ink"
               value={pollPresetKey}
               onChange={(e) => {
                 const key = e.target.value;
@@ -444,7 +444,7 @@ export function BundesratSandbox() {
               ?.scrollIntoView({ behavior: "smooth", block: "center" })
           }
         />
-        <div className="rounded-xl border border-ink/10 bg-gradient-to-b from-mist/20 to-white/60 p-4">
+        <div className="rounded-xl border border-ink/10 bg-gradient-to-b from-mist/20 to-mist/60 p-4">
           <VoteCounter
             yes={yes}
             no={no}
@@ -489,7 +489,7 @@ export function BundesratSandbox() {
                     <td className="py-2.5 pr-3 tabular-nums">{land.votes}</td>
                     <td className="py-2.5 pr-3">
                       <select
-                        className="max-w-[18rem] rounded border border-ink/15 bg-white px-2 py-1 text-ink"
+                        className="max-w-[18rem] rounded border border-ink/15 bg-mist px-2 py-1 text-ink"
                         value={override}
                         onChange={(e) =>
                           setLandOverride(land, e.target.value)

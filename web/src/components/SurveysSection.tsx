@@ -10,7 +10,7 @@ import {
 import { TrendLineChart } from "@/components/charts";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
 import { partyColor } from "@/lib/colors";
-import { ACCENT, PARTY_SWATCH_CLASS, SEA } from "@/lib/theme";
+import { ACCENT, INK, PAPER, PARTY_SWATCH_CLASS, SEA } from "@/lib/theme";
 import {
   Bar,
   BarChart,
@@ -86,18 +86,24 @@ export function SurveysSection({ parliamentId }: { parliamentId: string }) {
         Stand {averages.as_of} · gewichteter Schnitt vs. geglätteter Trendanteil
       </p>
       {trends && trends.parties.some((p) => p.points.length > 0) && (
-        <div className="mb-4 rounded-xl border border-ink/10 bg-white/50 p-2">
+        <div className="mb-4 rounded-xl border border-ink/10 bg-mist/50 p-2">
           <TrendLineChart parties={trends.parties} />
         </div>
       )}
-      <div className="h-80 w-full rounded-xl border border-ink/10 bg-white/50 p-2">
+      <div className="h-80 w-full rounded-xl border border-ink/10 bg-mist/50 p-2">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#0f1c2e22" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-            <YAxis unit="%" tick={{ fontSize: 11 }} width={40} />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke={`${INK}22`} />
+            <XAxis dataKey="name" tick={{ fontSize: 11, fill: INK }} />
+            <YAxis unit="%" tick={{ fontSize: 11, fill: INK }} width={40} />
+            <Tooltip
+              contentStyle={{
+                background: PAPER,
+                border: `1px solid ${INK}26`,
+                borderRadius: 8,
+              }}
+            />
+            <Legend wrapperStyle={{ color: INK }} />
             <Bar dataKey="Mittel" fill={SEA} radius={[3, 3, 0, 0]} />
             <Bar dataKey="Trend" fill={ACCENT} radius={[3, 3, 0, 0]} />
           </BarChart>

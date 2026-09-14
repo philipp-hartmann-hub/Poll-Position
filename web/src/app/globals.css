@@ -7,11 +7,12 @@
 :root {
   --font-display: "Fraunces", Georgia, serif;
   --font-sans: "Source Sans 3", system-ui, sans-serif;
+  color-scheme: dark;
 }
 
 body {
-  color: #0f1c2e;
-  background-color: #f3efe6;
+  color: #e8eaed;
+  background-color: #17191d;
   font-family: var(--font-sans);
 }
 

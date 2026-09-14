@@ -31,7 +31,7 @@ export function LaenderIndex() {
         <li key={s.id}>
           <Link
             href={`/parlament/${s.id}`}
-            className="block rounded-lg border border-ink/10 bg-white/50 px-4 py-3 text-ink transition hover:border-sea/40 hover:bg-mist/40"
+            className="block rounded-lg border border-ink/10 bg-mist/50 px-4 py-3 text-ink transition hover:border-sea/40 hover:bg-mist/40"
           >
             <span className="font-medium">{s.name}</span>
             {s.shortcut ? (

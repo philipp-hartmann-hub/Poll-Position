@@ -6,12 +6,12 @@ import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { fetchAverages } from "@/lib/api";
 import { partyColor } from "@/lib/colors";
-import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { INK, NEUTRAL_MUTED, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { DE_PARLIAMENTS } from "@/lib/deParliaments";
 
 const WIDTH = 560;
 const HEIGHT = 720;
-const NEUTRAL = "#c5c0b6";
+const NEUTRAL = NEUTRAL_MUTED;
 
 type StateFeature = Feature<
   Geometry,
@@ -147,7 +147,7 @@ export function GermanyMap() {
   return (
     <div
       ref={wrapRef}
-      className="relative overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/30 to-white/70 p-2"
+      className="relative overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/30 to-mist/70 p-2"
     >
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}

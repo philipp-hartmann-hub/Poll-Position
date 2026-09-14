@@ -136,7 +136,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
               {uncertainty.coalition_probabilities.slice(0, 10).map((c, i) => (
                 <li
                   key={i}
-                  className="flex items-center justify-between rounded-lg border border-ink/10 bg-white/40 px-3 py-2"
+                  className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
                 >
                   <span>
                     {c.parties.map(labelPartyId).join(" + ")}

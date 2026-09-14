@@ -9,10 +9,11 @@ import {
   stanceLabel,
 } from "@/lib/bundesratColors";
 import { DE_PARLIAMENTS } from "@/lib/deParliaments";
+import { INK, NEUTRAL_MUTED, PAPER } from "@/lib/theme";
 
 const WIDTH = 560;
 const HEIGHT = 720;
-const NEUTRAL = "#c5c0b6";
+const NEUTRAL = NEUTRAL_MUTED;
 
 type StateFeature = Feature<
   Geometry,
@@ -121,7 +122,7 @@ export function BundesratMap({
   return (
     <div
       ref={wrapRef}
-      className="relative overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/30 to-white/70 p-2"
+      className="relative overflow-hidden rounded-xl border border-ink/10 bg-gradient-to-b from-mist/30 to-mist/70 p-2"
     >
       <svg
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -143,7 +144,7 @@ export function BundesratMap({
               d={d}
               fill={fill}
               fillOpacity={active ? 0.95 : 0.82}
-              stroke={active ? "#0f1c2e" : "#f3efe6"}
+              stroke={active ? INK : PAPER}
               strokeWidth={active ? 1.6 : 0.8}
               style={{ cursor: parl && onLandClick ? "pointer" : "default" }}
               onMouseEnter={(e) => {
