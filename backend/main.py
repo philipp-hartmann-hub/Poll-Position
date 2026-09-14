@@ -40,6 +40,7 @@ _PUBLIC_CACHE_QUERY_PATHS = frozenset(
     {
         "/api/uncertainty",
         "/api/coalitions",
+        "/api/coalitions/last-election",
         "/api/party-forecast",
     }
 )
@@ -59,7 +60,7 @@ class PublicGetCacheMiddleware(BaseHTTPMiddleware):
             return response
 
         if path in _PUBLIC_CACHE_QUERY_PATHS:
-            if path == "/api/coalitions" or path == "/api/uncertainty":
+            if path in {"/api/coalitions", "/api/coalitions/last-election", "/api/uncertainty"}:
                 apply = request.query_params.get("apply_exclusions", "true").lower()
                 interactive = (
                     bool(request.query_params.getlist("disabled_rule_ids"))
@@ -256,6 +257,35 @@ def get_coalitions(
     )
     if data["total_seats"] <= 0:
         raise HTTPException(status_code=404, detail="Keine Sitzdaten")
+    return schemas.CoalitionsResponse.model_validate(data)
+
+
+@app.get(
+    "/api/coalitions/last-election",
+    response_model=schemas.CoalitionsResponse,
+)
+def get_coalitions_last_election(
+    parliament_id: str = Query(...),
+    apply_exclusions: bool = Query(True),
+    max_parties: int = Query(4, ge=1, le=6),
+    disabled_rule_ids: list[str] | None = Query(None),
+) -> schemas.CoalitionsResponse:
+    data = services.last_election_coalitions_payload(
+        parliament_id,
+        apply_exclusions=apply_exclusions,
+        max_parties=max_parties,
+        disabled_rule_ids=disabled_rule_ids,
+    )
+    if data is None:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Kein Wahlergebnis in election_results.yaml für Parlament "
+                f"'{parliament_id}' hinterlegt"
+            ),
+        )
+    if data["total_seats"] <= 0:
+        raise HTTPException(status_code=404, detail="Keine Sitzdaten aus Wahlergebnis")
     return schemas.CoalitionsResponse.model_validate(data)
 
 

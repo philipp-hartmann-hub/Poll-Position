@@ -107,6 +107,7 @@ export type CoalitionRulesResponse = {
 export type UncertaintyResponse = {
   parliament_id: string;
   n_simulations: number;
+  n_deadlock?: number;
   mean_seats: Record<string, number>;
   coalition_probabilities: {
     parties: string[];
@@ -114,6 +115,14 @@ export type UncertaintyResponse = {
     n_majority: number;
     n_simulations: number;
   }[];
+  party_indispensability?: {
+    party_id: string;
+    probability: number;
+    n_simulations_considered: number;
+  }[];
+  current_government_parties?: string[] | null;
+  current_government_label?: string | null;
+  current_government_majority_probability?: number | null;
 };
 
 export type ThresholdWatchParty = {
@@ -148,12 +157,14 @@ export type PartyForecastParty = {
   threshold_percent: number;
   probability_strongest: number;
   probability_above_threshold: number;
+  probability_indispensable?: number;
 };
 
 export type PartyForecastResponse = {
   parliament_id: string;
   threshold_percent: number;
   n_simulations: number;
+  n_deadlock?: number;
   parties: PartyForecastParty[];
 };
 
@@ -419,6 +430,43 @@ export function fetchCoalitions(
     apiPath,
   );
 }
+
+export function fetchLastElectionCoalitions(
+  parliamentId: string,
+  opts?: {
+    apply_exclusions?: boolean;
+    max_parties?: number;
+    disabled_rule_ids?: string[];
+  },
+): Promise<CoalitionsResponse> {
+  const q = new URLSearchParams({ parliament_id: parliamentId });
+  if (opts?.apply_exclusions !== undefined) {
+    q.set("apply_exclusions", String(opts.apply_exclusions));
+  }
+  if (opts?.max_parties !== undefined) {
+    q.set("max_parties", String(opts.max_parties));
+  }
+  const disabled = opts?.disabled_rule_ids ?? [];
+  for (const id of disabled) {
+    q.append("disabled_rule_ids", id);
+  }
+  return apiFetch(`/api/coalitions/last-election?${q}`, {
+    noStore:
+      opts !== undefined &&
+      (opts.apply_exclusions !== undefined ||
+        disabled.length > 0 ||
+        (opts.max_parties !== undefined && opts.max_parties !== 4)),
+  });
+}
+
+export type FetchCoalitionsFn = (
+  parliamentId: string,
+  opts?: {
+    apply_exclusions?: boolean;
+    max_parties?: number;
+    disabled_rule_ids?: string[];
+  },
+) => Promise<CoalitionsResponse>;
 
 export function fetchCoalitionRules(
   parliamentId: string,

@@ -107,7 +107,42 @@ def test_last_election_missing_returns_404(client):
     )
     assert r.status_code == 404
     detail = r.json()["detail"]
-    assert "election_results" in detail.lower() or "nicht" in detail.lower()
+    assert "Kein Wahlergebnis" in detail or "election_results" in detail
+
+
+def test_coalitions_last_election_bundestag(client):
+    r = client.get(
+        "/api/coalitions/last-election",
+        params={"parliament_id": "de_bundestag"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["total_seats"] == 630
+    assert body["majority_threshold"] == 316
+    assert isinstance(body["coalitions"], list)
+    assert len(body["coalitions"]) >= 1
+    assert all(c["seats"] >= body["majority_threshold"] for c in body["coalitions"])
+    # Union+SPD war die tatsächliche Mehrheit nach BTW 2025
+    union_spd = any(
+        set(c["parties"]) == {"de:cdu", "de:csu", "de:spd"}
+        or set(c["parties"]) == {"de:cdu_csu", "de:spd"}
+        or (
+            "de:spd" in c["parties"]
+            and ("de:cdu" in c["parties"] or "de:cdu_csu" in c["parties"])
+        )
+        for c in body["coalitions"]
+    )
+    assert union_spd, body["coalitions"][:8]
+
+
+def test_coalitions_last_election_missing_returns_404(client):
+    r = client.get(
+        "/api/coalitions/last-election",
+        params={"parliament_id": "de_nonexistent_landtag"},
+    )
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert "Kein Wahlergebnis" in detail or "election_results" in detail
 
 
 def test_public_get_cache_control_headers(client):
@@ -633,6 +668,24 @@ def test_uncertainty(client):
         for pid in entry["parties"]:
             assert not pid.startswith("dawum:"), pid
             assert pid.startswith("de:"), pid
+    # Bundesregierung aus bundesrat.yaml ist immer Kandidat
+    assert body["current_government_parties"] is not None
+    assert body["current_government_label"]
+    assert body["current_government_majority_probability"] is not None
+    assert 0.0 <= body["current_government_majority_probability"] <= 1.0
+    gov = set(body["current_government_parties"])
+    match = next(
+        (
+            e
+            for e in body["coalition_probabilities"]
+            if set(e["parties"]) == gov
+        ),
+        None,
+    )
+    assert match is not None
+    assert match["majority_probability"] == pytest.approx(
+        body["current_government_majority_probability"]
+    )
 
 
 def test_uncertainty_respects_apply_exclusions(client):

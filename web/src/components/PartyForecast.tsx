@@ -7,7 +7,10 @@ import {
 } from "@/lib/api";
 import { displayPartyName, partyColor } from "@/lib/colors";
 import { InfoTooltip } from "@/components/InfoTooltip";
-import { TIP_PARTY_FORECAST } from "@/lib/tooltipCopy";
+import {
+  TIP_PARTY_FORECAST,
+  TIP_PARTY_INDISPENSABLE,
+} from "@/lib/tooltipCopy";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 function ForecastTile({
@@ -20,6 +23,9 @@ function ForecastTile({
   const name = displayPartyName(party.party_id, party.party_name);
   const strongestPct = Math.round(party.probability_strongest * 100);
   const abovePct = Math.round(party.probability_above_threshold * 100);
+  const indispensablePct = Math.round(
+    (party.probability_indispensable ?? 0) * 100,
+  );
 
   return (
     <div className="rounded-2xl border border-accent/25 bg-accent/5 px-4 py-4 transition hover:border-accent/50">
@@ -33,19 +39,28 @@ function ForecastTile({
       <p className="mt-1 text-xs text-ink/45">
         Mittel {party.average_share.toFixed(1)} %
       </p>
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      <div className="mt-3 grid grid-cols-3 gap-2">
         <div>
-          <p className="font-display text-3xl tabular-nums text-accent">
+          <p className="font-display text-2xl tabular-nums text-accent sm:text-3xl">
             {strongestPct} %
           </p>
-          <p className="mt-1 text-sm text-ink/70">stärkste Kraft</p>
+          <p className="mt-1 text-xs text-ink/70 sm:text-sm">stärkste Kraft</p>
         </div>
         <div>
-          <p className="font-display text-3xl tabular-nums text-ink/80">
+          <p className="font-display text-2xl tabular-nums text-ink/80 sm:text-3xl">
             {abovePct} %
           </p>
-          <p className="mt-1 text-sm text-ink/70">
+          <p className="mt-1 text-xs text-ink/70 sm:text-sm">
             über {thresholdLabel}&nbsp;%
+          </p>
+        </div>
+        <div>
+          <p className="font-display text-2xl tabular-nums text-ink/80 sm:text-3xl">
+            {indispensablePct} %
+          </p>
+          <p className="mt-1 text-xs text-ink/70 sm:text-sm">
+            unverzichtbar
+            <InfoTooltip text={TIP_PARTY_INDISPENSABLE} />
           </p>
         </div>
       </div>
@@ -87,7 +102,8 @@ export function PartyForecast({ parliamentId }: { parliamentId: string }) {
       </h2>
       <p className="text-sm text-ink/55">
         Aus dem heutigen Umfragestand: Wie oft hätte jede Partei die meisten
-        Stimmen bzw. die {thrLabel}-%-Hürde geschafft?
+        Stimmen, die {thrLabel}-%-Hürde geschafft — oder wäre für jede mögliche
+        Mehrheit unverzichtbar?
       </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {parties.map((p) => (

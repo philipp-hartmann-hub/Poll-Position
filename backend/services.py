@@ -27,6 +27,7 @@ from analysis.bundesrat import (
     simulate_bundesrat,
 )
 from analysis.coalitions import (
+    CoalitionRulesConfig,
     list_active_exclusion_rules,
     majority_threshold,
     possible_majorities,
@@ -684,6 +685,130 @@ def _seats_to_canonical(seats: dict[str, int], names: dict[str, str]) -> dict[st
     return out
 
 
+def party_indispensability_from_seat_distributions(
+    seat_distributions: Sequence[Mapping[str, int]],
+    names: Mapping[str, str],
+    *,
+    total_seats: int,
+    parliament_id: str | None = None,
+    apply_exclusions: bool = True,
+    disabled_rule_ids: Sequence[str] | None = None,
+    max_parties: int = 4,
+    rules_config: CoalitionRulesConfig | None = None,
+) -> dict[str, Any]:
+    """
+    P(Partei ist in jeder möglichen Mehrheitskoalition dieser Ziehung).
+
+    Ziehungen ohne jede mögliche Mehrheit (Deadlock) zählen nicht zum Nenner.
+    """
+    if total_seats <= 0 or not seat_distributions:
+        return {
+            "n_deadlock": 0,
+            "n_simulations_considered": 0,
+            "party_indispensability": [],
+        }
+
+    hits: dict[str, int] = {}
+    n_deadlock = 0
+    n_considered = 0
+    disabled = list(disabled_rule_ids) if disabled_rule_ids else None
+
+    for raw_seats in seat_distributions:
+        canon = _seats_to_canonical(dict(raw_seats), dict(names))
+        chamber = total_seats or sum(canon.values())
+        if not canon or chamber <= 0:
+            n_deadlock += 1
+            continue
+        result = possible_majorities(
+            canon,
+            chamber,
+            max_parties=max_parties,
+            parliament_id=parliament_id,
+            apply_exclusions=apply_exclusions,
+            disabled_rule_ids=disabled,
+            rules_config=rules_config,
+        )
+        coalitions = result.coalitions
+        if not coalitions:
+            n_deadlock += 1
+            continue
+        n_considered += 1
+        for pid, seats_n in canon.items():
+            if seats_n <= 0:
+                continue
+            hits.setdefault(pid, 0)
+            if all(pid in c.parties for c in coalitions):
+                hits[pid] += 1
+
+    rows = [
+        {
+            "party_id": pid,
+            "probability": (hits.get(pid, 0) / n_considered) if n_considered else 0.0,
+            "n_simulations_considered": n_considered,
+        }
+        for pid in sorted(hits.keys(), key=lambda p: (-hits.get(p, 0), p))
+    ]
+    return {
+        "n_deadlock": n_deadlock,
+        "n_simulations_considered": n_considered,
+        "party_indispensability": rows,
+    }
+
+
+def _coalitions_from_seats(
+    parliament_id: str,
+    seats: dict[str, int],
+    names: Mapping[str, str],
+    *,
+    total_seats: int,
+    apply_exclusions: bool = True,
+    max_parties: int = 4,
+    disabled_rule_ids: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Gemeinsamer Kern: kanonisierte Sitze → possible_majorities → Response-Dict."""
+    empty = {
+        "parliament_id": parliament_id,
+        "total_seats": int(total_seats or 0),
+        "majority_threshold": 0,
+        "excluded_by_rules": 0,
+        "coalitions": [],
+    }
+    if not seats or total_seats <= 0:
+        return empty
+    canon = _seats_to_canonical(dict(seats), dict(names))
+    if not canon:
+        return empty
+    chamber = total_seats or sum(canon.values())
+    result = possible_majorities(
+        canon,
+        chamber,
+        max_parties=max_parties,
+        parliament_id=parliament_id,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=list(disabled_rule_ids) if disabled_rule_ids else None,
+    )
+    coalitions_out = []
+    for c in result.coalitions:
+        parties = [p for p in c.parties if not is_residual_party_id(p)]
+        if len(parties) != len(c.parties):
+            continue
+        coalitions_out.append(
+            {
+                "parties": parties,
+                "seats": c.seats,
+                "is_minimal_winning": c.is_minimal_winning,
+                "compatibility_span": c.compatibility_span,
+            }
+        )
+    return {
+        "parliament_id": parliament_id,
+        "total_seats": result.total_seats,
+        "majority_threshold": result.majority_threshold,
+        "excluded_by_rules": result.excluded_by_rules,
+        "coalitions": coalitions_out,
+    }
+
+
 def coalitions_payload(
     parliament_id: str,
     *,
@@ -701,7 +826,6 @@ def coalitions_payload(
     seats = seats_data["seats"]
     total = int(seats_data["total_seats"] or 0)
     if not seats or total <= 0:
-        # Leeres Warehouse / keine Umfragen — Endpoint liefert 404, kein 500.
         return _ttl_set(
             _coalitions_cache,
             cache_key,
@@ -714,52 +838,66 @@ def coalitions_payload(
             },
         )
     _, names = _votes_from_averages(parliament_id)
-    canon = _seats_to_canonical(seats, names)
-    if not canon:
-        return _ttl_set(
-            _coalitions_cache,
-            cache_key,
-            {
-                "parliament_id": parliament_id,
-                "total_seats": total,
-                "majority_threshold": 0,
-                "excluded_by_rules": 0,
-                "coalitions": [],
-            },
-        )
-    total = total or sum(canon.values())
-    result = possible_majorities(
-        canon,
-        total,
-        max_parties=max_parties,
-        parliament_id=parliament_id,
-        apply_exclusions=apply_exclusions,
-        disabled_rule_ids=list(disabled) if disabled else None,
-    )
-    coalitions_out = []
-    for c in result.coalitions:
-        parties = [p for p in c.parties if not is_residual_party_id(p)]
-        if len(parties) != len(c.parties):
-            continue
-        coalitions_out.append(
-            {
-                "parties": parties,
-                "seats": c.seats,
-                "is_minimal_winning": c.is_minimal_winning,
-                "compatibility_span": c.compatibility_span,
-            }
-        )
     return _ttl_set(
         _coalitions_cache,
         cache_key,
-        {
-            "parliament_id": parliament_id,
-            "total_seats": result.total_seats,
-            "majority_threshold": result.majority_threshold,
-            "excluded_by_rules": result.excluded_by_rules,
-            "coalitions": coalitions_out,
-        },
+        _coalitions_from_seats(
+            parliament_id,
+            seats,
+            names,
+            total_seats=total,
+            apply_exclusions=apply_exclusions,
+            max_parties=max_parties,
+            disabled_rule_ids=disabled_rule_ids,
+        ),
     )
+
+
+def last_election_coalitions_payload(
+    parliament_id: str,
+    *,
+    apply_exclusions: bool = True,
+    max_parties: int = 4,
+    disabled_rule_ids: list[str] | None = None,
+) -> dict[str, Any] | None:
+    """
+    Mögliche Mehrheiten auf Basis der Sitze des letzten amtlichen Wahlergebnisses.
+
+    ``None``, wenn kein Wahlergebnis hinterlegt ist (analog ``last_election_payload``).
+    """
+    disabled = tuple(sorted(disabled_rule_ids or []))
+    cache_key = ("last_election", parliament_id, apply_exclusions, max_parties, disabled)
+    cached = _ttl_get(_coalitions_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
+    election = last_election_payload(parliament_id)
+    if election is None:
+        return _ttl_set(_coalitions_cache, cache_key, None)
+
+    seats = dict(election["seats"])
+    total = int(election["total_seats"] or 0)
+    names: dict[str, str] = {
+        canon: short for short, canon in SHORT_TO_CANONICAL.items()
+    }
+    for pid in seats:
+        names.setdefault(pid, resolve_party_display_name(pid, names))
+    # Anzeigenamen aus seats_by_name rückwärts mergen
+    for display, _n in (election.get("seats_by_name") or {}).items():
+        canon = SHORT_TO_CANONICAL.get(display)
+        if canon:
+            names.setdefault(canon, display)
+
+    payload = _coalitions_from_seats(
+        parliament_id,
+        seats,
+        names,
+        total_seats=total,
+        apply_exclusions=apply_exclusions,
+        max_parties=max_parties,
+        disabled_rule_ids=disabled_rule_ids,
+    )
+    return _ttl_set(_coalitions_cache, cache_key, payload)
 
 
 def coalition_rules_payload(parliament_id: str) -> dict[str, Any]:
@@ -887,6 +1025,48 @@ def _expanded_coalition_candidates(
     return candidates
 
 
+def _incumbent_government_for_parliament(
+    parliament_id: str,
+) -> tuple[list[str], str] | None:
+    """Amtierende Regierung aus bundesrat.yaml (Länder) bzw. bundesregierung (Bund)."""
+    cfg = load_bundesrat_config()
+    if parliament_id == "de_bundestag":
+        fed = cfg.bundesregierung
+        if fed is None or not fed.parties:
+            return None
+        return list(fed.parties), fed.label
+    for state in cfg.states:
+        if state.parliament_id == parliament_id:
+            if not state.government_parties:
+                return None
+            return list(state.government_parties), state.government_label
+    return None
+
+
+def _normalize_gov_parties_for_simulation(
+    parties: Sequence[str],
+    canon_to_id: Mapping[str, str],
+) -> list[str]:
+    """CDU+CSU → de:cdu_csu, wenn die Simulation nur das Aggregat kennt."""
+    ordered = [p for p in parties if p]
+    use_union = (
+        "de:cdu" in ordered
+        and "de:csu" in ordered
+        and "de:cdu_csu" in canon_to_id
+        and "de:cdu" not in canon_to_id
+        and "de:csu" not in canon_to_id
+    )
+    out: list[str] = []
+    seen: set[str] = set()
+    for p in ordered:
+        repl = "de:cdu_csu" if use_union and p in {"de:cdu", "de:csu"} else p
+        if repl in seen:
+            continue
+        seen.add(repl)
+        out.append(repl)
+    return out
+
+
 def uncertainty_payload(
     parliament_id: str,
     *,
@@ -900,6 +1080,12 @@ def uncertainty_payload(
     if cached is not _TTL_MISS:
         return cached
 
+    empty_gov = {
+        "current_government_parties": None,
+        "current_government_label": None,
+        "current_government_majority_probability": None,
+    }
+
     votes, _names = _votes_from_averages(parliament_id)
     if not votes:
         return _ttl_set(
@@ -908,8 +1094,11 @@ def uncertainty_payload(
             {
                 "parliament_id": parliament_id,
                 "n_simulations": 0,
+                "n_deadlock": 0,
                 "mean_seats": {},
                 "coalition_probabilities": [],
+                "party_indispensability": [],
+                **empty_gov,
             },
         )
     parties = party_uncertainties_from_means(
@@ -962,6 +1151,24 @@ def uncertainty_payload(
             _add_candidate(combo)
         mapped = mapped[:20]
 
+    # Amtierende Regierung immer als Kandidat (auch nach Truncation).
+    gov_cfg = _incumbent_government_for_parliament(parliament_id)
+    gov_canon: list[str] | None = None
+    gov_label: str | None = None
+    gov_wh_ids: tuple[str, ...] | None = None
+    if gov_cfg is not None:
+        raw_parties, gov_label = gov_cfg
+        gov_canon = _normalize_gov_parties_for_simulation(raw_parties, canon_to_id)
+        ids = tuple(sorted(canon_to_id[p] for p in gov_canon if p in canon_to_id))
+        if ids and len(ids) == len(gov_canon):
+            gov_wh_ids = ids
+            if ids not in mapped_set:
+                mapped_set.add(ids)
+                mapped.append(ids)
+            elif ids not in mapped:
+                mapped.append(ids)
+            deterministic_ids.add(ids)
+
     bundle = load_parliament_config()
     parliament = next((p for p in bundle.parliaments if p.id == parliament_id), None)
     system = None
@@ -982,12 +1189,31 @@ def uncertainty_payload(
         total_seats=total or 630,
         config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
     )
+    indis = party_indispensability_from_seat_distributions(
+        result.seat_distributions,
+        names,
+        total_seats=total or 630,
+        parliament_id=parliament_id,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
+        max_parties=4,
+    )
+
+    gov_prob: float | None = None
+    if gov_wh_ids is not None:
+        gov_prob = 0.0
+        for c in result.coalition_probabilities:
+            if c.parties == gov_wh_ids:
+                gov_prob = float(c.majority_probability)
+                break
+
     return _ttl_set(
         _uncertainty_cache,
         cache_key,
         {
             "parliament_id": parliament_id,
             "n_simulations": result.n_simulations,
+            "n_deadlock": indis["n_deadlock"],
             "mean_seats": result.mean_seats,
             "coalition_probabilities": [
                 {
@@ -999,6 +1225,10 @@ def uncertainty_payload(
                 for c in result.coalition_probabilities
                 if c.parties in deterministic_ids or c.n_majority > 0
             ],
+            "party_indispensability": indis["party_indispensability"],
+            "current_government_parties": gov_canon,
+            "current_government_label": gov_label,
+            "current_government_majority_probability": gov_prob,
         },
     )
 
@@ -1123,6 +1353,7 @@ def party_forecast_payload(
         "parliament_id": parliament_id,
         "threshold_percent": threshold,
         "n_simulations": 0,
+        "n_deadlock": 0,
         "parties": [],
     }
     if not votes:
@@ -1150,6 +1381,17 @@ def party_forecast_payload(
         residual_party_ids=residual_ids,
         config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
     )
+    # Unverzichtbarkeit aus derselben Unsicherheits-Pipeline (Default-Ausschlüsse).
+    unc = uncertainty_payload(parliament_id, n_simulations=n_simulations)
+    indis_by_canon = {
+        e["party_id"]: float(e["probability"])
+        for e in unc.get("party_indispensability", [])
+    }
+
+    def _canon_for(pid: str) -> str:
+        name = names.get(pid, pid)
+        return SHORT_TO_CANONICAL.get(name, pid)
+
     return _ttl_set(
         _forecast_cache,
         cache_key,
@@ -1157,6 +1399,7 @@ def party_forecast_payload(
             "parliament_id": parliament_id,
             "threshold_percent": threshold,
             "n_simulations": n_simulations,
+            "n_deadlock": unc.get("n_deadlock", 0),
             "parties": [
                 {
                     "party_id": r.party_id,
@@ -1165,6 +1408,9 @@ def party_forecast_payload(
                     "threshold_percent": r.threshold_percent,
                     "probability_strongest": r.probability_strongest,
                     "probability_above_threshold": r.probability_above_threshold,
+                    "probability_indispensable": indis_by_canon.get(
+                        _canon_for(r.party_id), 0.0
+                    ),
                 }
                 for r in rows
             ],

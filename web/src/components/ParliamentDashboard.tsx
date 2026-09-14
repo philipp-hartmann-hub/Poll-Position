@@ -7,6 +7,7 @@ import {
   fetchGovernment,
   fetchLastElection,
   fetchSeats,
+  fetchUncertainty,
   type AveragesResponse,
   type LastElectionResponse,
   type SeatsResponse,
@@ -15,18 +16,24 @@ import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/compo
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { LastElectionSection } from "@/components/LastElectionSection";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
-import { TIP_AVERAGES_TREND, TIP_SEAT_PROJECTION } from "@/lib/tooltipCopy";
+import {
+  TIP_AVERAGES_TREND,
+  TIP_REELECTION,
+  TIP_SEAT_PROJECTION,
+} from "@/lib/tooltipCopy";
 
-type TagKey = "umfragen" | "koalitionen" | "prognose";
+type TagKey = "umfragen" | "koalitionen" | "prognose" | "letzte-wahl";
 
 const TAGS: { key: TagKey; label: string }[] = [
   { key: "umfragen", label: "Umfragen" },
   { key: "koalitionen", label: "Koalitionen" },
   { key: "prognose", label: "Prognose" },
+  { key: "letzte-wahl", label: "Letzte Wahl" },
 ];
 
 type IncumbentGov = {
@@ -39,11 +46,13 @@ function SeatCompareBlock({
   pollSeats,
   averages,
   gov,
+  reelectionProbability,
 }: {
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
   averages: AveragesResponse | null;
   gov: IncumbentGov | null;
+  reelectionProbability: number | null;
 }) {
   const pollParties =
     averages?.parties.map((p) => ({
@@ -96,30 +105,7 @@ function SeatCompareBlock({
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {lastElection ? (
-          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-            <h3 className="text-sm font-semibold text-ink">
-              Ergebnis der letzten Wahl
-            </h3>
-            <p className="mb-3 text-xs text-ink/55">
-              {lastElection.label} ({lastElection.election_date}) ·{" "}
-              <span className="font-display tabular-nums">
-                {lastElection.total_seats}
-              </span>{" "}
-              Sitze
-            </p>
-            <Hemicycle
-              seats={lastElection.seats_by_name}
-              size="sm"
-              style="official"
-            />
-          </div>
-        ) : (
-          <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
-            Kein hinterlegtes Wahlergebnis für dieses Parlament.
-          </div>
-        )}
+      <div className="grid gap-4 md:grid-cols-2">
         {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
           <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
             <h3 className="text-sm font-semibold text-ink">
@@ -144,13 +130,22 @@ function SeatCompareBlock({
             Keine Umfrage-Sitzprojektion verfügbar.
           </div>
         )}
-        <IncumbentCoalitionCard gov={gov} />
+        <IncumbentCoalitionCard
+          gov={gov}
+          reelectionProbability={reelectionProbability}
+        />
       </div>
     </div>
   );
 }
 
-function IncumbentCoalitionCard({ gov }: { gov: IncumbentGov | null }) {
+function IncumbentCoalitionCard({
+  gov,
+  reelectionProbability,
+}: {
+  gov: IncumbentGov | null;
+  reelectionProbability: number | null;
+}) {
   if (!gov) {
     return (
       <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
@@ -181,6 +176,17 @@ function IncumbentCoalitionCard({ gov }: { gov: IncumbentGov | null }) {
           );
         })}
       </div>
+      {reelectionProbability != null ? (
+        <div className="mt-4 border-t border-ink/10 pt-3">
+          <p className="font-display text-3xl tabular-nums text-accent">
+            {Math.round(reelectionProbability * 100)} %
+          </p>
+          <p className="mt-1 text-sm text-ink/70">
+            Wahrscheinlichkeit der Wiederwahl
+            <InfoTooltip text={TIP_REELECTION} />
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -196,6 +202,9 @@ export function ParliamentDashboard({
   const [pollSeats, setPollSeats] = useState<SeatsResponse | null>(null);
   const [averages, setAverages] = useState<AveragesResponse | null>(null);
   const [incumbent, setIncumbent] = useState<IncumbentGov | null>(null);
+  const [reelectionProbability, setReelectionProbability] = useState<
+    number | null
+  >(null);
   const [headerError, setHeaderError] = useState<string | null>(null);
   const [headerLoading, setHeaderLoading] = useState(true);
 
@@ -208,15 +217,18 @@ export function ParliamentDashboard({
     setHeaderLoading(true);
     setHeaderError(null);
     setActiveTag("umfragen");
+    setReelectionProbability(null);
 
     (async () => {
       try {
-        const [election, seats, avg, gov, br] = await Promise.all([
+        const [election, seats, avg, gov, br, unc] = await Promise.all([
           fetchLastElection(parliamentId).catch(() => null),
           fetchSeats(parliamentId).catch(() => null),
           fetchAverages(parliamentId).catch(() => null),
           fetchGovernment().catch(() => null),
           fetchBundesratStatus().catch(() => null),
+          // Gleiche Simulationsgröße wie Koalitionen-Tab (200)
+          fetchUncertainty(parliamentId, 200).catch(() => null),
         ]);
         if (cancelled) return;
         setLastElection(election);
@@ -239,6 +251,9 @@ export function ParliamentDashboard({
             setIncumbent(null);
           }
         }
+
+        const p = unc?.current_government_majority_probability;
+        setReelectionProbability(typeof p === "number" ? p : null);
       } catch (e) {
         if (!cancelled) {
           setHeaderError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
@@ -293,6 +308,8 @@ export function ParliamentDashboard({
         );
       case "prognose":
         return <PartyForecast parliamentId={parliamentId} />;
+      case "letzte-wahl":
+        return <LastElectionSection parliamentId={parliamentId} />;
     }
   }, [activeTag, parliamentId]);
 
@@ -319,6 +336,7 @@ export function ParliamentDashboard({
             pollSeats={pollSeats}
             averages={averages}
             gov={incumbent}
+            reelectionProbability={reelectionProbability}
           />
         )}
       </section>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Coalition, ExclusionRule } from "@/lib/api";
+import type { Coalition, ExclusionRule, FetchCoalitionsFn } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
@@ -31,6 +31,9 @@ export function CoalitionPanel({
   seatsByName,
   initialExclusion,
   onExclusionStateChange,
+  fetchCoalitionsFn = fetchCoalitions,
+  title = "Koalitionsrechner",
+  tipText = TIP_POSSIBLE_COALITIONS,
 }: {
   parliamentId: string;
   initial: {
@@ -42,6 +45,10 @@ export function CoalitionPanel({
   /** Zustand aus URL / Parent — steuert Checkboxen nach dem Laden der Regeln. */
   initialExclusion?: ExclusionUiState;
   onExclusionStateChange?: (state: ExclusionUiState) => void;
+  /** Default: aktuelle Umfrage-Sitze; Wahlergebnis: fetchLastElectionCoalitions. */
+  fetchCoalitionsFn?: FetchCoalitionsFn;
+  title?: string;
+  tipText?: string;
 }) {
   const [applyExclusions, setApplyExclusions] = useState(
     initialExclusion?.applyExclusions ?? true,
@@ -98,7 +105,7 @@ export function CoalitionPanel({
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchCoalitions(parliamentId, {
+      const res = await fetchCoalitionsFn(parliamentId, {
         apply_exclusions: nextApply,
         disabled_rule_ids: nextApply ? nextDisabled : [],
       });
@@ -127,8 +134,8 @@ export function CoalitionPanel({
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-2xl text-ink">
-          Koalitionsrechner
-          <InfoTooltip text={TIP_POSSIBLE_COALITIONS} />
+          {title}
+          <InfoTooltip text={tipText} />
         </h2>
         <label className="flex items-center gap-2 text-sm text-ink/80">
           <input

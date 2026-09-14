@@ -139,11 +139,22 @@ class CoalitionProbabilityOut(BaseModel):
     n_simulations: int
 
 
+class PartyIndispensabilityOut(BaseModel):
+    party_id: str
+    probability: float
+    n_simulations_considered: int
+
+
 class UncertaintyResponse(BaseModel):
     parliament_id: str
     n_simulations: int
+    n_deadlock: int = 0
     mean_seats: dict[str, float]
     coalition_probabilities: list[CoalitionProbabilityOut]
+    party_indispensability: list[PartyIndispensabilityOut] = Field(default_factory=list)
+    current_government_parties: list[str] | None = None
+    current_government_label: str | None = None
+    current_government_majority_probability: float | None = None
 
 
 class ThresholdWatchPartyOut(BaseModel):

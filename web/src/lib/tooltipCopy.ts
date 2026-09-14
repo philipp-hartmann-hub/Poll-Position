@@ -3,6 +3,12 @@
 export const TIP_PARTY_FORECAST =
   "Wir lassen den aktuellen Umfragewert tausendfach leicht zufällig schwanken — so wie echte Umfragen auch schwanken — und zählen, wie oft jede Partei dabei die meisten Stimmen hätte bzw. über die 5-%-Hürde käme. Die Zahl ist also keine Wahlprognose, sondern zeigt, wie sicher der heutige Umfragestand ist.";
 
+export const TIP_PARTY_INDISPENSABLE =
+  "Wie oft gibt es in den simulierten Szenarien KEINE mögliche Mehrheitsregierung ohne diese Partei — unter Berücksichtigung der aktuell aktiven Ausschlussregeln? Ein hoher Wert heißt: diese Partei lässt sich bei der Regierungsbildung kaum umgehen. Das ist keine Vorhersage, wer tatsächlich regiert, sondern zeigt, wie zwingend diese Partei rein rechnerisch gebraucht würde.";
+
+export const TIP_REELECTION =
+  "Wie oft hätte genau diese Regierungskoalition laut aktuellem Umfragestand noch eine Mehrheit, wenn man die Umfragewerte leicht schwanken lässt? Keine Vorhersage der nächsten Wahl, sondern eine Einschätzung, wie stabil die jetzige Mehrheit nach heutigem Stand wäre.";
+
 export const TIP_COALITION_UNCERTAINTY =
   "Wie oft käme genau diese Parteien-Kombination auf eine Mehrheit der Sitze, wenn man den heutigen Umfragestand tausendfach leicht schwanken lässt? Gezählt wird nur, wenn wirklich jede genannte Partei dafür gebraucht wird — reicht schon ein Teil der Kombination für die Mehrheit, zählt das nicht mit, damit keine Partei nur mitgelistet wird, ohne wirklich etwas beizutragen.";
 
@@ -38,6 +44,9 @@ export const TIP_DATA_FRESHNESS =
 
 export const TIP_POSSIBLE_COALITIONS =
   "Listet Parteien-Kombinationen, die nach der aktuellen Sitzhochrechnung gemeinsam mehr als die Hälfte der Sitze hätten. Ob sie politisch zustande kämen, sagt die Liste nicht — nur, dass die Sitze rechnerisch reichen würden.";
+
+export const TIP_ELECTION_COALITIONS =
+  "Listet Parteien-Kombinationen, die nach dem tatsächlichen Sitzstand der letzten Wahl gemeinsam mehr als die Hälfte der Sitze gehabt hätten. Ob sie politisch zustande kamen, sagt die Liste nicht — nur, dass die Sitze rechnerisch gereicht hätten.";
 
 export const TIP_EUROPE_OVERVIEW =
   "Jedes Land ist in der Farbe der Parteienfamilie eingefärbt, die laut aktuellen Umfragen dort am stärksten dasteht. Die Karte ist eine Übersicht der Umfragelage — keine Vorhersage des Wahlergebnisses und keine Aussage über Sitze in jedem Land.";
