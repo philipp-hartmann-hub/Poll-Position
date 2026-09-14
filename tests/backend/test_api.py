@@ -743,12 +743,96 @@ def test_uncertainty_payload_canonical_coalition_ids(api_warehouse):
     payload = services.uncertainty_payload("de_bundestag", n_simulations=60)
     assert payload["coalition_probabilities"], "Fixture sollte Mehrheiten liefern"
     canonical = set(services.SHORT_TO_CANONICAL.values())
+    assert isinstance(payload.get("party_id_to_canonical"), dict)
+    assert payload["party_id_to_canonical"], "Warehouse→Kanon-Map erwartet"
+    for wh_id, canon in payload["party_id_to_canonical"].items():
+        assert canon in canonical or canon.startswith("de:")
+        assert not str(wh_id).startswith("de:") or wh_id == canon
     for entry in payload["coalition_probabilities"]:
         for pid in entry["parties"]:
             assert pid in canonical or (
                 pid.startswith("de:") and not pid.startswith("dawum:")
             ), f"erwartete kanonische ID, got {pid!r}"
             assert not pid.startswith("dawum:party:"), pid
+
+
+def test_party_forecast_indispensable_survives_db_name_mismatch(
+    api_warehouse, monkeypatch
+):
+    """
+    Regression Prompt 25: DB-short_name weicht vom Averages-Anzeigenamen ab —
+    probability_indispensable muss über party_id_to_canonical trotzdem greifen.
+    """
+    from backend import services
+
+    services.clear_payload_caches()
+
+    votes = {
+        "wh:cdu": 30.0,
+        "wh:spd": 22.0,
+        "wh:gruene": 18.0,
+        "wh:afd": 16.0,
+        "wh:fdp": 8.0,
+    }
+    avg_names = {
+        "wh:cdu": "CDU",
+        "wh:spd": "SPD",
+        "wh:gruene": "Grüne",
+        "wh:afd": "AfD",
+        "wh:fdp": "FDP",
+    }
+    raw_db_names = {
+        "wh:cdu": "Christlich Demokratische Union",
+        "wh:spd": "Sozialdemokratische Partei",
+        "wh:gruene": "Bündnis 90/Die Grünen",
+        "wh:afd": "Alternative für Deutschland",
+        "wh:fdp": "Freie Demokraten",
+    }
+
+    monkeypatch.setattr(
+        services, "_votes_from_averages", lambda _pid: (dict(votes), dict(avg_names))
+    )
+    monkeypatch.setattr(services, "_party_name_map", lambda _con: dict(raw_db_names))
+    monkeypatch.setattr(services, "_party_house_variance", lambda _pid: {})
+    monkeypatch.setattr(
+        services,
+        "uncertainty_payload",
+        lambda _pid, n_simulations=400, **_kw: {
+            "parliament_id": _pid,
+            "n_simulations": n_simulations,
+            "n_deadlock": 0,
+            "mean_seats": {},
+            "coalition_probabilities": [],
+            "party_indispensability": [
+                {
+                    "party_id": "de:cdu",
+                    "probability": 0.815,
+                    "n_simulations_considered": 100,
+                },
+                {
+                    "party_id": "de:spd",
+                    "probability": 0.1,
+                    "n_simulations_considered": 100,
+                },
+            ],
+            "party_id_to_canonical": {
+                "wh:cdu": "de:cdu",
+                "wh:spd": "de:spd",
+                "wh:gruene": "de:gruene",
+                "wh:afd": "de:afd",
+                "wh:fdp": "de:fdp",
+            },
+            "current_government_parties": None,
+            "current_government_label": None,
+            "current_government_majority_probability": None,
+        },
+    )
+
+    out = services.party_forecast_payload("de_bundestag", n_simulations=40)
+    by_id = {p["party_id"]: p for p in out["parties"]}
+    assert by_id["wh:cdu"]["probability_indispensable"] == pytest.approx(0.815)
+    assert by_id["wh:spd"]["probability_indispensable"] == pytest.approx(0.1)
+    assert by_id["wh:afd"]["probability_indispensable"] == 0.0
 
 
 def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):

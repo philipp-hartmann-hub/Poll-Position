@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from analysis.coalitions import (
     CoalitionRulesConfig,
     ExclusionRule,
@@ -102,3 +104,30 @@ def test_indispensability_deadlock_excluded_from_denominator():
     assert out["n_deadlock"] == 25
     assert out["n_simulations_considered"] == 0
     assert out["party_indispensability"] == []
+
+
+def test_indispensable_probability_prefers_id_to_canonical_over_raw_name():
+    """DB-short_name ≠ Anzeigename → trotzdem Treffer über party_id_to_canonical."""
+    from backend.services import _indispensable_probability_for_party
+
+    indis = {"de:cdu": 0.815, "de:spd": 0.12}
+    id_map = {"wh:cdu": "de:cdu", "wh:spd": "de:spd"}
+    # Rohname absichtlich nicht in SHORT_TO_CANONICAL
+    raw_names = {"wh:cdu": "Christlich Demokratische Union", "wh:spd": "SPD-Roh"}
+
+    assert _indispensable_probability_for_party(
+        "wh:cdu",
+        indis_by_canon=indis,
+        party_id_to_canonical=id_map,
+        names=raw_names,
+    ) == pytest.approx(0.815)
+    # Ohne ID-Map und ohne bekannten Namen → 0
+    assert (
+        _indispensable_probability_for_party(
+            "wh:cdu",
+            indis_by_canon=indis,
+            party_id_to_canonical={},
+            names=raw_names,
+        )
+        == 0.0
+    )

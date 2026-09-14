@@ -1143,6 +1143,7 @@ def uncertainty_payload(
                 "mean_seats": {},
                 "coalition_probabilities": [],
                 "party_indispensability": [],
+                "party_id_to_canonical": {},
                 **empty_gov,
             },
         )
@@ -1271,6 +1272,8 @@ def uncertainty_payload(
                 if c.parties in deterministic_ids or c.n_majority > 0
             ],
             "party_indispensability": indis["party_indispensability"],
+            # Warehouse-ID → kanonische ID (für Forecast-Join ohne Namens-Mismatch)
+            "party_id_to_canonical": id_to_canon,
             "current_government_parties": gov_canon,
             "current_government_label": gov_label,
             "current_government_majority_probability": gov_prob,
@@ -1369,6 +1372,33 @@ def threshold_watch_payload(
     }
 
 
+def _indispensable_probability_for_party(
+    party_id: str,
+    *,
+    indis_by_canon: Mapping[str, float],
+    party_id_to_canonical: Mapping[str, str],
+    names: Mapping[str, str] | None = None,
+) -> float:
+    """
+    Mappt Warehouse-/Anzeige-ID auf party_indispensability (kanonische IDs).
+
+    Bevorzugt die Zuordnung aus ``uncertainty_payload`` (``party_id_to_canonical``),
+    damit abweichende DB-short_names nicht still auf 0.0 fallen.
+    """
+    pid = str(party_id)
+    if pid in indis_by_canon:
+        return float(indis_by_canon[pid])
+    canon = party_id_to_canonical.get(pid)
+    if canon is not None and canon in indis_by_canon:
+        return float(indis_by_canon[canon])
+    if names:
+        label = names.get(pid, pid)
+        via_name = SHORT_TO_CANONICAL.get(str(label), pid)
+        if via_name in indis_by_canon:
+            return float(indis_by_canon[via_name])
+    return 0.0
+
+
 def party_forecast_payload(
     parliament_id: str,
     *,
@@ -1380,11 +1410,14 @@ def party_forecast_payload(
     if cached is not _TTL_MISS:
         return cached
 
-    votes, names = _votes_from_averages(parliament_id)
+    votes, avg_names = _votes_from_averages(parliament_id)
+    names = dict(avg_names)
     try:
         ensure_warehouse()
         con = connect_warehouse(read_only=not uses_motherduck())
         try:
+            # Anzeige: Warehouse-Namen mergen. Join auf Unverzichtbarkeit nutzt
+            # separat party_id_to_canonical aus uncertainty_payload (nicht diese Map).
             names = {**names, **_party_name_map(con)}
         finally:
             con.close()
@@ -1432,10 +1465,9 @@ def party_forecast_payload(
         e["party_id"]: float(e["probability"])
         for e in unc.get("party_indispensability", [])
     }
-
-    def _canon_for(pid: str) -> str:
-        name = names.get(pid, pid)
-        return SHORT_TO_CANONICAL.get(name, pid)
+    id_to_canon = {
+        str(k): str(v) for k, v in (unc.get("party_id_to_canonical") or {}).items()
+    }
 
     return _ttl_set(
         _forecast_cache,
@@ -1453,8 +1485,11 @@ def party_forecast_payload(
                     "threshold_percent": r.threshold_percent,
                     "probability_strongest": r.probability_strongest,
                     "probability_above_threshold": r.probability_above_threshold,
-                    "probability_indispensable": indis_by_canon.get(
-                        _canon_for(r.party_id), 0.0
+                    "probability_indispensable": _indispensable_probability_for_party(
+                        r.party_id,
+                        indis_by_canon=indis_by_canon,
+                        party_id_to_canonical=id_to_canon,
+                        names=avg_names,
                     ),
                 }
                 for r in rows
