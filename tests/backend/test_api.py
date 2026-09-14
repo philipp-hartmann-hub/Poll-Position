@@ -136,6 +136,34 @@ def test_coalitions_last_election_bundestag(client):
         for c in body["coalitions"]
     )
 
+
+def test_coalitions_last_election_apply_exclusions_false(client):
+    """Letzte-Wahl-Koalitionen: Ausschluss aus → mehr Optionen, excluded_by_rules=0."""
+    from backend import services
+
+    services.clear_payload_caches()
+    with_ex = client.get(
+        "/api/coalitions/last-election",
+        params={"parliament_id": "de_bundestag", "apply_exclusions": True},
+    )
+    assert with_ex.status_code == 200
+    body_on = with_ex.json()
+    assert body_on["excluded_by_rules"] >= 1
+
+    without = client.get(
+        "/api/coalitions/last-election",
+        params={"parliament_id": "de_bundestag", "apply_exclusions": False},
+    )
+    assert without.status_code == 200
+    assert without.headers.get("cache-control") == "private, no-store"
+    body_off = without.json()
+    assert body_off["excluded_by_rules"] == 0
+    assert len(body_off["coalitions"]) >= len(body_on["coalitions"])
+    assert any(
+        set(c["parties"]) == {"de:afd", "de:cdu_csu"} for c in body_off["coalitions"]
+    )
+
+
 def test_coalitions_last_election_missing_returns_404(client):
     r = client.get(
         "/api/coalitions/last-election",

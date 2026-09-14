@@ -970,11 +970,13 @@ def coalition_rules_payload(parliament_id: str) -> dict[str, Any]:
 
 
 def _present_parties_for_exclusion_ui(parliament_id: str) -> set[str]:
-    """Warehouse-IDs + kanonische IDs aus Sitzen und Umfrage-Mittelwerten."""
+    """Warehouse-IDs + kanonische IDs aus Sitzen, Umfragen und letzter Wahl."""
     present: set[str] = set()
     votes, names = _votes_from_averages(parliament_id)
     seats_data = seats_payload(parliament_id)
     seats = seats_data.get("seats") or {}
+    election = last_election_payload(parliament_id)
+    election_seats = (election or {}).get("seats") or {}
 
     def _add(pid: str) -> None:
         if not pid:
@@ -990,6 +992,9 @@ def _present_parties_for_exclusion_ui(parliament_id: str) -> set[str]:
         if float(share) > 0:
             _add(str(pid))
     for pid, n in seats.items():
+        if int(n) > 0:
+            _add(str(pid))
+    for pid, n in election_seats.items():
         if int(n) > 0:
             _add(str(pid))
     return present

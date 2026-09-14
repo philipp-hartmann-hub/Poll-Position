@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LastElectionSection } from "@/components/LastElectionSection";
 import { displayNameForParliament } from "@/lib/deParliaments";
 import type { Metadata } from "next";
@@ -30,7 +31,11 @@ export default async function LetzteWahlPage({ params }: PageProps) {
           ← Zurück zur Übersicht
         </Link>
       </p>
-      <LastElectionSection parliamentId={id} />
+      <Suspense
+        fallback={<p className="text-sm text-ink/50">Lade Wahlergebnis…</p>}
+      >
+        <LastElectionSection parliamentId={id} />
+      </Suspense>
     </div>
   );
 }

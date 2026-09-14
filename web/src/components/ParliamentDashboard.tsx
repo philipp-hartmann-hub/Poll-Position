@@ -309,7 +309,13 @@ export function ParliamentDashboard({
       case "prognose":
         return <PartyForecast parliamentId={parliamentId} />;
       case "letzte-wahl":
-        return <LastElectionSection parliamentId={parliamentId} />;
+        return (
+          <Suspense
+            fallback={<p className="text-sm text-ink/50">Lade Wahlergebnis…</p>}
+          >
+            <LastElectionSection parliamentId={parliamentId} />
+          </Suspense>
+        );
     }
   }, [activeTag, parliamentId]);
 

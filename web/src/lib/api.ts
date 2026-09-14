@@ -450,13 +450,16 @@ export function fetchLastElectionCoalitions(
   for (const id of disabled) {
     q.append("disabled_rule_ids", id);
   }
-  return apiFetch(`/api/coalitions/last-election?${q}`, {
-    noStore:
-      opts !== undefined &&
-      (opts.apply_exclusions !== undefined ||
-        disabled.length > 0 ||
-        (opts.max_parties !== undefined && opts.max_parties !== 4)),
-  });
+  const apiPath = `/api/coalitions/last-election?${q}`;
+  // Wie /api/coalitions: jede UI-Interaktion (Ausschluss an/aus, einzelne Regeln)
+  // muss frisch von der API kommen — sonst bleibt die Übersicht auf dem
+  // Default-Snapshot mit aktiven Ausschlüssen.
+  const interactive =
+    opts !== undefined &&
+    (opts.apply_exclusions !== undefined ||
+      disabled.length > 0 ||
+      (opts.max_parties !== undefined && opts.max_parties !== 4));
+  return apiFetch(apiPath, interactive ? { noStore: true } : undefined);
 }
 
 export type FetchCoalitionsFn = (
