@@ -19,7 +19,7 @@ import {
   type LastElectionResponse,
   type SeatsResponse,
 } from "@/lib/api";
-import { Hemicycle, PollShareBarChart, PollElectionStackedChart } from "@/components/charts";
+import { Hemicycle, PollShareBarChart, ElectionPollCompareChart, SwingDeltaBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
@@ -121,24 +121,7 @@ function SeatCompareBlock({
         )}
       </div>
 
-      {compareRows.length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-          <h3 className="text-sm font-semibold text-ink">
-            Umfrage im Vergleich zur letzten Wahl
-          </h3>
-          <p className="mb-3 text-xs text-ink/55">
-            Gewichteter Mittelwert
-            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""}
-            {lastElection
-              ? ` · Bezug: ${lastElection.label} (${lastElection.election_date})`
-              : ""}
-          </p>
-          <PollElectionStackedChart
-            rows={compareRows}
-            electionDate={lastElection?.election_date}
-          />
-        </div>
-      ) : pollParties.length > 0 ? (
+      {pollParties.length > 0 ? (
         <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <h3 className="text-sm font-semibold text-ink">
             Aktueller Umfrageanteil
@@ -148,6 +131,32 @@ function SeatCompareBlock({
             {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
           </p>
           <PollShareBarChart parties={pollParties} />
+        </div>
+      ) : null}
+
+      {compareRows.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Letzte Wahl vs. Umfrage
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              Stimmenanteil in Prozent
+              {lastElection
+                ? ` · Wahl ${lastElection.election_date}`
+                : ""}
+            </p>
+            <ElectionPollCompareChart rows={compareRows} />
+          </div>
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Veränderung zur letzten Wahl
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              Umfrage − Wahlergebnis in Prozentpunkten
+            </p>
+            <SwingDeltaBarChart rows={compareRows} />
+          </div>
         </div>
       ) : null}
     </div>
