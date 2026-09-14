@@ -191,12 +191,14 @@ class PartyForecastPartyOut(BaseModel):
     threshold_percent: float
     probability_strongest: float
     probability_above_threshold: float
+    probability_indispensable: float = 0.0
 
 
 class PartyForecastResponse(BaseModel):
     parliament_id: str
     threshold_percent: float
     n_simulations: int
+    n_deadlock: int = 0
     parties: list[PartyForecastPartyOut]
 
 

@@ -835,6 +835,23 @@ def test_party_forecast_indispensable_survives_db_name_mismatch(
     assert by_id["wh:afd"]["probability_indispensable"] == 0.0
 
 
+def test_party_forecast_api_exposes_indispensable(client):
+    """API-Schema darf probability_indispensable nicht verwerfen (Prompt 25 Follow-up)."""
+    r = client.get(
+        "/api/party-forecast",
+        params={"parliament_id": "de_bundestag"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert "parties" in body and body["parties"]
+    assert "probability_indispensable" in body["parties"][0]
+    # Mindestens eine Partei mit definiertem float (auch 0.0 ist ok — Feld muss da sein)
+    assert all(
+        isinstance(p.get("probability_indispensable"), (int, float))
+        for p in body["parties"]
+    )
+
+
 def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
     """~46 % der Sitze → 1-Parteien-Kandidat; ~25 % → nicht."""
     from backend import services
