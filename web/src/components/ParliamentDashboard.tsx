@@ -48,10 +48,12 @@ function SeatCompareBlock({
   lastElection,
   pollSeats,
   averages,
+  gov,
 }: {
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
   averages: AveragesResponse | null;
+  gov: IncumbentGov | null;
 }) {
   const pollParties =
     averages?.parties.map((p) => ({
@@ -104,7 +106,7 @@ function SeatCompareBlock({
         </div>
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {lastElection ? (
           <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
             <h3 className="text-sm font-semibold text-ink">
@@ -152,6 +154,7 @@ function SeatCompareBlock({
             Keine Umfrage-Sitzprojektion verfügbar.
           </div>
         )}
+        <IncumbentCoalitionCard gov={gov} />
       </div>
     </div>
   );
@@ -317,14 +320,12 @@ export function ParliamentDashboard({
             {headerError}
           </p>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(14rem,0.7fr)]">
-            <SeatCompareBlock
-              lastElection={lastElection}
-              pollSeats={pollSeats}
-              averages={averages}
-            />
-            <IncumbentCoalitionCard gov={incumbent} />
-          </div>
+          <SeatCompareBlock
+            lastElection={lastElection}
+            pollSeats={pollSeats}
+            averages={averages}
+            gov={incumbent}
+          />
         )}
       </section>
 
