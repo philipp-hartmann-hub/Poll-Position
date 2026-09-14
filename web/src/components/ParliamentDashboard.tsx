@@ -25,7 +25,6 @@ import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
-import { ThresholdWatch } from "@/components/ThresholdWatch";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
@@ -261,12 +260,7 @@ export function ParliamentDashboard({
       case "koalitionen":
         return <CoalitionsSection parliamentId={parliamentId} />;
       case "prognose":
-        return (
-          <div className="space-y-10">
-            <PartyForecast parliamentId={parliamentId} />
-            <ThresholdWatch parliamentId={parliamentId} />
-          </div>
-        );
+        return <PartyForecast parliamentId={parliamentId} />;
       case "institute":
         return <InstituteView parliamentId={parliamentId} />;
     }
