@@ -19,7 +19,7 @@ import {
   type LastElectionResponse,
   type SeatsResponse,
 } from "@/lib/api";
-import { Hemicycle, PollShareBarChart } from "@/components/charts";
+import { Hemicycle, PollShareBarChart, ElectionPollCompareChart, SwingDeltaBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
@@ -56,6 +56,19 @@ function SeatCompareBlock({
       party_name: p.party_name,
       share: p.average_share,
     })) ?? [];
+
+  const compareRows =
+    averages?.parties
+      .filter((p) => p.swing != null)
+      .map((p) => {
+        const swing = p.swing as number;
+        return {
+          party_name: p.party_name,
+          election_share: p.average_share - swing,
+          poll_share: p.average_share,
+          swing,
+        };
+      }) ?? [];
 
   return (
     <div className="space-y-4">
@@ -118,6 +131,32 @@ function SeatCompareBlock({
             {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
           </p>
           <PollShareBarChart parties={pollParties} />
+        </div>
+      ) : null}
+
+      {compareRows.length > 0 ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Letzte Wahl vs. Umfrage
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              Stimmenanteil in Prozent
+              {lastElection
+                ? ` · Wahl ${lastElection.election_date}`
+                : ""}
+            </p>
+            <ElectionPollCompareChart rows={compareRows} />
+          </div>
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Veränderung zur letzten Wahl
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              Umfrage − Wahlergebnis in Prozentpunkten
+            </p>
+            <SwingDeltaBarChart rows={compareRows} />
+          </div>
         </div>
       ) : null}
     </div>
