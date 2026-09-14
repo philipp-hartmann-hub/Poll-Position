@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Coalition, ExclusionRule, FetchCoalitionsFn } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
@@ -11,6 +11,12 @@ import { TIP_POSSIBLE_COALITIONS } from "@/lib/tooltipCopy";
 export type ExclusionUiState = {
   applyExclusions: boolean;
   disabledRuleIds: string[];
+};
+
+export type CoalitionPanelData = {
+  majority_threshold: number;
+  excluded_by_rules: number;
+  coalitions: Coalition[];
 };
 
 function pairParties(rule: ExclusionRule): [string, string] {
@@ -36,11 +42,7 @@ export function CoalitionPanel({
   tipText = TIP_POSSIBLE_COALITIONS,
 }: {
   parliamentId: string;
-  initial: {
-    majority_threshold: number;
-    excluded_by_rules: number;
-    coalitions: Coalition[];
-  };
+  initial: CoalitionPanelData;
   seatsByName: Record<string, number>;
   /** Zustand aus URL / Parent — steuert Checkboxen nach dem Laden der Regeln. */
   initialExclusion?: ExclusionUiState;
@@ -55,12 +57,21 @@ export function CoalitionPanel({
   );
   const [rules, setRules] = useState<ExclusionRule[]>([]);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({});
-  const [data, setData] = useState(initial);
+  const [data, setData] = useState<CoalitionPanelData>(initial);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [highlightParties, setHighlightParties] = useState<string[] | null>(
     null,
   );
+  /** Nur die neueste refresh()-Antwort darf setData/setLoading anfassen. */
+  const refreshSeq = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      // Pending refresh()-Responses nach Unmount verwerfen.
+      refreshSeq.current += 1;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +113,7 @@ export function CoalitionPanel({
       applyExclusions: nextApply,
       disabledRuleIds: nextDisabled,
     });
+    const seq = ++refreshSeq.current;
     setLoading(true);
     setError(null);
     try {
@@ -109,15 +121,19 @@ export function CoalitionPanel({
         apply_exclusions: nextApply,
         disabled_rule_ids: nextApply ? nextDisabled : [],
       });
+      if (seq !== refreshSeq.current) return;
       setData({
         majority_threshold: res.majority_threshold,
         excluded_by_rules: res.excluded_by_rules,
         coalitions: res.coalitions,
       });
     } catch (e) {
+      if (seq !== refreshSeq.current) return;
       setError(e instanceof Error ? e.message : "Fehler");
     } finally {
-      setLoading(false);
+      if (seq === refreshSeq.current) {
+        setLoading(false);
+      }
     }
   }
 

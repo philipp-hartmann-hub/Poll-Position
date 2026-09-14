@@ -112,38 +112,6 @@ export function LastElectionSection({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Query nur bei Toggle / Parlamentwechsel
   }, [parliamentId]);
 
-  const disabledKey = exclusionState.disabledRuleIds.join("\0");
-
-  // Koalitionsübersicht an Ausschluss-Toggles anbinden (wie Unsicherheit im
-  // Koalitionen-Tab): Parent lädt neu, Panel bekommt frisches initial.
-  useEffect(() => {
-    if (!election) return;
-    let cancelled = false;
-    const t = setTimeout(() => {
-      void fetchLastElectionCoalitions(parliamentId, {
-        apply_exclusions: exclusionState.applyExclusions,
-        disabled_rule_ids: exclusionState.applyExclusions
-          ? exclusionState.disabledRuleIds
-          : [],
-      })
-        .then((coal) => {
-          if (!cancelled) setCoalitions(coal);
-        })
-        .catch(() => {
-          if (!cancelled) setCoalitions(null);
-        });
-    }, 0);
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-    };
-  }, [
-    parliamentId,
-    election,
-    exclusionState.applyExclusions,
-    disabledKey,
-  ]);
-
   if (loading) {
     return <p className="text-sm text-ink/50">Lade Wahlergebnis…</p>;
   }
@@ -188,7 +156,7 @@ export function LastElectionSection({
 
       {coalitions ? (
         <CoalitionPanel
-          key={`election-${parliamentId}-${exclusionState.applyExclusions}-${disabledKey}`}
+          key={`election-${parliamentId}`}
           parliamentId={parliamentId}
           seatsByName={election.seats_by_name}
           fetchCoalitionsFn={fetchLastElectionCoalitions}

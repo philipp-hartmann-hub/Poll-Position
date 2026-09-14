@@ -6,7 +6,7 @@ export const MIST = "#23262b";
 export const ACCENT = "#d77842";
 export const SEA = "#26d997";
 
-/** „Keine Daten“ auf Karten — dunkles Pendant zu #c5c0b6. */
+/** „Keine Daten“ / unbekannter Stance auf Karten (Dark-Chrome). */
 export const NEUTRAL_MUTED = "#565b64";
 
 /**
