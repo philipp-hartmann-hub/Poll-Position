@@ -72,6 +72,27 @@ export function AttributionFooter() {
         <p className="text-xs text-ink/45">
           Persönlicher / nicht-kommerzieller Gebrauch, sofern keine kommerzielle
           Lizenz für europäische Zusatzdaten vorliegt.
+          {" · "}
+          <a
+            className="underline decoration-ink/20 hover:text-ink"
+            href="/methodik"
+          >
+            Methodik
+          </a>
+          {" · "}
+          <a
+            className="underline decoration-ink/20 hover:text-ink"
+            href="/impressum"
+          >
+            Impressum
+          </a>
+          {" · "}
+          <a
+            className="underline decoration-ink/20 hover:text-ink"
+            href="/datenschutz"
+          >
+            Datenschutz
+          </a>
         </p>
       </div>
     </footer>

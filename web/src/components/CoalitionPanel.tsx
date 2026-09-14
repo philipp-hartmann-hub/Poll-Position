@@ -29,6 +29,7 @@ export function CoalitionPanel({
   parliamentId,
   initial,
   seatsByName,
+  initialExclusion,
   onExclusionStateChange,
 }: {
   parliamentId: string;
@@ -38,9 +39,13 @@ export function CoalitionPanel({
     coalitions: Coalition[];
   };
   seatsByName: Record<string, number>;
+  /** Zustand aus URL / Parent — steuert Checkboxen nach dem Laden der Regeln. */
+  initialExclusion?: ExclusionUiState;
   onExclusionStateChange?: (state: ExclusionUiState) => void;
 }) {
-  const [applyExclusions, setApplyExclusions] = useState(true);
+  const [applyExclusions, setApplyExclusions] = useState(
+    initialExclusion?.applyExclusions ?? true,
+  );
   const [rules, setRules] = useState<ExclusionRule[]>([]);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({});
   const [data, setData] = useState(initial);
@@ -57,7 +62,11 @@ export function CoalitionPanel({
         const res = await fetchCoalitionRules(parliamentId);
         if (cancelled) return;
         setRules(res.rules);
-        setEnabled(Object.fromEntries(res.rules.map((r) => [r.id, true])));
+        const disabled = new Set(initialExclusion?.disabledRuleIds ?? []);
+        setEnabled(
+          Object.fromEntries(res.rules.map((r) => [r.id, !disabled.has(r.id)])),
+        );
+        setApplyExclusions(initialExclusion?.applyExclusions ?? true);
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Regeln laden fehlgeschlagen");
@@ -67,6 +76,8 @@ export function CoalitionPanel({
     return () => {
       cancelled = true;
     };
+    // Nur bei Parlamentwechsel neu laden; initialExclusion kommt mit key={parliamentId} + Remount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: URL-State nur beim Mount / Parlamentwechsel
   }, [parliamentId]);
 
   const disabledRuleIds = useMemo(
@@ -80,17 +91,16 @@ export function CoalitionPanel({
   );
 
   async function refresh(nextApply: boolean, nextDisabled: string[]) {
-    const disabledForApi = nextApply ? nextDisabled : [];
     onExclusionStateChange?.({
       applyExclusions: nextApply,
-      disabledRuleIds: disabledForApi,
+      disabledRuleIds: nextDisabled,
     });
     setLoading(true);
     setError(null);
     try {
       const res = await fetchCoalitions(parliamentId, {
         apply_exclusions: nextApply,
-        disabled_rule_ids: disabledForApi,
+        disabled_rule_ids: nextApply ? nextDisabled : [],
       });
       setData({
         majority_threshold: res.majority_threshold,
@@ -175,8 +185,6 @@ export function CoalitionPanel({
               <tr>
                 <th className="px-3 py-2 font-medium">Koalition</th>
                 <th className="px-3 py-2 font-medium">Sitze</th>
-                <th className="px-3 py-2 font-medium">Span</th>
-                <th className="px-3 py-2 font-medium">Minimal</th>
               </tr>
             </thead>
             <tbody>
@@ -202,12 +210,6 @@ export function CoalitionPanel({
                     </td>
                     <td className="px-3 py-2 font-display tabular-nums">
                       {c.seats}
-                    </td>
-                    <td className="px-3 py-2 tabular-nums">
-                      {c.compatibility_span?.toFixed(1) ?? "—"}
-                    </td>
-                    <td className="px-3 py-2">
-                      {c.is_minimal_winning ? "ja" : "nein"}
                     </td>
                   </tr>
                 ))}

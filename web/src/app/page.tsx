@@ -27,6 +27,11 @@ export default function HomePage() {
             Institute
           </Link>
         </li>
+        <li>
+          <Link className="hover:text-sea" href="/methodik">
+            Methodik
+          </Link>
+        </li>
         {features.europe ? (
           <li>
             <Link className="hover:text-sea" href="/europa">

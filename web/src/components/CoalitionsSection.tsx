@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   fetchCoalitions,
   fetchSeats,
@@ -16,33 +17,82 @@ import {
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
 import {
-  TIP_COALITION_UNCERTAINTY,
-  TIP_POSSIBLE_COALITIONS,
-} from "@/lib/tooltipCopy";
+  DEFAULT_EXCLUSION_UI,
+  exclusionFromSearchParams,
+  exclusionStatesEqual,
+  searchParamsWithExclusion,
+} from "@/lib/exclusionUrl";
+import { TIP_COALITION_UNCERTAINTY } from "@/lib/tooltipCopy";
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const prevParliamentId = useRef<string | null>(null);
+
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
   const [uncertainty, setUncertainty] = useState<UncertaintyResponse | null>(
     null,
   );
-  const [exclusionState, setExclusionState] = useState<ExclusionUiState>({
-    applyExclusions: true,
-    disabledRuleIds: [],
-  });
+  const [exclusionState, setExclusionState] = useState<ExclusionUiState>(() =>
+    exclusionFromSearchParams(searchParams),
+  );
   const [uncertaintyBusy, setUncertaintyBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const syncExclusionToUrl = useCallback(
+    (state: ExclusionUiState) => {
+      const next = searchParamsWithExclusion(searchParams, state);
+      const qs = next.toString();
+      const href = qs ? `${pathname}?${qs}` : pathname;
+      if (qs === searchParams.toString()) return;
+      router.replace(href, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const onExclusionStateChange = useCallback(
+    (state: ExclusionUiState) => {
+      setExclusionState((prev) =>
+        exclusionStatesEqual(prev, state) ? prev : state,
+      );
+      syncExclusionToUrl(state);
+    },
+    [syncExclusionToUrl],
+  );
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    setExclusionState({ applyExclusions: true, disabledRuleIds: [] });
+
+    const switchedParliament =
+      prevParliamentId.current != null &&
+      prevParliamentId.current !== parliamentId;
+    prevParliamentId.current = parliamentId;
+
+    const hasExclusionQuery =
+      searchParams.has("apply_exclusions") ||
+      searchParams.has("disabled_rules");
+    // Parlamentwechsel ohne Query → Default (kein Altlast). Mit Query (z. B. Zurück
+    // im Browser) → URL übernehmen.
+    const nextExclusion =
+      switchedParliament && !hasExclusionQuery
+        ? DEFAULT_EXCLUSION_UI
+        : exclusionFromSearchParams(searchParams);
+    setExclusionState(nextExclusion);
+
     (async () => {
       try {
         const [c, s] = await Promise.all([
-          fetchCoalitions(parliamentId),
+          fetchCoalitions(parliamentId, {
+            apply_exclusions: nextExclusion.applyExclusions,
+            disabled_rule_ids: nextExclusion.applyExclusions
+              ? nextExclusion.disabledRuleIds
+              : [],
+          }),
           fetchSeats(parliamentId),
         ]);
         if (cancelled) return;
@@ -59,6 +109,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Query nur bei Toggle / Parlamentwechsel
   }, [parliamentId]);
 
   const disabledKey = exclusionState.disabledRuleIds.join("\0");
@@ -69,7 +120,9 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
       setUncertaintyBusy(true);
       void fetchUncertainty(parliamentId, 200, {
         applyExclusions: exclusionState.applyExclusions,
-        disabledRuleIds: exclusionState.disabledRuleIds,
+        disabledRuleIds: exclusionState.applyExclusions
+          ? exclusionState.disabledRuleIds
+          : [],
       })
         .then((u) => {
           if (!cancelled) setUncertainty(u);
@@ -109,12 +162,13 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
         key={parliamentId}
         parliamentId={parliamentId}
         seatsByName={seats.seats_by_name}
+        initialExclusion={exclusionState}
         initial={{
           majority_threshold: coalitions.majority_threshold,
           excluded_by_rules: coalitions.excluded_by_rules,
           coalitions: coalitions.coalitions,
         }}
-        onExclusionStateChange={setExclusionState}
+        onExclusionStateChange={onExclusionStateChange}
       />
 
       {(uncertainty && uncertainty.coalition_probabilities.length > 0) ||

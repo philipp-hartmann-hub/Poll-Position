@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetchRawSurveys, type RawSurveysResponse } from "@/lib/api";
+import { ExportButtons } from "@/components/ExportButtons";
 import { partyColor } from "@/lib/colors";
+import {
+  downloadCsv,
+  downloadJson,
+  exportBasename,
+  formatDeNumber,
+  toCsv,
+} from "@/lib/download";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 const PAGE_SIZE = 20;
@@ -50,6 +58,53 @@ export function RawSurveysTable({
     void load(0);
   }, [open, load]);
 
+  const exportPage = (kind: "csv" | "json") => {
+    if (!data || data.surveys.length === 0) return;
+    const base = exportBasename(parliamentId, `surveys-p${data.offset}`);
+    if (kind === "json") {
+      downloadJson(`${base}.json`, {
+        parliament_id: data.parliament_id,
+        total: data.total,
+        limit: data.limit,
+        offset: data.offset,
+        note: "Nur die aktuell geladene Seite, nicht alle historischen Umfragen.",
+        surveys: data.surveys,
+      });
+      return;
+    }
+    const rows: (string | number)[][] = [];
+    for (const s of data.surveys) {
+      for (const r of s.results) {
+        rows.push([
+          s.institute_name ?? s.institute_id,
+          s.field_date_from ?? "",
+          s.field_date_to ?? "",
+          s.publication_date,
+          s.sample_size ?? "",
+          r.party_name,
+          formatDeNumber(r.share),
+          s.source_url ?? "",
+        ]);
+      }
+    }
+    downloadCsv(
+      `${base}.csv`,
+      toCsv(
+        [
+          "Institut",
+          "Zeitraum von",
+          "Zeitraum bis",
+          "Veröffentlichung",
+          "Stichprobe",
+          "Partei",
+          "Anteil %",
+          "Quelle",
+        ],
+        rows,
+      ),
+    );
+  };
+
   return (
     <details
       className="rounded-lg border border-ink/10 bg-mist/40"
@@ -66,6 +121,20 @@ export function RawSurveysTable({
         )}
         {data && (
           <>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs text-ink/45">
+                Export gilt nur für die aktuell angezeigte Seite
+                {data.total > 0
+                  ? ` (${data.offset + 1}–${Math.min(data.offset + data.surveys.length, data.total)} von ${data.total})`
+                  : ""}
+                .
+              </p>
+              <ExportButtons
+                disabled={data.surveys.length === 0 || loading}
+                onCsv={() => exportPage("csv")}
+                onJson={() => exportPage("json")}
+              />
+            </div>
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-sm">
                 <thead className="bg-ink/5 text-ink/60">
@@ -81,7 +150,9 @@ export function RawSurveysTable({
                 <tbody>
                   {data.surveys.map((s) => (
                     <tr key={s.id} className="border-t border-ink/5 align-top">
-                      <td className="px-2 py-2">{s.institute_name ?? s.institute_id}</td>
+                      <td className="px-2 py-2">
+                        {s.institute_name ?? s.institute_id}
+                      </td>
                       <td className="px-2 py-2 tabular-nums whitespace-nowrap">
                         {formatRange(s.field_date_from, s.field_date_to)}
                       </td>
@@ -94,10 +165,15 @@ export function RawSurveysTable({
                       <td className="px-2 py-2">
                         <div className="flex flex-wrap gap-x-3 gap-y-1">
                           {s.results.map((r) => (
-                            <span key={r.party_id} className="whitespace-nowrap">
+                            <span
+                              key={r.party_id}
+                              className="whitespace-nowrap"
+                            >
                               <span
                                 className={`mr-1 ${PARTY_SWATCH_CLASS} h-1.5 w-1.5`}
-                                style={{ background: partyColor(r.party_name) }}
+                                style={{
+                                  background: partyColor(r.party_name),
+                                }}
                               />
                               {r.party_name} {r.share.toFixed(1)}
                             </span>

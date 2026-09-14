@@ -20,6 +20,7 @@ const links = [
     ? [{ href: "/europa", label: "Europa", match: "prefix" as const }]
     : []),
   { href: "/institute", label: "Institute", match: "prefix" as const },
+  { href: "/methodik", label: "Methodik", match: "prefix" as const },
 ];
 
 function isActive(

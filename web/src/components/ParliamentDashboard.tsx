@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import {
   fetchAverages,
   fetchBundesratStatus,
@@ -294,7 +286,13 @@ export function ParliamentDashboard({
       case "umfragen":
         return <SurveysSection parliamentId={parliamentId} />;
       case "koalitionen":
-        return <CoalitionsSection parliamentId={parliamentId} />;
+        return (
+          <Suspense
+            fallback={<p className="text-sm text-ink/50">Lade Analyse…</p>}
+          >
+            <CoalitionsSection parliamentId={parliamentId} />
+          </Suspense>
+        );
       case "prognose":
         return <PartyForecast parliamentId={parliamentId} />;
       case "institute":
