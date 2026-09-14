@@ -84,19 +84,23 @@ def test_last_election_bundestag(client):
     seats = body["seats"]
     assert sum(seats.values()) == 630
     assert "de:sonstige" not in seats
-    assert "de:cdu_csu" not in seats
-    assert seats.get("de:cdu", 0) > 0
+    # Bundesebene: CDU und CSU immer als Union, nie getrennt
+    assert seats.get("de:cdu_csu", 0) > 0
+    assert "de:cdu" not in seats
+    assert "de:csu" not in seats
     assert seats.get("de:afd", 0) > 0
     assert body["seats_by_name"]
+    assert "CDU" not in body["seats_by_name"]
+    assert "CSU" not in body["seats_by_name"]
+    assert body["seats_by_name"].get("CDU/CSU", 0) > 0
     shares = body["vote_share_by_name"]
     assert shares
     assert "Sonstige" not in shares
     assert "sonstige" not in {k.lower() for k in shares}
     assert shares.get("AfD") == pytest.approx(20.8)
     assert shares.get("SPD") == pytest.approx(16.4)
-    assert shares.get("CDU") == pytest.approx(22.6)
-    assert shares.get("CSU") == pytest.approx(6.0)
-    # Aggregat für Umfragen, die Union zusammenfassen
+    assert "CDU" not in shares
+    assert "CSU" not in shares
     assert shares.get("CDU/CSU") == pytest.approx(28.52)
 
 
@@ -124,16 +128,13 @@ def test_coalitions_last_election_bundestag(client):
     assert all(c["seats"] >= body["majority_threshold"] for c in body["coalitions"])
     # Union+SPD war die tatsächliche Mehrheit nach BTW 2025
     union_spd = any(
-        set(c["parties"]) == {"de:cdu", "de:csu", "de:spd"}
-        or set(c["parties"]) == {"de:cdu_csu", "de:spd"}
-        or (
-            "de:spd" in c["parties"]
-            and ("de:cdu" in c["parties"] or "de:cdu_csu" in c["parties"])
-        )
-        for c in body["coalitions"]
+        set(c["parties"]) == {"de:cdu_csu", "de:spd"} for c in body["coalitions"]
     )
     assert union_spd, body["coalitions"][:8]
-
+    assert all(
+        "de:cdu" not in c["parties"] and "de:csu" not in c["parties"]
+        for c in body["coalitions"]
+    )
 
 def test_coalitions_last_election_missing_returns_404(client):
     r = client.get(
@@ -1018,7 +1019,9 @@ def test_government(client):
     assert r.status_code == 200
     body = r.json()
     assert body["bundesregierung"] is not None
-    assert set(body["bundesregierung"]["parties"]) >= {"de:cdu", "de:csu", "de:spd"}
+    assert set(body["bundesregierung"]["parties"]) == {"de:cdu_csu", "de:spd"}
+    assert "de:cdu" not in body["bundesregierung"]["parties"]
+    assert "de:csu" not in body["bundesregierung"]["parties"]
     assert isinstance(body["known_parties"], list)
     assert len(body["known_parties"]) >= 1
     assert isinstance(body["poll_presets"], list)

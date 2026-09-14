@@ -17,7 +17,7 @@ majority_two_thirds: 46
 # Amtierende Bundesregierung (Sandbox / Mehrheitscheck) — manuell pflegen
 bundesregierung:
   stand: "2026-08-25"
-  parties: [de:cdu, de:csu, de:spd]
+  parties: [de:cdu_csu, de:spd]
   label: "CDU/CSU + SPD"
 
 sources:

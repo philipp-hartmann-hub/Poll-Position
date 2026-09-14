@@ -552,6 +552,8 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     by_name = {
         resolve_party_display_name(k, names): v for k, v in seats.items()
     }
+    if parliament_id == "de_bundestag":
+        _aggregate_cdu_csu_bundestag_display(seats, by_name)
     if not seats:
         return _ttl_set(
             _seats_cache,
@@ -575,6 +577,40 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
             "reason": None,
         },
     )
+
+
+def _aggregate_cdu_csu_bundestag_display(
+    seats: dict[str, int],
+    seats_by_name: dict[str, int],
+    vote_share_by_name: dict[str, float] | None = None,
+) -> None:
+    """
+    Bundestag-Anzeige: CDU und CSU immer als CDU/CSU zusammenführen (in-place).
+
+    Die Sitzzuteilung darf weiter getrennt rechnen; nur die Response-Maps
+    werden aggregiert, damit nirgendwo getrennte CDU/CSU-Balken oder -Sitze
+    erscheinen.
+    """
+    cdu = int(seats.pop("de:cdu", 0) or 0)
+    csu = int(seats.pop("de:csu", 0) or 0)
+    if cdu or csu:
+        seats["de:cdu_csu"] = int(seats.get("de:cdu_csu", 0) or 0) + cdu + csu
+
+    name_cdu = int(seats_by_name.pop("CDU", 0) or 0)
+    name_csu = int(seats_by_name.pop("CSU", 0) or 0)
+    if name_cdu or name_csu:
+        seats_by_name["CDU/CSU"] = (
+            int(seats_by_name.get("CDU/CSU", 0) or 0) + name_cdu + name_csu
+        )
+
+    if vote_share_by_name is not None:
+        share_cdu = vote_share_by_name.pop("CDU", None)
+        share_csu = vote_share_by_name.pop("CSU", None)
+        if share_cdu is not None or share_csu is not None:
+            if "CDU/CSU" not in vote_share_by_name:
+                vote_share_by_name["CDU/CSU"] = float(share_cdu or 0.0) + float(
+                    share_csu or 0.0
+                )
 
 
 def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
@@ -641,6 +677,10 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
         vote_share_by_name["CDU/CSU"] = (
             float(raw_union) if raw_union is not None else float(cdu_share) + float(csu_share)
         )
+
+    if parliament_id == "de_bundestag":
+        _aggregate_cdu_csu_bundestag_display(seats, by_name, vote_share_by_name)
+
     return _ttl_set(
         _last_election_cache,
         cache_key,

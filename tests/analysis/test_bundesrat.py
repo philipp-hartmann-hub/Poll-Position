@@ -30,7 +30,7 @@ def test_load_bundesrat_config_16_states_69_votes(bundesrat_cfg):
     assert cfg.majority_two_thirds == 46
     assert {s.votes for s in cfg.states} <= {3, 4, 5, 6}
     assert cfg.bundesregierung is not None
-    assert set(cfg.bundesregierung.parties) >= {"de:cdu", "de:csu", "de:spd"}
+    assert set(cfg.bundesregierung.parties) == {"de:cdu_csu", "de:spd"}
 
 
 def test_default_all_yes_has_simple_majority(bundesrat_cfg):
