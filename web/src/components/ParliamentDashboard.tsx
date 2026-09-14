@@ -15,20 +15,18 @@ import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/compo
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InfoTooltip } from "@/components/InfoTooltip";
-import { InstituteView } from "@/components/InstituteView";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { TIP_AVERAGES_TREND, TIP_SEAT_PROJECTION } from "@/lib/tooltipCopy";
 
-type TagKey = "umfragen" | "koalitionen" | "prognose" | "institute";
+type TagKey = "umfragen" | "koalitionen" | "prognose";
 
 const TAGS: { key: TagKey; label: string }[] = [
   { key: "umfragen", label: "Umfragen" },
   { key: "koalitionen", label: "Koalitionen" },
   { key: "prognose", label: "Prognose" },
-  { key: "institute", label: "Institute" },
 ];
 
 type IncumbentGov = {
@@ -295,8 +293,6 @@ export function ParliamentDashboard({
         );
       case "prognose":
         return <PartyForecast parliamentId={parliamentId} />;
-      case "institute":
-        return <InstituteView parliamentId={parliamentId} />;
     }
   }, [activeTag, parliamentId]);
 

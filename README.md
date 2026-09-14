@@ -122,7 +122,7 @@ jeweiligen Nutzungsbedingungen der Herausgebenden.
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-09-14 17:00:06 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-09-14 17:00:49 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -135,7 +135,7 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Projektroot:** `Umfragen`
 - **Dateien (sichtbar):** 80
 - **Stack-Hinweise:** Node.js / npm, Python (pip), Python (pyproject)
-- **Git-Branch:** `main` · Commits: 75 · Status: Arbeitsbaum unsauber
+- **Git-Branch:** `main` · Commits: 76 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
