@@ -5,6 +5,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  LabelList,
   Legend,
   Line,
   LineChart,
@@ -116,6 +117,74 @@ export function SeatsBarChart({ seats }: { seats: Record<string, number> }) {
             }}
           />
           <Bar dataKey="value" radius={[4, 4, 0, 0]} stroke={INK} strokeOpacity={0.3} strokeWidth={1}>
+            {data.map((d) => (
+              <Cell key={d.name} fill={partyColor(d.name)} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+/** Umfrage-Stimmenanteile (%) — ein Balken je Partei in Parteifarbe, absteigend. */
+export function PollShareBarChart({
+  parties,
+}: {
+  parties: { party_name: string; share: number }[];
+}) {
+  const data = [...parties]
+    .filter((p) => p.share > 0)
+    .sort((a, b) => b.share - a.share)
+    .map((p) => ({
+      name: p.party_name,
+      share: Number(p.share.toFixed(1)),
+    }));
+  if (!data.length) {
+    return <p className="text-sm text-ink/50">Keine Umfrageanteile.</p>;
+  }
+  return (
+    <div className="h-64 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={data}
+          margin={{ top: 22, right: 8, left: 0, bottom: 40 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={`${INK}22`} />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: INK }}
+            angle={-25}
+            textAnchor="end"
+            height={50}
+          />
+          <YAxis
+            unit="%"
+            tick={{ fontSize: 11, fill: INK }}
+            width={40}
+            domain={[0, "auto"]}
+          />
+          <Tooltip
+            formatter={(value: number) => [`${value} %`, "Anteil"]}
+            contentStyle={{
+              background: PAPER,
+              border: `1px solid ${INK}26`,
+              borderRadius: 8,
+            }}
+          />
+          <Bar
+            dataKey="share"
+            radius={[4, 4, 0, 0]}
+            stroke={INK}
+            strokeOpacity={0.3}
+            strokeWidth={1}
+          >
+            <LabelList
+              dataKey="share"
+              position="top"
+              formatter={(v: number) => `${v}%`}
+              style={{ fill: INK, fontSize: 11 }}
+            />
             {data.map((d) => (
               <Cell key={d.name} fill={partyColor(d.name)} />
             ))}

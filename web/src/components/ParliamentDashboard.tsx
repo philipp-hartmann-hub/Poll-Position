@@ -1,15 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
+import {
+  fetchAverages,
   fetchBundesratStatus,
   fetchGovernment,
   fetchLastElection,
   fetchSeats,
+  type AveragesResponse,
   type LastElectionResponse,
   type SeatsResponse,
 } from "@/lib/api";
-import { Hemicycle } from "@/components/charts";
+import { Hemicycle, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
@@ -36,58 +46,81 @@ type IncumbentGov = {
 function SeatCompareBlock({
   lastElection,
   pollSeats,
+  averages,
 }: {
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
+  averages: AveragesResponse | null;
 }) {
+  const pollParties =
+    averages?.parties.map((p) => ({
+      party_name: p.party_name,
+      share: p.average_share,
+    })) ?? [];
+
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {lastElection ? (
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        {lastElection ? (
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Ergebnis der letzten Wahl
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              {lastElection.label} ({lastElection.election_date}) ·{" "}
+              <span className="font-display tabular-nums">
+                {lastElection.total_seats}
+              </span>{" "}
+              Sitze
+            </p>
+            <Hemicycle
+              seats={lastElection.seats_by_name}
+              size="sm"
+              style="official"
+            />
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
+            Kein hinterlegtes Wahlergebnis für dieses Parlament.
+          </div>
+        )}
+        {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
+          <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+            <h3 className="text-sm font-semibold text-ink">
+              Sitzprojektion nach Umfragen
+            </h3>
+            <p className="mb-3 text-xs text-ink/55">
+              Hochrechnung ·{" "}
+              <span className="font-display tabular-nums">
+                {pollSeats.total_seats}
+              </span>{" "}
+              Sitze
+            </p>
+            <Hemicycle
+              seats={pollSeats.seats_by_name}
+              size="sm"
+              style="projection"
+            />
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
+            Keine Umfrage-Sitzprojektion verfügbar.
+          </div>
+        )}
+      </div>
+
+      {pollParties.length > 0 ? (
         <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <h3 className="text-sm font-semibold text-ink">
-            Ergebnis der letzten Wahl
+            Aktueller Umfrageanteil
           </h3>
           <p className="mb-3 text-xs text-ink/55">
-            {lastElection.label} ({lastElection.election_date}) ·{" "}
-            <span className="font-display tabular-nums">
-              {lastElection.total_seats}
-            </span>{" "}
-            Sitze
+            Gewichteter Mittelwert
+            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
           </p>
-          <Hemicycle
-            seats={lastElection.seats_by_name}
-            size="sm"
-            style="official"
-          />
+          <PollShareBarChart parties={pollParties} />
         </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
-          Kein hinterlegtes Wahlergebnis für dieses Parlament.
-        </div>
-      )}
-      {pollSeats && Object.keys(pollSeats.seats_by_name).length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-          <h3 className="text-sm font-semibold text-ink">
-            Sitzprojektion nach Umfragen
-          </h3>
-          <p className="mb-3 text-xs text-ink/55">
-            Hochrechnung ·{" "}
-            <span className="font-display tabular-nums">
-              {pollSeats.total_seats}
-            </span>{" "}
-            Sitze
-          </p>
-          <Hemicycle
-            seats={pollSeats.seats_by_name}
-            size="sm"
-            style="projection"
-          />
-        </div>
-      ) : (
-        <div className="rounded-xl border border-dashed border-ink/15 p-4 text-sm text-ink/45">
-          Keine Umfrage-Sitzprojektion verfügbar.
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -136,35 +169,34 @@ export function ParliamentDashboard({
     null,
   );
   const [pollSeats, setPollSeats] = useState<SeatsResponse | null>(null);
+  const [averages, setAverages] = useState<AveragesResponse | null>(null);
   const [incumbent, setIncumbent] = useState<IncumbentGov | null>(null);
   const [headerError, setHeaderError] = useState<string | null>(null);
   const [headerLoading, setHeaderLoading] = useState(true);
 
-  const [openedTags, setOpenedTags] = useState<Set<TagKey>>(
-    () => new Set(["umfragen"]),
-  );
-  const [activeTags, setActiveTags] = useState<Set<TagKey>>(
-    () => new Set(["umfragen"]),
-  );
+  const [activeTag, setActiveTag] = useState<TagKey>("umfragen");
+  const baseId = useId();
+  const tabRefs = useRef<Partial<Record<TagKey, HTMLButtonElement | null>>>({});
 
   useEffect(() => {
     let cancelled = false;
     setHeaderLoading(true);
     setHeaderError(null);
-    setOpenedTags(new Set(["umfragen"]));
-    setActiveTags(new Set(["umfragen"]));
+    setActiveTag("umfragen");
 
     (async () => {
       try {
-        const [election, seats, gov, br] = await Promise.all([
+        const [election, seats, avg, gov, br] = await Promise.all([
           fetchLastElection(parliamentId).catch(() => null),
           fetchSeats(parliamentId).catch(() => null),
+          fetchAverages(parliamentId).catch(() => null),
           fetchGovernment().catch(() => null),
           fetchBundesratStatus().catch(() => null),
         ]);
         if (cancelled) return;
         setLastElection(election);
         setPollSeats(seats);
+        setAverages(avg);
 
         if (parliamentId === "de_bundestag" && gov?.bundesregierung) {
           setIncumbent({
@@ -196,47 +228,52 @@ export function ParliamentDashboard({
     };
   }, [parliamentId]);
 
-  const toggleTag = useCallback((key: TagKey) => {
-    setOpenedTags((prev) => {
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
-    setActiveTags((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  const focusTab = useCallback((key: TagKey) => {
+    setActiveTag(key);
+    tabRefs.current[key]?.focus();
   }, []);
 
-  const tagPanels = useMemo(
-    () =>
-      [
-        {
-          key: "umfragen" as const,
-          node: <SurveysSection parliamentId={parliamentId} />,
-        },
-        {
-          key: "koalitionen" as const,
-          node: <CoalitionsSection parliamentId={parliamentId} />,
-        },
-        {
-          key: "prognose" as const,
-          node: (
-            <div className="space-y-10">
-              <PartyForecast parliamentId={parliamentId} />
-              <ThresholdWatch parliamentId={parliamentId} />
-            </div>
-          ),
-        },
-        {
-          key: "institute" as const,
-          node: <InstituteView parliamentId={parliamentId} />,
-        },
-      ] as const,
-    [parliamentId],
+  const onTabKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLButtonElement>, key: TagKey) => {
+      const idx = TAGS.findIndex((t) => t.key === key);
+      if (idx < 0) return;
+      let next = -1;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        next = (idx + 1) % TAGS.length;
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        next = (idx - 1 + TAGS.length) % TAGS.length;
+      } else if (e.key === "Home") {
+        next = 0;
+      } else if (e.key === "End") {
+        next = TAGS.length - 1;
+      }
+      if (next < 0) return;
+      e.preventDefault();
+      focusTab(TAGS[next].key);
+    },
+    [focusTab],
   );
+
+  const activePanel = useMemo(() => {
+    switch (activeTag) {
+      case "umfragen":
+        return <SurveysSection parliamentId={parliamentId} />;
+      case "koalitionen":
+        return <CoalitionsSection parliamentId={parliamentId} />;
+      case "prognose":
+        return (
+          <div className="space-y-10">
+            <PartyForecast parliamentId={parliamentId} />
+            <ThresholdWatch parliamentId={parliamentId} />
+          </div>
+        );
+      case "institute":
+        return <InstituteView parliamentId={parliamentId} />;
+    }
+  }, [activeTag, parliamentId]);
+
+  const tabId = (key: TagKey) => `${baseId}-tab-${key}`;
+  const panelId = (key: TagKey) => `${baseId}-panel-${key}`;
 
   return (
     <div className="space-y-8">
@@ -257,6 +294,7 @@ export function ParliamentDashboard({
             <SeatCompareBlock
               lastElection={lastElection}
               pollSeats={pollSeats}
+              averages={averages}
             />
             <IncumbentCoalitionCard gov={incumbent} />
           </div>
@@ -265,19 +303,27 @@ export function ParliamentDashboard({
 
       <div
         className="flex flex-wrap gap-2"
-        role="toolbar"
+        role="tablist"
         aria-label="Analyse-Bereiche"
       >
         {TAGS.map((tag) => {
-          const active = activeTags.has(tag.key);
+          const selected = activeTag === tag.key;
           return (
             <button
               key={tag.key}
+              ref={(el) => {
+                tabRefs.current[tag.key] = el;
+              }}
               type="button"
-              onClick={() => toggleTag(tag.key)}
-              aria-pressed={active}
+              role="tab"
+              id={tabId(tag.key)}
+              aria-selected={selected}
+              aria-controls={panelId(tag.key)}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActiveTag(tag.key)}
+              onKeyDown={(e) => onTabKeyDown(e, tag.key)}
               className={
-                active
+                selected
                   ? "rounded-md border border-sea/40 bg-sea/10 px-3 py-1.5 text-sm font-medium text-ink"
                   : "rounded-md border border-ink/15 bg-mist px-3 py-1.5 text-sm text-ink/65 transition hover:border-ink/25 hover:text-ink"
               }
@@ -288,20 +334,13 @@ export function ParliamentDashboard({
         })}
       </div>
 
-      <div className="space-y-10">
-        {tagPanels.map(({ key, node }) => {
-          if (!openedTags.has(key)) return null;
-          const visible = activeTags.has(key);
-          return (
-            <div
-              key={`${parliamentId}-${key}`}
-              hidden={!visible}
-              className={visible ? "space-y-4" : undefined}
-            >
-              {node}
-            </div>
-          );
-        })}
+      <div
+        role="tabpanel"
+        id={panelId(activeTag)}
+        aria-labelledby={tabId(activeTag)}
+        className="space-y-4"
+      >
+        {activePanel}
       </div>
     </div>
   );

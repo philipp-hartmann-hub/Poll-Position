@@ -10,11 +10,12 @@ import {
 import { TrendLineChart } from "@/components/charts";
 import { RawSurveysTable } from "@/components/RawSurveysTable";
 import { partyColor } from "@/lib/colors";
-import { ACCENT, INK, PAPER, PARTY_SWATCH_CLASS, SEA } from "@/lib/theme";
+import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -103,9 +104,31 @@ export function SurveysSection({ parliamentId }: { parliamentId: string }) {
                 borderRadius: 8,
               }}
             />
-            <Legend wrapperStyle={{ color: INK }} />
-            <Bar dataKey="Mittel" fill={SEA} radius={[3, 3, 0, 0]} />
-            <Bar dataKey="Trend" fill={ACCENT} radius={[3, 3, 0, 0]} />
+            <Legend
+              wrapperStyle={{ color: INK }}
+              payload={[
+                { value: "Mittel", type: "square", color: INK },
+                {
+                  value: "Trend (heller)",
+                  type: "square",
+                  color: `${INK}66`,
+                },
+              ]}
+            />
+            <Bar dataKey="Mittel" radius={[3, 3, 0, 0]}>
+              {chartData.map((d) => (
+                <Cell key={`m-${d.name}`} fill={partyColor(d.name)} />
+              ))}
+            </Bar>
+            <Bar dataKey="Trend" radius={[3, 3, 0, 0]}>
+              {chartData.map((d) => (
+                <Cell
+                  key={`t-${d.name}`}
+                  fill={partyColor(d.name)}
+                  fillOpacity={0.45}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
