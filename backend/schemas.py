@@ -27,6 +27,10 @@ class LastElectionResponse(BaseModel):
     source: str | None = None
     seats: dict[str, int] = Field(description="party_id → Sitze")
     seats_by_name: dict[str, int] = Field(default_factory=dict)
+    vote_share_by_name: dict[str, float] = Field(
+        default_factory=dict,
+        description="Anzeigename → Stimmenanteil in Prozent (letzte Wahl)",
+    )
     total_seats: int
 
 

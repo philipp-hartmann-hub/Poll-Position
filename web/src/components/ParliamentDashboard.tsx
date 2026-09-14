@@ -19,7 +19,7 @@ import {
   type LastElectionResponse,
   type SeatsResponse,
 } from "@/lib/api";
-import { Hemicycle, PollShareBarChart } from "@/components/charts";
+import { ElectionSwingBarChart, Hemicycle, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
@@ -56,6 +56,23 @@ function SeatCompareBlock({
       party_name: p.party_name,
       share: p.average_share,
     })) ?? [];
+
+  const electionShares = lastElection?.vote_share_by_name ?? {};
+  const swingRows =
+    averages?.parties
+      .map((p) => {
+        const electionShare = electionShares[p.party_name];
+        if (electionShare == null) return null;
+        return {
+          party_name: p.party_name,
+          poll_share: p.average_share,
+          delta_pp: p.average_share - electionShare,
+        };
+      })
+      .filter(
+        (r): r is { party_name: string; poll_share: number; delta_pp: number } =>
+          r != null,
+      ) ?? [];
 
   return (
     <div className="space-y-4">
@@ -118,6 +135,22 @@ function SeatCompareBlock({
             {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
           </p>
           <PollShareBarChart parties={pollParties} />
+        </div>
+      ) : null}
+
+      {swingRows.length > 0 ? (
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+          <h3 className="text-sm font-semibold text-ink">
+            Gewinne & Verluste seit letzter Wahl
+          </h3>
+          <p className="mb-3 text-xs text-ink/55">
+            Umfrage-Mittelwert − Stimmenanteil
+            {lastElection
+              ? ` (${lastElection.label}, ${lastElection.election_date})`
+              : ""}{" "}
+            in Prozentpunkten
+          </p>
+          <ElectionSwingBarChart rows={swingRows} />
         </div>
       ) : null}
     </div>

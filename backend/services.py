@@ -571,6 +571,11 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
     by_name = {
         resolve_party_display_name(k, names): v for k, v in seats.items()
     }
+    vote_share_by_name = {
+        resolve_party_display_name(pid, names): float(share)
+        for pid, share in votes.items()
+        if not _is_residual_party(pid, names.get(pid))
+    }
     return {
         "parliament_id": parliament_id,
         "election_date": election.election_date,
@@ -578,6 +583,7 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
         "source": election.source,
         "seats": seats,
         "seats_by_name": by_name,
+        "vote_share_by_name": vote_share_by_name,
         "total_seats": sum(seats.values()) if seats else total,
     }
 

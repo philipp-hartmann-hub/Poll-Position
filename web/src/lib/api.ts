@@ -71,6 +71,8 @@ export type LastElectionResponse = {
   source: string | null;
   seats: Record<string, number>;
   seats_by_name: Record<string, number>;
+  /** Anzeigename → Stimmenanteil in % bei der letzten Wahl */
+  vote_share_by_name: Record<string, number>;
   total_seats: number;
 };
 

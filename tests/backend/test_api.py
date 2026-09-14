@@ -88,6 +88,14 @@ def test_last_election_bundestag(client):
     assert seats.get("de:cdu", 0) > 0
     assert seats.get("de:afd", 0) > 0
     assert body["seats_by_name"]
+    shares = body["vote_share_by_name"]
+    assert shares
+    assert "Sonstige" not in shares
+    assert "sonstige" not in {k.lower() for k in shares}
+    assert shares.get("AfD") == pytest.approx(20.8)
+    assert shares.get("SPD") == pytest.approx(16.4)
+    assert shares.get("CDU") == pytest.approx(22.6)
+    assert "CDU/CSU" not in shares
 
 
 def test_last_election_missing_returns_404(client):

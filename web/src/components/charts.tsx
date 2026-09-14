@@ -11,6 +11,7 @@ import {
   LineChart,
   Pie,
   PieChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -184,6 +185,95 @@ export function PollShareBarChart({
               position="top"
               formatter={(v: number) => `${v}%`}
               style={{ fill: INK, fontSize: 11 }}
+            />
+            {data.map((d) => (
+              <Cell key={d.name} fill={partyColor(d.name)} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function formatDeltaPp(v: number): string {
+  const rounded = Number(v.toFixed(1));
+  return rounded > 0 ? `+${rounded}` : `${rounded}`;
+}
+
+/**
+ * Divergierende Balken: Umfrage-Mittelwert − letzter Wahlanteil (Prozentpunkte).
+ * Sortierung wie PollShareBarChart (absteigend nach aktuellem Umfragewert).
+ */
+export function ElectionSwingBarChart({
+  rows,
+}: {
+  rows: { party_name: string; poll_share: number; delta_pp: number }[];
+}) {
+  const data = [...rows]
+    .sort((a, b) => b.poll_share - a.poll_share)
+    .map((r) => ({
+      name: r.party_name,
+      delta: Number(r.delta_pp.toFixed(1)),
+    }));
+  if (!data.length) {
+    return null;
+  }
+  return (
+    <div className="h-64 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={data}
+          margin={{ top: 22, right: 8, left: 0, bottom: 40 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={`${INK}22`} vertical={false} />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 11, fill: INK }}
+            angle={-25}
+            textAnchor="end"
+            height={50}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: INK }}
+            width={44}
+            tickFormatter={(v: number) => formatDeltaPp(v)}
+          />
+          <ReferenceLine y={0} stroke={INK} strokeOpacity={0.55} strokeWidth={1.25} />
+          <Tooltip
+            formatter={(value: number) => [
+              `${formatDeltaPp(value)} Pp`,
+              "Veränderung",
+            ]}
+            contentStyle={{
+              background: PAPER,
+              border: `1px solid ${INK}26`,
+              borderRadius: 8,
+            }}
+          />
+          <Bar dataKey="delta" maxBarSize={48}>
+            <LabelList
+              dataKey="delta"
+              content={({ x, y, width, height, value }) => {
+                if (x == null || y == null || width == null || value == null) {
+                  return null;
+                }
+                const v = Number(value);
+                const h = typeof height === "number" ? height : 0;
+                const cx = Number(x) + Number(width) / 2;
+                const cy = v >= 0 ? Number(y) - 6 : Number(y) + h + 12;
+                return (
+                  <text
+                    x={cx}
+                    y={cy}
+                    textAnchor="middle"
+                    fill={INK}
+                    fontSize={11}
+                  >
+                    {formatDeltaPp(v)}
+                  </text>
+                );
+              }}
             />
             {data.map((d) => (
               <Cell key={d.name} fill={partyColor(d.name)} />
