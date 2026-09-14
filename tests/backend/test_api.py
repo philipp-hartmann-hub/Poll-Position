@@ -95,7 +95,9 @@ def test_last_election_bundestag(client):
     assert shares.get("AfD") == pytest.approx(20.8)
     assert shares.get("SPD") == pytest.approx(16.4)
     assert shares.get("CDU") == pytest.approx(22.6)
-    assert "CDU/CSU" not in shares
+    assert shares.get("CSU") == pytest.approx(6.0)
+    # Aggregat für Umfragen, die Union zusammenfassen
+    assert shares.get("CDU/CSU") == pytest.approx(28.52)
 
 
 def test_last_election_missing_returns_404(client):

@@ -19,7 +19,7 @@ import {
   type LastElectionResponse,
   type SeatsResponse,
 } from "@/lib/api";
-import { ElectionSwingBarChart, Hemicycle, PollShareBarChart } from "@/components/charts";
+import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { InstituteView } from "@/components/InstituteView";
@@ -58,7 +58,7 @@ function SeatCompareBlock({
     })) ?? [];
 
   const electionShares = lastElection?.vote_share_by_name ?? {};
-  const swingRows =
+  const alignedRows =
     averages?.parties
       .map((p) => {
         const electionShare = electionShares[p.party_name];
@@ -66,12 +66,19 @@ function SeatCompareBlock({
         return {
           party_name: p.party_name,
           poll_share: p.average_share,
+          election_share: electionShare,
           delta_pp: p.average_share - electionShare,
         };
       })
       .filter(
-        (r): r is { party_name: string; poll_share: number; delta_pp: number } =>
-          r != null,
+        (
+          r,
+        ): r is {
+          party_name: string;
+          poll_share: number;
+          election_share: number;
+          delta_pp: number;
+        } => r != null,
       ) ?? [];
 
   return (
@@ -125,7 +132,24 @@ function SeatCompareBlock({
         )}
       </div>
 
-      {pollParties.length > 0 ? (
+      {alignedRows.length > 0 ? (
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+          <h3 className="text-sm font-semibold text-ink">
+            Umfrage & Veränderung seit letzter Wahl
+          </h3>
+          <p className="mb-3 text-xs text-ink/55">
+            Gewichteter Mittelwert
+            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""}
+            {lastElection
+              ? ` · Bezug: ${lastElection.label} (${lastElection.election_date})`
+              : ""}
+          </p>
+          <PollAndSwingAlignedCharts
+            rows={alignedRows}
+            electionDate={lastElection?.election_date}
+          />
+        </div>
+      ) : pollParties.length > 0 ? (
         <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <h3 className="text-sm font-semibold text-ink">
             Aktueller Umfrageanteil
@@ -135,22 +159,6 @@ function SeatCompareBlock({
             {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
           </p>
           <PollShareBarChart parties={pollParties} />
-        </div>
-      ) : null}
-
-      {swingRows.length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-          <h3 className="text-sm font-semibold text-ink">
-            Gewinne & Verluste seit letzter Wahl
-          </h3>
-          <p className="mb-3 text-xs text-ink/55">
-            Umfrage-Mittelwert − Stimmenanteil
-            {lastElection
-              ? ` (${lastElection.label}, ${lastElection.election_date})`
-              : ""}{" "}
-            in Prozentpunkten
-          </p>
-          <ElectionSwingBarChart rows={swingRows} />
         </div>
       ) : null}
     </div>

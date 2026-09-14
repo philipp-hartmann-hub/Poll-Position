@@ -576,6 +576,14 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
         for pid, share in votes.items()
         if not _is_residual_party(pid, names.get(pid))
     }
+    # Umfragen melden oft „CDU/CSU“, Wahlergebnisse CDU und CSU getrennt.
+    cdu_share = vote_share_by_name.get("CDU")
+    csu_share = vote_share_by_name.get("CSU")
+    if cdu_share is not None and csu_share is not None:
+        raw_union = election.results.get("de:cdu_csu")
+        vote_share_by_name["CDU/CSU"] = (
+            float(raw_union) if raw_union is not None else float(cdu_share) + float(csu_share)
+        )
     return {
         "parliament_id": parliament_id,
         "election_date": election.election_date,
