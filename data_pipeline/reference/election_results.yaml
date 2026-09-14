@@ -217,18 +217,19 @@ elections:
       de:sonstige: 3.4
 
   - parliament_id: de_st_landtag
-    election_date: "2021-06-06"
-    label: Landtagswahl Sachsen-Anhalt 2021
-    source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Sachsen-Anhalt_2021"
+    election_date: "2026-09-06"
+    label: Landtagswahl Sachsen-Anhalt 2026
+    source: "https://wahlergebnisse.sachsen-anhalt.de/wahlen/lt26/erg_land.html"
     results:
-      de:cdu: 37.1
-      de:afd: 20.8
-      de:linke: 11.0
-      de:spd: 8.4
-      de:fdp: 6.4
-      de:gruene: 5.9
-      de:fw: 3.1
-      de:sonstige: 7.3
+      de:afd: 43.8
+      de:cdu: 17.2
+      de:spd: 9.3
+      de:gruene: 8.9
+      de:linke: 8.6
+      de:bsw: 5.3
+      de:fdp: 2.6
+      de:fw: 1.2
+      de:sonstige: 3.1
 
   - parliament_id: de_sh_landtag
     election_date: "2022-05-08"

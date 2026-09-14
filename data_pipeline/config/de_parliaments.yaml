@@ -365,8 +365,8 @@ parliaments:
     name: Landtag von Sachsen-Anhalt
     seats_total: 83
     election_system_key: de_st_lt
-    next_election_date: "2026-09-06"
-    next_election_note: null
+    next_election_date: null
+    next_election_note: "voraussichtlich Herbst 2031 (nach Landtagswahl 6. September 2026; Termin noch nicht festgesetzt)"
     sources:
       - "https://www.bundeswahlleiterin.de/service/wahltermine.html"
       - "https://www.bundesrat.de/DE/termine/wahl-termine/wahl-termine.html"
