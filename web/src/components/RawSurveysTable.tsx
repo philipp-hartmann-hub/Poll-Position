@@ -12,8 +12,14 @@ function formatRange(from: string | null, to: string | null): string {
   return from ?? to ?? "—";
 }
 
-export function RawSurveysTable({ parliamentId }: { parliamentId: string }) {
-  const [open, setOpen] = useState(false);
+export function RawSurveysTable({
+  parliamentId,
+  defaultOpen = false,
+}: {
+  parliamentId: string;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState<RawSurveysResponse | null>(null);
   const [loading, setLoading] = useState(false);

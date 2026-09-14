@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { fetchDataFreshness, type DataFreshnessResponse } from "@/lib/api";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { TIP_DATA_FRESHNESS } from "@/lib/tooltipCopy";
 
 const DISMISS_KEY = "pp-data-freshness-dismissed";
 
@@ -48,7 +50,10 @@ export function DataFreshnessBanner() {
     <aside className="rounded-md border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-sm text-ink/80">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1.5">
-          <p className="font-medium text-ink/90">Datenpflege — Entwurf prüfen</p>
+          <p className="font-medium text-ink/90">
+            Datenpflege — Entwurf prüfen
+            <InfoTooltip text={TIP_DATA_FRESHNESS} />
+          </p>
           {drafts.length > 0 ? (
             <ul className="list-inside list-disc text-ink/70">
               {drafts.map((d) => (

@@ -20,6 +20,8 @@ import {
 import { displayPartyName, partyColor, relabelSeatMap } from "@/lib/colors";
 import { leftRightPosition } from "@/lib/partyPositions";
 import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { TIP_AVERAGES_TREND, TIP_SWING } from "@/lib/tooltipCopy";
+import { InfoTooltip } from "@/components/InfoTooltip";
 
 type TrendPoint = { as_of: string; [party: string]: string | number };
 
@@ -202,7 +204,6 @@ function formatDeltaPp(v: number): string {
 }
 
 const ALIGNED_Y_WIDTH = 44;
-const ALIGNED_MARGIN = { top: 20, right: 12, left: 4, bottom: 4 } as const;
 
 export type PollSwingRow = {
   party_name: string;
@@ -212,8 +213,8 @@ export type PollSwingRow = {
 };
 
 /**
- * Umfrageanteile und Gewinne/Verluste gestapelt — gleiche Parteienreihenfolge
- * (absteigend nach Umfrage), damit die Balken untereinander stehen.
+ * Umfrageanteile und Gewinne/Verluste nebeneinander (md+) —
+ * gleiche Parteienreihenfolge (absteigend nach Umfrage).
  */
 export function PollAndSwingAlignedCharts({
   rows,
@@ -239,130 +240,145 @@ export function PollAndSwingAlignedCharts({
   };
 
   return (
-    <div className="w-full space-y-1">
-      <p className="text-xs font-medium text-ink/70">
-        Aktueller Umfrageanteil in %
-      </p>
-      <div className="h-52 w-full sm:h-56">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ ...ALIGNED_MARGIN, bottom: 8 }}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={`${INK}18`}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="name"
-              tick={false}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              unit="%"
-              tick={{ fontSize: 11, fill: INK }}
-              width={ALIGNED_Y_WIDTH}
-              domain={[0, "auto"]}
-            />
-            <Tooltip
-              formatter={(value: number, _n, item) => {
-                const row = item?.payload as { election?: number } | undefined;
-                const election =
-                  row?.election != null ? ` · Wahl ${row.election}%` : "";
-                return [`${value}%${election}`, "Umfrage"];
-              }}
-              contentStyle={tooltipStyle}
-            />
-            <Bar dataKey="poll" radius={[3, 3, 0, 0]} maxBarSize={48}>
-              <LabelList
-                dataKey="poll"
-                position="top"
-                formatter={(v: number) => `${v}`}
-                style={{ fill: INK, fontSize: 11 }}
+    <div className="grid gap-4 md:grid-cols-2">
+      <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+        <h3 className="text-sm font-semibold text-ink">
+          Aktueller Umfrageanteil in %
+          <InfoTooltip text={TIP_AVERAGES_TREND} />
+        </h3>
+        <p className="mb-3 text-xs text-ink/55">Gewichteter Mittelwert</p>
+        <div className="h-56 w-full sm:h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              margin={{ top: 22, right: 8, left: 4, bottom: 36 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={`${INK}18`}
+                vertical={false}
               />
-              {data.map((d) => (
-                <Cell key={`p-${d.name}`} fill={partyColor(d.name)} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11, fill: INK }}
+                interval={0}
+                angle={-25}
+                textAnchor="end"
+                height={48}
+              />
+              <YAxis
+                unit="%"
+                tick={{ fontSize: 11, fill: INK }}
+                width={ALIGNED_Y_WIDTH}
+                domain={[0, "auto"]}
+              />
+              <Tooltip
+                formatter={(value: number, _n, item) => {
+                  const row = item?.payload as { election?: number } | undefined;
+                  const election =
+                    row?.election != null ? ` · Wahl ${row.election}%` : "";
+                  return [`${value}%${election}`, "Umfrage"];
+                }}
+                contentStyle={tooltipStyle}
+              />
+              <Bar dataKey="poll" radius={[3, 3, 0, 0]} maxBarSize={48}>
+                <LabelList
+                  dataKey="poll"
+                  position="top"
+                  formatter={(v: number) => `${v}`}
+                  style={{ fill: INK, fontSize: 11 }}
+                />
+                {data.map((d) => (
+                  <Cell key={`p-${d.name}`} fill={partyColor(d.name)} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
-      <p className="pt-2 text-xs font-medium text-ink/70">
-        Gewinne & Verluste seit letzter Wahl
-        {electionDate ? ` (${electionDate})` : ""}
-      </p>
-      <div className="h-44 w-full sm:h-48">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{ top: 8, right: 12, left: 4, bottom: 36 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={`${INK}18`}
-              vertical={false}
-            />
-            <XAxis
-              dataKey="name"
-              tick={{ fontSize: 11, fill: INK }}
-              interval={0}
-              angle={-25}
-              textAnchor="end"
-              height={48}
-            />
-            <YAxis
-              tick={{ fontSize: 11, fill: INK }}
-              width={ALIGNED_Y_WIDTH}
-              tickFormatter={(v: number) => formatDeltaPp(v)}
-            />
-            <ReferenceLine
-              y={0}
-              stroke={INK}
-              strokeOpacity={0.55}
-              strokeWidth={1.25}
-            />
-            <Tooltip
-              formatter={(value: number) => [
-                `${formatDeltaPp(value)} Pp`,
-                "Veränderung",
-              ]}
-              contentStyle={tooltipStyle}
-            />
-            <Bar dataKey="delta" maxBarSize={48}>
-              <LabelList
-                dataKey="delta"
-                content={({ x, y, width, height, value }) => {
-                  if (
-                    x == null ||
-                    y == null ||
-                    width == null ||
-                    value == null
-                  ) {
-                    return null;
-                  }
-                  const v = Number(value);
-                  const h = typeof height === "number" ? height : 0;
-                  const cx = Number(x) + Number(width) / 2;
-                  const cy = v >= 0 ? Number(y) - 6 : Number(y) + h + 12;
-                  return (
-                    <text
-                      x={cx}
-                      y={cy}
-                      textAnchor="middle"
-                      fill={INK}
-                      fontSize={11}
-                    >
-                      {formatDeltaPp(v)}
-                    </text>
-                  );
-                }}
+      <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+        <h3 className="text-sm font-semibold text-ink">
+          Gewinne & Verluste seit letzter Wahl
+          <InfoTooltip text={TIP_SWING} />
+        </h3>
+        <p className="mb-3 text-xs text-ink/55">
+          Umfrage − Stimmenanteil
+          {electionDate ? ` (${electionDate})` : ""} in Prozentpunkten
+        </p>
+        <div className="h-56 w-full sm:h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              margin={{ top: 22, right: 8, left: 4, bottom: 36 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={`${INK}18`}
+                vertical={false}
               />
-              {data.map((d) => (
-                <Cell key={`s-${d.name}`} fill={partyColor(d.name)} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11, fill: INK }}
+                interval={0}
+                angle={-25}
+                textAnchor="end"
+                height={48}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: INK }}
+                width={ALIGNED_Y_WIDTH}
+                tickFormatter={(v: number) => formatDeltaPp(v)}
+              />
+              <ReferenceLine
+                y={0}
+                stroke={INK}
+                strokeOpacity={0.55}
+                strokeWidth={1.25}
+              />
+              <Tooltip
+                formatter={(value: number) => [
+                  `${formatDeltaPp(value)} Pp`,
+                  "Veränderung",
+                ]}
+                contentStyle={tooltipStyle}
+              />
+              <Bar dataKey="delta" maxBarSize={48}>
+                <LabelList
+                  dataKey="delta"
+                  content={({ x, y, width, height, value }) => {
+                    if (
+                      x == null ||
+                      y == null ||
+                      width == null ||
+                      value == null
+                    ) {
+                      return null;
+                    }
+                    const v = Number(value);
+                    const h = typeof height === "number" ? height : 0;
+                    const cx = Number(x) + Number(width) / 2;
+                    const cy = v >= 0 ? Number(y) - 6 : Number(y) + h + 12;
+                    return (
+                      <text
+                        x={cx}
+                        y={cy}
+                        textAnchor="middle"
+                        fill={INK}
+                        fontSize={11}
+                      >
+                        {formatDeltaPp(v)}
+                      </text>
+                    );
+                  }}
+                />
+                {data.map((d) => (
+                  <Cell key={`s-${d.name}`} fill={partyColor(d.name)} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

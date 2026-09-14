@@ -5,6 +5,8 @@ import {
   fetchInstituteLeaderboard,
   type InstituteLeaderboardResponse,
 } from "@/lib/api";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { TIP_INSTITUTE_LEADERBOARD } from "@/lib/tooltipCopy";
 
 export function InstituteLeaderboard() {
   const [data, setData] = useState<InstituteLeaderboardResponse | null>(null);
@@ -32,17 +34,17 @@ export function InstituteLeaderboard() {
     <section className="space-y-4 rounded-2xl border border-ink/10 bg-mist/60 p-5 shadow-sm">
       <h2 className="font-display text-2xl text-ink md:text-3xl">
         Wer lag zuletzt am genauesten?
+        <InfoTooltip text={TIP_INSTITUTE_LEADERBOARD} />
       </h2>
       <p className="max-w-2xl text-sm text-ink/55">
-        Rangliste über alle Parlamente mit Backtest gegen Wahlergebnisse.
-        Score gewichtet nach Zahl der Vergleiche — nicht nur eine Liste
-        einzeln nebeneinander.
+        Rangliste darüber, wie nah Institute vor Wahlen am späteren Ergebnis
+        lagen — Institute mit mehr Vergleichen zählen stärker.
       </p>
       {loading && <p className="text-sm text-ink/50">Lade Rangliste…</p>}
       {error && <p className="text-sm text-accent">{error}</p>}
       {data && !loading && data.institutes.length === 0 && (
         <p className="text-sm text-ink/50">
-          Noch keine Backtest-Treffer (fehlende Umfragen kurz vor Wahlen).
+          Noch keine Vergleichswerte (fehlende Umfragen kurz vor Wahlen).
         </p>
       )}
       {data && data.institutes.length > 0 && (

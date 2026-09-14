@@ -122,7 +122,7 @@ jeweiligen Nutzungsbedingungen der Herausgebenden.
 ## Status
 
 <!-- AUTO:START:meta -->
-_Zuletzt automatisch aktualisiert: **2026-08-24 20:04:12 CEST**_
+_Zuletzt automatisch aktualisiert: **2026-09-14 16:40:53 CEST**_
 
 Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nach jeder Agent-Session + manueller Aufruf).
 <!-- AUTO:END:meta -->
@@ -135,7 +135,7 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 - **Projektroot:** `Umfragen`
 - **Dateien (sichtbar):** 80
 - **Stack-Hinweise:** Node.js / npm, Python (pip), Python (pyproject)
-- **Git-Branch:** `main` · Commits: 11 · Status: sauber
+- **Git-Branch:** `main` · Commits: 72 · Status: Arbeitsbaum unsauber
 <!-- AUTO:END:overview -->
 
 ## Projektstruktur
@@ -143,9 +143,11 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 <!-- AUTO:START:structure -->
 ```text
 .cursorrules
+.env
 .env.example
 .github/workflows/ci.yml
 .github/workflows/daily-pipeline.yml
+.github/workflows/warm-ping.yml
 .gitignore
 .pytest_cache/.gitignore
 .pytest_cache/CACHEDIR.TAG
@@ -220,8 +222,6 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 .vercel/python/vercel_runtime/_vendor/uvicorn/middleware/__init__.py
 .vercel/python/vercel_runtime/_vendor/uvicorn/middleware/asgi2.py
 .vercel/python/vercel_runtime/_vendor/uvicorn/middleware/message_logger.py
-.vercel/python/vercel_runtime/_vendor/uvicorn/middleware/proxy_headers.py
-.vercel/python/vercel_runtime/_vendor/uvicorn/middleware/wsgi.py
 … (weitere Dateien ausgeblendet)
 ```
 <!-- AUTO:END:structure -->
@@ -231,12 +231,12 @@ Diese Abschnitte werden von `scripts/update-readme.py` gepflegt (Cursor-Hook nac
 <!-- AUTO:START:languages -->
 | Endung | Anzahl |
 | --- | ---: |
-| `.py` | 59 |
-| `(ohne Endung)` | 6 |
+| `.py` | 57 |
+| `(ohne Endung)` | 7 |
 | `.txt` | 4 |
 | `.typed` | 3 |
+| `.yml` | 3 |
 | `.pyi` | 2 |
-| `.yml` | 2 |
 | `.c` | 1 |
 | `.example` | 1 |
 | `.md` | 1 |

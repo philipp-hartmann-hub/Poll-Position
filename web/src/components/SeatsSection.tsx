@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { fetchSeats, type SeatsResponse } from "@/lib/api";
 import { Hemicycle, SeatsBarChart } from "@/components/charts";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { TIP_SEAT_PROJECTION } from "@/lib/tooltipCopy";
 
 export function SeatsSection({ parliamentId }: { parliamentId: string }) {
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
@@ -49,7 +51,10 @@ export function SeatsSection({ parliamentId }: { parliamentId: string }) {
 
   return (
     <section>
-      <h2 className="mb-3 font-display text-2xl text-ink">Sitzprojektion</h2>
+      <h2 className="mb-3 font-display text-2xl text-ink">
+        Sitzprojektion
+        <InfoTooltip text={TIP_SEAT_PROJECTION} />
+      </h2>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <Hemicycle seats={seats.seats_by_name} style="projection" />

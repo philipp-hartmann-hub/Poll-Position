@@ -377,7 +377,10 @@ export function fetchLastElection(
   parliamentId: string,
 ): Promise<LastElectionResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
-  return apiFetch(`/api/parliaments/last-election?${q}`);
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/last-election.json`,
+    `/api/parliaments/last-election?${q}`,
+  );
 }
 
 export function fetchCoalitions(
@@ -464,7 +467,10 @@ export function fetchPartyForecast(
   parliamentId: string,
 ): Promise<PartyForecastResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
-  return apiFetch(`/api/party-forecast?${q}`);
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/party-forecast.json`,
+    `/api/party-forecast?${q}`,
+  );
 }
 
 export function fetchThresholdWatchOverview(

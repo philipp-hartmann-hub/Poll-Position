@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { Coalition, ExclusionRule } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
+import { TIP_POSSIBLE_COALITIONS } from "@/lib/tooltipCopy";
 
 export type ExclusionUiState = {
   applyExclusions: boolean;
@@ -114,7 +116,10 @@ export function CoalitionPanel({
   return (
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-2xl text-ink">Koalitionsrechner</h2>
+        <h2 className="font-display text-2xl text-ink">
+          Koalitionsrechner
+          <InfoTooltip text={TIP_POSSIBLE_COALITIONS} />
+        </h2>
         <label className="flex items-center gap-2 text-sm text-ink/80">
           <input
             type="checkbox"

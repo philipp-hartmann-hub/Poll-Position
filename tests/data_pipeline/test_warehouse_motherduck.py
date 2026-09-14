@@ -132,3 +132,30 @@ def test_ensure_warehouse_local_creates_tables(tmp_path, monkeypatch):
     finally:
         con.close()
     assert {"parliaments", "surveys", "party_averages", "party_trends"} <= names
+
+
+def test_ensure_warehouse_schema_runs_once_per_target(tmp_path, monkeypatch):
+    """Zweites ensure_warehouse() öffnet keine neue Schema-Verbindung."""
+    monkeypatch.setattr(warehouse, "WAREHOUSE", tmp_path / "warehouse.duckdb")
+    monkeypatch.setattr(warehouse, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(warehouse, "RAW_DIR", tmp_path / "raw")
+    monkeypatch.delenv("MOTHERDUCK_TOKEN", raising=False)
+    monkeypatch.delenv("MOTHERDUCK_READONLY_TOKEN", raising=False)
+    warehouse.clear_warehouse_connection_cache()
+
+    calls = {"n": 0}
+    real_connect = warehouse.connect_warehouse
+
+    def counting_connect(*args, **kwargs):
+        calls["n"] += 1
+        return real_connect(*args, **kwargs)
+
+    monkeypatch.setattr(warehouse, "connect_warehouse", counting_connect)
+    warehouse.ensure_warehouse()
+    first = calls["n"]
+    assert first >= 1
+    warehouse.ensure_warehouse()
+    assert calls["n"] == first
+    warehouse.clear_warehouse_connection_cache()
+    warehouse.ensure_warehouse()
+    assert calls["n"] > first

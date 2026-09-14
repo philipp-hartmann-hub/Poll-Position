@@ -15,6 +15,10 @@ import {
 } from "@/components/CoalitionPanel";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
+import {
+  TIP_COALITION_UNCERTAINTY,
+  TIP_POSSIBLE_COALITIONS,
+} from "@/lib/tooltipCopy";
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
@@ -117,13 +121,13 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
       uncertaintyBusy ? (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
-            Unsicherheit (Monte-Carlo)
-            <InfoTooltip text="Anteil der simulierten Stimmenverteilungen, in denen diese Parteikombination gemeinsam mehr als 50 % der Sitze hätte — unter Berücksichtigung der aktuell aktiven Ausschlussregeln." />
+            Wie sicher ist die Mehrheit?
+            <InfoTooltip text={TIP_COALITION_UNCERTAINTY} />
           </h2>
           <p className="mb-3 text-sm text-ink/55">
             {uncertainty
-              ? `${uncertainty.n_simulations} Simulationen · Mehrheitswahrscheinlichkeiten`
-              : "Simulation lädt…"}
+              ? `Aus ${uncertainty.n_simulations} leicht schwankenden Varianten des heutigen Umfragestands`
+              : "Wird gerade berechnet…"}
             {uncertaintyBusy ? " · aktualisiert…" : ""}
             {!exclusionState.applyExclusions
               ? " · ohne Ausschlussregeln"
@@ -153,7 +157,9 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-ink/50">Keine Mehrheitskoalitionen in der Simulation.</p>
+            <p className="text-sm text-ink/50">
+              Keine Mehrheitskoalitionen bei diesem Umfragestand.
+            </p>
           )}
         </section>
       ) : null}

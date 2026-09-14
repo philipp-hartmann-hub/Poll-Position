@@ -8,8 +8,10 @@ import {
   type SeatsResponse,
 } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
+import { TIP_SEAT_PROJECTION } from "@/lib/tooltipCopy";
 
 export function OverviewSection({
   parliamentId,
@@ -82,13 +84,14 @@ export function OverviewSection({
               <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
                 <h3 className="text-sm font-semibold text-ink">
                   Sitzprojektion nach aktuellen Umfragen
+                  <InfoTooltip text={TIP_SEAT_PROJECTION} />
                 </h3>
                 <p className="mb-3 text-xs text-ink/55">
-                  Hochrechnung ·{" "}
+                  Nach aktuellen Umfragen ·{" "}
                   <span className="font-display tabular-nums">
                     {pollSeats.total_seats}
                   </span>{" "}
-                  Sitze (gesetzliche Größe)
+                  Sitze
                 </p>
                 <Hemicycle
                   seats={pollSeats.seats_by_name}

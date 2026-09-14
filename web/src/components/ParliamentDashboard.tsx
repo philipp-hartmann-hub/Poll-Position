@@ -22,11 +22,13 @@ import {
 import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { InstituteView } from "@/components/InstituteView";
 import { PartyForecast } from "@/components/PartyForecast";
 import { SurveysSection } from "@/components/SurveysSection";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { TIP_AVERAGES_TREND, TIP_SEAT_PROJECTION } from "@/lib/tooltipCopy";
 
 type TagKey = "umfragen" | "koalitionen" | "prognose" | "institute";
 
@@ -83,6 +85,25 @@ function SeatCompareBlock({
 
   return (
     <div className="space-y-4">
+      {alignedRows.length > 0 ? (
+        <PollAndSwingAlignedCharts
+          rows={alignedRows}
+          electionDate={lastElection?.election_date}
+        />
+      ) : pollParties.length > 0 ? (
+        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
+          <h3 className="text-sm font-semibold text-ink">
+            Aktueller Umfrageanteil
+            <InfoTooltip text={TIP_AVERAGES_TREND} />
+          </h3>
+          <p className="mb-3 text-xs text-ink/55">
+            Gewichteter Mittelwert
+            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
+          </p>
+          <PollShareBarChart parties={pollParties} />
+        </div>
+      ) : null}
+
       <div className="grid gap-4 md:grid-cols-2">
         {lastElection ? (
           <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
@@ -111,9 +132,10 @@ function SeatCompareBlock({
           <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
             <h3 className="text-sm font-semibold text-ink">
               Sitzprojektion nach Umfragen
+              <InfoTooltip text={TIP_SEAT_PROJECTION} />
             </h3>
             <p className="mb-3 text-xs text-ink/55">
-              Hochrechnung ·{" "}
+              Nach aktuellen Umfragen ·{" "}
               <span className="font-display tabular-nums">
                 {pollSeats.total_seats}
               </span>{" "}
@@ -131,36 +153,6 @@ function SeatCompareBlock({
           </div>
         )}
       </div>
-
-      {alignedRows.length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-          <h3 className="text-sm font-semibold text-ink">
-            Umfrage & Veränderung seit letzter Wahl
-          </h3>
-          <p className="mb-3 text-xs text-ink/55">
-            Gewichteter Mittelwert
-            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""}
-            {lastElection
-              ? ` · Bezug: ${lastElection.label} (${lastElection.election_date})`
-              : ""}
-          </p>
-          <PollAndSwingAlignedCharts
-            rows={alignedRows}
-            electionDate={lastElection?.election_date}
-          />
-        </div>
-      ) : pollParties.length > 0 ? (
-        <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
-          <h3 className="text-sm font-semibold text-ink">
-            Aktueller Umfrageanteil
-          </h3>
-          <p className="mb-3 text-xs text-ink/55">
-            Gewichteter Mittelwert
-            {averages?.as_of ? ` · Stand ${averages.as_of}` : ""} · Prozent
-          </p>
-          <PollShareBarChart parties={pollParties} />
-        </div>
-      ) : null}
     </div>
   );
 }

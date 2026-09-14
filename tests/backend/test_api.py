@@ -418,6 +418,7 @@ def test_seats_404_reasons(api_warehouse, monkeypatch):
     assert "keine Sitzprojektion" in detail["message"]
 
     # 3) Averages da, Projektion an, aber keine Sitze nach Hürde
+    services.clear_payload_caches()
     monkeypatch.setattr(
         services,
         "_votes_from_averages",
@@ -936,6 +937,7 @@ def test_institute_leaderboard_payload_aggregates_two_parliaments(monkeypatch):
 
     monkeypatch.setattr(services, "load_election_results", lambda: _Bundle())
 
+    services.clear_payload_caches()
     payload = services.institute_leaderboard_payload()
     assert len(payload["institutes"]) == 1
     row = payload["institutes"][0]

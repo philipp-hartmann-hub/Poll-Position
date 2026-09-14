@@ -10,11 +10,12 @@ export default function InstitutePage() {
           Institute
         </h1>
         <p className="max-w-2xl text-ink/60">
-          Wer lag bei vergangenen Wahlen am nächsten am Ergebnis — und wie
-          weichen Institute voneinander ab (House Effects).
+          Wer lag bei vergangenen Wahlen am nächsten am Ergebnis — und wo
+          Institute im Schnitt systematisch höher oder niedriger liegen als der
+          Durchschnitt (Haus-Effekt).
         </p>
         <p className="max-w-2xl text-sm text-ink/55">
-          House Effects je Parlament im Tag „Institute“ unter{" "}
+          Haus-Effekte je Parlament im Tag „Institute“ unter{" "}
           <Link
             href="/parlament/de_bundestag"
             className="text-sea underline-offset-2 hover:underline"

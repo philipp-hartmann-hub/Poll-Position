@@ -204,10 +204,13 @@ class _CachedConnection:
 # Getrennt für read_only=True vs False (Pipeline-Schreibzugriff vs. API-Reads).
 _cached_raw: dict[bool, duckdb.DuckDBPyConnection | None] = {False: None, True: None}
 _cached_target: dict[bool, str | None] = {False: None, True: None}
+# Schema-SQL nur einmal pro warmem Prozess / Verbindungsziel ausführen.
+_schema_ensured_for: str | None = None
 
 
 def clear_warehouse_connection_cache() -> None:
     """Schließt gecachte Verbindungen (Tests / Zielwechsel)."""
+    global _schema_ensured_for
     for read_only in (False, True):
         raw = _cached_raw[read_only]
         if raw is not None:
@@ -217,6 +220,7 @@ def clear_warehouse_connection_cache() -> None:
                 pass
         _cached_raw[read_only] = None
         _cached_target[read_only] = None
+    _schema_ensured_for = None
 
 
 def _connection_cache_key(*, read_only: bool) -> str:
@@ -322,7 +326,16 @@ def write_bronze(source: str, frame: pl.DataFrame, *, as_of: date | None = None)
 
 
 def ensure_warehouse() -> Path:
-    """Legt Silver/Gold-Tabellen an (lokal und MotherDuck). Rückgabe: lokaler Pfad (API-kompatibel)."""
+    """Legt Silver/Gold-Tabellen an (lokal und MotherDuck). Rückgabe: lokaler Pfad (API-kompatibel).
+
+    ``CREATE TABLE IF NOT EXISTS`` läuft nur einmal pro warmem Prozess und
+    Verbindungsziel — nicht bei jedem Request erneut gegen MotherDuck.
+    """
+    global _schema_ensured_for
+    target = warehouse_connection_target()
+    if _schema_ensured_for == target:
+        return WAREHOUSE
+
     if not uses_motherduck():
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         RAW_DIR.mkdir(parents=True, exist_ok=True)
@@ -331,6 +344,7 @@ def ensure_warehouse() -> Path:
         con.execute(_SCHEMA_SQL)
     finally:
         con.close()
+    _schema_ensured_for = target
     return WAREHOUSE
 
 

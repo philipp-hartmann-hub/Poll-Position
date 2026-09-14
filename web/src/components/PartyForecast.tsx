@@ -7,6 +7,7 @@ import {
 } from "@/lib/api";
 import { displayPartyName, partyColor } from "@/lib/colors";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { TIP_PARTY_FORECAST } from "@/lib/tooltipCopy";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 function ForecastTile({
@@ -82,11 +83,11 @@ export function PartyForecast({ parliamentId }: { parliamentId: string }) {
     <section className="space-y-3">
       <h2 className="font-display text-2xl text-ink">
         Prognose je Partei
-        <InfoTooltip text="P(stärkste Kraft) = Anteil der Simulationen, in denen diese Partei den höchsten Stimmenanteil hätte. P(über Hürde) = Anteil der Simulationen über der gesetzlichen Sperrklausel. Beides aus denselben 400 Monte-Carlo-Ziehungen — keine Wahlprognose, sondern eine Unsicherheitsabschätzung um den aktuellen Umfragestand." />
+        <InfoTooltip text={TIP_PARTY_FORECAST} />
       </h2>
       <p className="text-sm text-ink/55">
-        Monte-Carlo aus dem Umfragemittel — Wahrscheinlichkeit, stärkste Kraft
-        zu sein bzw. die {thrLabel}-%-Hürde zu schaffen.
+        Aus dem heutigen Umfragestand: Wie oft hätte jede Partei die meisten
+        Stimmen bzw. die {thrLabel}-%-Hürde geschafft?
       </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {parties.map((p) => (

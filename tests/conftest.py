@@ -27,3 +27,13 @@ def _clear_warehouse_connection_cache():
     clear_warehouse_connection_cache()
     yield
     clear_warehouse_connection_cache()
+
+
+@pytest.fixture(autouse=True)
+def _clear_payload_ttl_caches():
+    """TTL-Payload-Caches nicht über Testgrenzen schleppen."""
+    from backend import services
+
+    services.clear_payload_caches()
+    yield
+    services.clear_payload_caches()

@@ -43,22 +43,34 @@ def export_warehouse(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_export_parliament_static_writes_four_files(export_warehouse, tmp_path):
+def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
     from data_pipeline.export_static import export_parliament_static
 
     out = tmp_path / "static"
     ok = export_parliament_static("de_bundestag", out_dir=out)
-    assert ok == {
-        "averages": True,
-        "trend": True,
-        "seats": True,
-        "coalitions": True,
-    }
-    for name in ("averages", "trend", "seats", "coalitions"):
+    assert ok["averages"] is True
+    assert ok["trend"] is True
+    assert ok["seats"] is True
+    assert ok["coalitions"] is True
+    assert ok["last-election"] is True
+    assert ok["party-forecast"] is True
+    for name in (
+        "averages",
+        "trend",
+        "seats",
+        "coalitions",
+        "last-election",
+        "party-forecast",
+    ):
         path = out / "de_bundestag" / f"{name}.json"
         assert path.is_file()
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert payload["parliament_id"] == "de_bundestag"
+    election = json.loads(
+        (out / "de_bundestag" / "last-election.json").read_text(encoding="utf-8")
+    )
+    assert "vote_share_by_name" in election
+    assert election["vote_share_by_name"].get("AfD") == pytest.approx(20.8)
 
 
 def test_static_path_segment_strips_artifact_unsafe_chars():
@@ -89,15 +101,39 @@ def test_export_parliament_static_sanitizes_colon_ids(
     def fake_coalitions(pid, **_kwargs):
         return {"parliament_id": pid, "coalitions": []}
 
+    def fake_last_election(pid):
+        return {
+            "parliament_id": pid,
+            "election_date": date(2025, 1, 1),
+            "label": "Test",
+            "source": None,
+            "seats": {},
+            "seats_by_name": {},
+            "vote_share_by_name": {},
+            "total_seats": 0,
+        }
+
+    def fake_forecast(pid, **_kwargs):
+        return {"parliament_id": pid, "parties": []}
+
     monkeypatch.setattr("backend.services.party_averages_payload", fake_averages)
     monkeypatch.setattr("backend.services.party_trend_series_payload", fake_trend)
     monkeypatch.setattr("backend.services.seats_payload", fake_seats)
     monkeypatch.setattr("backend.services.coalitions_payload", fake_coalitions)
+    monkeypatch.setattr("backend.services.last_election_payload", fake_last_election)
+    monkeypatch.setattr("backend.services.party_forecast_payload", fake_forecast)
 
     ok = export_static.export_parliament_static("dawum:parliament:17", out_dir=out)
     assert all(ok.values())
     assert not (out / "dawum:parliament:17").exists()
-    for name in ("averages", "trend", "seats", "coalitions"):
+    for name in (
+        "averages",
+        "trend",
+        "seats",
+        "coalitions",
+        "last-election",
+        "party-forecast",
+    ):
         path = out / "dawum_parliament_17" / f"{name}.json"
         assert path.is_file()
         assert ":" not in str(path.relative_to(out))
@@ -133,3 +169,14 @@ def test_export_all_static_writes_parliaments_index(export_warehouse, tmp_path):
     for child in out.iterdir():
         if child.is_dir():
             assert ":" not in child.name
+
+
+def test_export_skips_last_election_when_none(export_warehouse, tmp_path, monkeypatch):
+    from data_pipeline.export_static import export_parliament_static
+
+    monkeypatch.setattr("backend.services.last_election_payload", lambda _pid: None)
+    out = tmp_path / "static"
+    ok = export_parliament_static("de_bundestag", out_dir=out)
+    assert ok["last-election"] is False
+    assert not (out / "de_bundestag" / "last-election.json").exists()
+    assert (out / "de_bundestag" / "averages.json").is_file()

@@ -3,11 +3,14 @@
 Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
-- ``<safe_parliament_id>/{averages,trend,seats,coalitions}.json``
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast}.json``
 
 Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
 Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
 keine ungültigen Zeichen sehen. Die ID im JSON-Inhalt bleibt unverändert.
+
+``last-election.json`` wird nur geschrieben, wenn ein Wahlergebnis hinterlegt
+ist (``last_election_payload`` ≠ ``None``).
 
 Alt-Verzeichnisse mit ungültigen Zeichen werden beim Export entfernt.
 
@@ -24,7 +27,7 @@ import re
 import shutil
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 log = logging.getLogger("data_pipeline.export_static")
 
@@ -73,14 +76,15 @@ def export_parliament_static(
     *,
     out_dir: Path,
 ) -> dict[str, bool]:
-    """Exportiert die vier Standard-Payloads für ein Parlament. Rückgabe: ok je Datei."""
+    """Exportiert die Standard-Payloads für ein Parlament. Rückgabe: ok je Datei."""
     from backend import services
 
     results: dict[str, bool] = {}
-    writers: list[tuple[str, Any]] = [
-        ("averages", lambda: services.party_averages_payload(parliament_id, days=365)),
-        ("trend", lambda: services.party_trend_series_payload(parliament_id, days=365)),
-        ("seats", lambda: services.seats_payload(parliament_id)),
+    # name → (factory, skip_when_none)
+    writers: list[tuple[str, Callable[[], Any], bool]] = [
+        ("averages", lambda: services.party_averages_payload(parliament_id, days=365), False),
+        ("trend", lambda: services.party_trend_series_payload(parliament_id, days=365), False),
+        ("seats", lambda: services.seats_payload(parliament_id), False),
         (
             "coalitions",
             lambda: services.coalitions_payload(
@@ -88,13 +92,28 @@ def export_parliament_static(
                 apply_exclusions=True,
                 disabled_rule_ids=None,
             ),
+            False,
+        ),
+        ("last-election", lambda: services.last_election_payload(parliament_id), True),
+        (
+            "party-forecast",
+            lambda: services.party_forecast_payload(parliament_id),
+            False,
         ),
     ]
     segment = static_path_segment(parliament_id)
-    for name, factory in writers:
+    for name, factory, skip_none in writers:
         dest = out_dir / segment / f"{name}.json"
         try:
             payload = factory()
+            if skip_none and payload is None:
+                results[name] = False
+                log.info(
+                    "Static-Export %s/%s übersprungen (kein Wahlergebnis)",
+                    parliament_id,
+                    name,
+                )
+                continue
             _write_json(dest, payload)
             results[name] = True
         except Exception:
@@ -114,6 +133,8 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
     _purge_unsafe_dirs(target)
     parliaments = services.list_parliaments()
     written = 0
+    last_election_written = 0
+    forecast_written = 0
 
     index_path = target / "parliaments.json"
     try:
@@ -137,15 +158,22 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
         pid = str(row["id"])
         ok = export_parliament_static(pid, out_dir=target)
         written += sum(1 for v in ok.values() if v)
+        if ok.get("last-election"):
+            last_election_written += 1
+        if ok.get("party-forecast"):
+            forecast_written += 1
         log.info(
             "Static-Export %s: %s",
             pid,
-            ", ".join(f"{k}={'ok' if v else 'fail'}" for k, v in ok.items()),
+            ", ".join(f"{k}={'ok' if v else 'skip/fail'}" for k, v in ok.items()),
         )
     log.info(
-        "Static-Export fertig: %d Dateien unter %s (%d Parlamente)",
+        "Static-Export fertig: %d Dateien unter %s (%d Parlamente); "
+        "+%d last-election.json, +%d party-forecast.json",
         written,
         target,
         len(parliaments),
+        last_election_written,
+        forecast_written,
     )
     return written

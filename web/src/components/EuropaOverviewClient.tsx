@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { EuropeMap } from "@/components/EuropeMap";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { fetchEuropeOverview, type EuropeOverviewResponse } from "@/lib/api";
+import { TIP_EUROPE_OVERVIEW } from "@/lib/tooltipCopy";
 
 export function EuropaOverviewClient() {
   const [data, setData] = useState<EuropeOverviewResponse | null>(null);
@@ -19,11 +21,12 @@ export function EuropaOverviewClient() {
       <p className="text-sm uppercase tracking-wide text-ink/45">Europa</p>
       <h1 className="font-display text-3xl tracking-tight text-ink md:text-4xl">
         Übersicht
+        <InfoTooltip text={TIP_EUROPE_OVERVIEW} />
       </h1>
       <p className="max-w-2xl text-ink/60">
-        Einfärbung nach stärkster europäischer Parteienfamilie je Land.
-        Klick öffnet die Länderseite (Sitze wo das Wahlrecht eine nationale
-        Näherung zulässt; Frankreich nur Umfragen).
+        Einfärbung nach stärkster europäischer Parteienfamilie je Land. Klick
+        öffnet die Länderseite (Sitze wo das Wahlrecht eine nationale Näherung
+        zulässt; Frankreich nur Umfragen).
       </p>
       {error && (
         <p className="rounded-lg border border-accent/30 bg-accent/5 px-4 py-3 text-sm text-accent">

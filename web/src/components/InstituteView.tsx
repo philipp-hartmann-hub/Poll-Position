@@ -5,6 +5,8 @@ import {
   fetchHouseEffects,
   type HouseEffectsResponse,
 } from "@/lib/api";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { TIP_HOUSE_EFFECT, TIP_INSTITUTE_BACKTEST } from "@/lib/tooltipCopy";
 
 /** Dezente divergierende Tints; Intensität proportional zu |pp|, Cap ±5. */
 function houseEffectCellStyle(value: number): { backgroundColor: string } | undefined {
@@ -86,15 +88,16 @@ export function InstituteView({ parliamentId }: { parliamentId: string }) {
         <>
           <section>
             <h2 className="mb-3 font-display text-xl text-ink">
-              House Effects (pp)
+              Haus-Effekte der Institute
+              <InfoTooltip text={TIP_HOUSE_EFFECT} />
             </h2>
             <p className="mb-3 text-xs text-ink/45">
-              Grün: Institut unter dem Peer-Schnitt · Rot: darüber (Farbstärke
-              bis ±5 pp).
+              Grün: Institut liegt unter dem Schnitt der anderen · Rot: darüber
+              (Farbstärke bis ±5 Prozentpunkte).
             </p>
             {pivot.institutes.length === 0 ? (
               <p className="text-sm text-ink/50">
-                Keine House Effects (zu wenige Peer-Institute im Fenster).
+                Keine Haus-Effekte sichtbar (zu wenige Institute im Vergleichsfenster).
               </p>
             ) : (
               <div className="overflow-x-auto rounded-lg border border-ink/10">
@@ -137,11 +140,12 @@ export function InstituteView({ parliamentId }: { parliamentId: string }) {
 
           <section>
             <h2 className="mb-3 font-display text-xl text-ink">
-              Backtesting (dieses Parlament)
+              Treffer bei vergangenen Wahlen
+              <InfoTooltip text={TIP_INSTITUTE_BACKTEST} />
             </h2>
             {data.accuracy.length === 0 ? (
               <p className="text-sm text-ink/50">
-                Keine Backtest-Treffer für dieses Parlament.
+                Keine Vergleichswerte für dieses Parlament.
               </p>
             ) : (
               <div className="overflow-x-auto rounded-lg border border-ink/10">

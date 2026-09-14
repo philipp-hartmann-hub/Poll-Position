@@ -1,5 +1,7 @@
 import { GermanyMap } from "@/components/GermanyMap";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { LaenderIndex } from "@/components/LaenderIndex";
+import { TIP_GERMANY_MAP } from "@/lib/tooltipCopy";
 import Link from "next/link";
 
 export default function LaenderPage() {
@@ -28,7 +30,10 @@ export default function LaenderPage() {
       </div>
 
       <section className="space-y-3">
-        <h2 className="font-display text-2xl text-ink">Karte</h2>
+        <h2 className="font-display text-2xl text-ink">
+          Karte
+          <InfoTooltip text={TIP_GERMANY_MAP} />
+        </h2>
         <p className="text-sm text-ink/55">
           Farbe = stärkste Partei (ohne Sonstige). Grau = noch keine Umfragedaten.
         </p>

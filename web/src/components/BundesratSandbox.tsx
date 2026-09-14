@@ -23,6 +23,10 @@ import {
   YES_COLOR,
 } from "@/lib/bundesratColors";
 import { labelPartyId } from "@/lib/colors";
+import {
+  TIP_BUNDESRAT_MAJORITY,
+  TIP_BUNDESRAT_PARTY_STANCE,
+} from "@/lib/tooltipCopy";
 
 type PartyStance = Record<string, "yes" | "no">;
 
@@ -85,7 +89,10 @@ function VoteCounter({
   return (
     <div className="flex h-full flex-col justify-center space-y-4">
       <div>
-        <p className="text-xs uppercase tracking-wide text-ink/45">Stimmen</p>
+        <p className="text-xs uppercase tracking-wide text-ink/45">
+          Stimmen
+          <InfoTooltip text={TIP_BUNDESRAT_MAJORITY} />
+        </p>
         <p className="mt-1 font-display text-3xl tabular-nums text-ink">
           {yes}
           <span className="text-lg text-ink/40"> / {total}</span>
@@ -373,7 +380,7 @@ export function BundesratSandbox() {
       <section className="space-y-3">
         <h2 className="font-display text-xl text-ink">
           Partei-Stimmverhalten
-          <InfoTooltip text="Bundesweite Voreinstellung: Stimmen alle Regierungsparteien eines Landes mit Ja, gibt das Land Ja ab; alle Nein → Nein; sonst Enthaltung (Art. 51 Abs. 3 GG). Landes-Overrides darunter überschreiben das." />
+          <InfoTooltip text={TIP_BUNDESRAT_PARTY_STANCE} />
         </h2>
 
         <div className="flex flex-wrap gap-2">

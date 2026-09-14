@@ -98,37 +98,58 @@ DAWUM_PARTY_SHORTCUTS: dict[str, str] = {
 
 # Prozess-lokaler TTL-Cache (warme Serverless-Instanzen; Daily-Pipeline ~1×/Tag).
 _PAYLOAD_TTL_SECONDS = 300.0
-_averages_cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]] = {}
-_coalitions_cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]] = {}
+_TTL_MISS = object()
+_averages_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_coalitions_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_seats_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_last_election_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_uncertainty_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_trend_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_forecast_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_house_effects_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_leaderboard_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
+_europe_cache: dict[tuple[Any, ...], tuple[float, Any]] = {}
 
 
 def clear_payload_caches() -> None:
-    """Leert Averages-/Coalitions-Caches (Tests / nach Pipeline-Write)."""
-    _averages_cache.clear()
-    _coalitions_cache.clear()
+    """Leert Payload-TTL-Caches (Tests / nach Pipeline-Write)."""
+    for cache in (
+        _averages_cache,
+        _coalitions_cache,
+        _seats_cache,
+        _last_election_cache,
+        _uncertainty_cache,
+        _trend_cache,
+        _forecast_cache,
+        _house_effects_cache,
+        _leaderboard_cache,
+        _europe_cache,
+    ):
+        cache.clear()
 
 
 def _ttl_get(
-    cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]],
+    cache: dict[tuple[Any, ...], tuple[float, Any]],
     key: tuple[Any, ...],
-) -> dict[str, Any] | None:
+) -> Any:
+    """Cache-Treffer oder ``_TTL_MISS`` (auch gecachtes ``None`` ist ein Treffer)."""
     entry = cache.get(key)
     if entry is None:
-        return None
+        return _TTL_MISS
     expires_at, value = entry
     if time.monotonic() >= expires_at:
         del cache[key]
-        return None
+        return _TTL_MISS
     return copy.deepcopy(value)
 
 
 def _ttl_set(
-    cache: dict[tuple[Any, ...], tuple[float, dict[str, Any]]],
+    cache: dict[tuple[Any, ...], tuple[float, Any]],
     key: tuple[Any, ...],
-    value: dict[str, Any],
+    value: Any,
     *,
     ttl: float = _PAYLOAD_TTL_SECONDS,
-) -> dict[str, Any]:
+) -> Any:
     cache[key] = (time.monotonic() + ttl, copy.deepcopy(value))
     return copy.deepcopy(value)
 
@@ -232,7 +253,7 @@ def _load_points(parliament_id: str | None = None) -> list[PollObservationPoint]
 def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, Any]:
     cache_key = (parliament_id, days)
     cached = _ttl_get(_averages_cache, cache_key)
-    if cached is not None:
+    if cached is not _TTL_MISS:
         return cached
 
     points = _load_points(parliament_id)
@@ -287,6 +308,11 @@ def party_averages_payload(parliament_id: str, *, days: int = 365) -> dict[str, 
 
 def party_trend_series_payload(parliament_id: str, *, days: int = 365) -> dict[str, Any]:
     """Chronologische Trendpunkte je Partei aus Gold-Tabelle `party_trends`."""
+    cache_key = (parliament_id, days)
+    cached = _ttl_get(_trend_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     since = date.today() - timedelta(days=days)
     ensure_warehouse()
     con = connect_warehouse(read_only=not uses_motherduck())
@@ -320,7 +346,11 @@ def party_trend_series_payload(parliament_id: str, *, days: int = 365) -> dict[s
         for pid, points in by_party.items()
     ]
     parties.sort(key=lambda p: (-(p["points"][-1]["trend_share"] if p["points"] else 0.0), p["party_id"]))
-    return {"parliament_id": parliament_id, "days": days, "parties": parties}
+    return _ttl_set(
+        _trend_cache,
+        cache_key,
+        {"parliament_id": parliament_id, "days": days, "parties": parties},
+    )
 
 
 def raw_surveys_payload(
@@ -464,6 +494,11 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     Sitzprojektion. Bei leerem ``seats`` steht ``reason``:
     ``no_averages`` | ``all_below_threshold`` | ``no_seat_projection``.
     """
+    cache_key = (parliament_id,)
+    cached = _ttl_get(_seats_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     votes, names = _votes_from_averages(parliament_id)
     try:
         ensure_warehouse()
@@ -475,13 +510,17 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
     except Exception:
         pass
     if not votes:
-        return {
-            "parliament_id": parliament_id,
-            "total_seats": 0,
-            "seats": {},
-            "seats_by_name": {},
-            "reason": "no_averages",
-        }
+        return _ttl_set(
+            _seats_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "total_seats": 0,
+                "seats": {},
+                "seats_by_name": {},
+                "reason": "no_averages",
+            },
+        )
 
     projection = _seat_projection_enabled(parliament_id)
     if projection is False:
@@ -490,13 +529,17 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
         system = next(
             s for s in bundle.election_systems if s.key == parliament.election_system_key
         )
-        return {
-            "parliament_id": parliament_id,
-            "total_seats": system.seats_total,
-            "seats": {},
-            "seats_by_name": {},
-            "reason": "no_seat_projection",
-        }
+        return _ttl_set(
+            _seats_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "total_seats": system.seats_total,
+                "seats": {},
+                "seats_by_name": {},
+                "reason": "no_seat_projection",
+            },
+        )
 
     seats, total = _allocate_for_parliament(parliament_id, votes)
     # Restkategorie nie in der Sitz-/Koalitions-UI
@@ -509,20 +552,28 @@ def seats_payload(parliament_id: str) -> dict[str, Any]:
         resolve_party_display_name(k, names): v for k, v in seats.items()
     }
     if not seats:
-        return {
+        return _ttl_set(
+            _seats_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "total_seats": total,
+                "seats": {},
+                "seats_by_name": {},
+                "reason": "all_below_threshold",
+            },
+        )
+    return _ttl_set(
+        _seats_cache,
+        cache_key,
+        {
             "parliament_id": parliament_id,
             "total_seats": total,
-            "seats": {},
-            "seats_by_name": {},
-            "reason": "all_below_threshold",
-        }
-    return {
-        "parliament_id": parliament_id,
-        "total_seats": total,
-        "seats": seats,
-        "seats_by_name": by_name,
-        "reason": None,
-    }
+            "seats": seats,
+            "seats_by_name": by_name,
+            "reason": None,
+        },
+    )
 
 
 def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
@@ -532,9 +583,14 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
     Nutzt dieselbe Allokationspipeline wie ``seats_payload`` (inkl. Sonstige-Ausschluss).
     ``None``, wenn für das Parlament kein Wahlergebnis hinterlegt ist.
     """
+    cache_key = (parliament_id,)
+    cached = _ttl_get(_last_election_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     election = latest_election_for(parliament_id)
     if election is None:
-        return None
+        return _ttl_set(_last_election_cache, cache_key, None)
 
     votes = dict(election.results)
     # Aggregat Union nur nutzen, wenn keine getrennten CDU/CSU-Anteile vorliegen
@@ -584,16 +640,20 @@ def last_election_payload(parliament_id: str) -> dict[str, Any] | None:
         vote_share_by_name["CDU/CSU"] = (
             float(raw_union) if raw_union is not None else float(cdu_share) + float(csu_share)
         )
-    return {
-        "parliament_id": parliament_id,
-        "election_date": election.election_date,
-        "label": election.label,
-        "source": election.source,
-        "seats": seats,
-        "seats_by_name": by_name,
-        "vote_share_by_name": vote_share_by_name,
-        "total_seats": sum(seats.values()) if seats else total,
-    }
+    return _ttl_set(
+        _last_election_cache,
+        cache_key,
+        {
+            "parliament_id": parliament_id,
+            "election_date": election.election_date,
+            "label": election.label,
+            "source": election.source,
+            "seats": seats,
+            "seats_by_name": by_name,
+            "vote_share_by_name": vote_share_by_name,
+            "total_seats": sum(seats.values()) if seats else total,
+        },
+    )
 
 
 def _is_residual_party(party_id: str, name: str | None = None) -> bool:
@@ -634,7 +694,7 @@ def coalitions_payload(
     disabled = tuple(sorted(disabled_rule_ids or []))
     cache_key = (parliament_id, apply_exclusions, max_parties, disabled)
     cached = _ttl_get(_coalitions_cache, cache_key)
-    if cached is not None:
+    if cached is not _TTL_MISS:
         return cached
 
     seats_data = seats_payload(parliament_id)
@@ -834,14 +894,24 @@ def uncertainty_payload(
     apply_exclusions: bool = True,
     disabled_rule_ids: list[str] | None = None,
 ) -> dict[str, Any]:
+    disabled = tuple(sorted(disabled_rule_ids or []))
+    cache_key = (parliament_id, n_simulations, apply_exclusions, disabled)
+    cached = _ttl_get(_uncertainty_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     votes, _names = _votes_from_averages(parliament_id)
     if not votes:
-        return {
-            "parliament_id": parliament_id,
-            "n_simulations": 0,
-            "mean_seats": {},
-            "coalition_probabilities": [],
-        }
+        return _ttl_set(
+            _uncertainty_cache,
+            cache_key,
+            {
+                "parliament_id": parliament_id,
+                "n_simulations": 0,
+                "mean_seats": {},
+                "coalition_probabilities": [],
+            },
+        )
     parties = party_uncertainties_from_means(
         votes,
         sample_size=1000,
@@ -912,21 +982,25 @@ def uncertainty_payload(
         total_seats=total or 630,
         config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
     )
-    return {
-        "parliament_id": parliament_id,
-        "n_simulations": result.n_simulations,
-        "mean_seats": result.mean_seats,
-        "coalition_probabilities": [
-            {
-                "parties": [id_to_canon.get(p, p) for p in c.parties],
-                "majority_probability": c.majority_probability,
-                "n_majority": c.n_majority,
-                "n_simulations": c.n_simulations,
-            }
-            for c in result.coalition_probabilities
-            if c.parties in deterministic_ids or c.n_majority > 0
-        ],
-    }
+    return _ttl_set(
+        _uncertainty_cache,
+        cache_key,
+        {
+            "parliament_id": parliament_id,
+            "n_simulations": result.n_simulations,
+            "mean_seats": result.mean_seats,
+            "coalition_probabilities": [
+                {
+                    "parties": [id_to_canon.get(p, p) for p in c.parties],
+                    "majority_probability": c.majority_probability,
+                    "n_majority": c.n_majority,
+                    "n_simulations": c.n_simulations,
+                }
+                for c in result.coalition_probabilities
+                if c.parties in deterministic_ids or c.n_majority > 0
+            ],
+        },
+    )
 
 
 def _election_system_for(parliament_id: str):
@@ -1026,6 +1100,11 @@ def party_forecast_payload(
     n_simulations: int = 400,
 ) -> dict[str, Any]:
     """Monte-Carlo: P(stärkste Kraft) und P(über Sperrklausel) für alle Parteien."""
+    cache_key = (parliament_id, n_simulations)
+    cached = _ttl_get(_forecast_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     votes, names = _votes_from_averages(parliament_id)
     try:
         ensure_warehouse()
@@ -1047,7 +1126,7 @@ def party_forecast_payload(
         "parties": [],
     }
     if not votes:
-        return empty
+        return _ttl_set(_forecast_cache, cache_key, empty)
 
     residual_ids = [
         pid
@@ -1056,7 +1135,7 @@ def party_forecast_payload(
     ]
     filtered = {pid: share for pid, share in votes.items() if pid not in residual_ids}
     if not filtered:
-        return empty
+        return _ttl_set(_forecast_cache, cache_key, empty)
 
     exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
     parties = party_uncertainties_from_means(
@@ -1071,22 +1150,26 @@ def party_forecast_payload(
         residual_party_ids=residual_ids,
         config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
     )
-    return {
-        "parliament_id": parliament_id,
-        "threshold_percent": threshold,
-        "n_simulations": n_simulations,
-        "parties": [
-            {
-                "party_id": r.party_id,
-                "party_name": resolve_party_display_name(r.party_id, names),
-                "average_share": r.mean_share,
-                "threshold_percent": r.threshold_percent,
-                "probability_strongest": r.probability_strongest,
-                "probability_above_threshold": r.probability_above_threshold,
-            }
-            for r in rows
-        ],
-    }
+    return _ttl_set(
+        _forecast_cache,
+        cache_key,
+        {
+            "parliament_id": parliament_id,
+            "threshold_percent": threshold,
+            "n_simulations": n_simulations,
+            "parties": [
+                {
+                    "party_id": r.party_id,
+                    "party_name": resolve_party_display_name(r.party_id, names),
+                    "average_share": r.mean_share,
+                    "threshold_percent": r.threshold_percent,
+                    "probability_strongest": r.probability_strongest,
+                    "probability_above_threshold": r.probability_above_threshold,
+                }
+                for r in rows
+            ],
+        },
+    )
 
 
 def threshold_watch_overview_payload(
@@ -1119,9 +1202,18 @@ def house_effects_payload(
     *,
     window_days: int = 14,
 ) -> dict[str, Any]:
+    cache_key = (parliament_id, window_days)
+    cached = _ttl_get(_house_effects_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     points = _load_points(parliament_id)
     if not points:
-        return {"parliament_id": parliament_id, "effects": [], "accuracy": []}
+        return _ttl_set(
+            _house_effects_cache,
+            cache_key,
+            {"parliament_id": parliament_id, "effects": [], "accuracy": []},
+        )
 
     ref_dates = sorted({p.as_of for p in points})
     step = max(1, len(ref_dates) // 24)
@@ -1170,11 +1262,15 @@ def house_effects_payload(
     except Exception:  # noqa: BLE001 — Backtest optional
         pass
 
-    return {
-        "parliament_id": parliament_id,
-        "effects": effect_rows,
-        "accuracy": accuracy_rows,
-    }
+    return _ttl_set(
+        _house_effects_cache,
+        cache_key,
+        {
+            "parliament_id": parliament_id,
+            "effects": effect_rows,
+            "accuracy": accuracy_rows,
+        },
+    )
 
 
 def _election_tuples_for_backtest(
@@ -1205,9 +1301,14 @@ def _election_tuples_for_backtest(
 
 def institute_leaderboard_payload() -> dict[str, Any]:
     """Gesamt-Rangliste der Institute über alle Parlamente mit Backtest-Daten."""
+    cache_key: tuple[Any, ...] = ()
+    cached = _ttl_get(_leaderboard_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     points = _load_points(None)
     if not points:
-        return {"institutes": []}
+        return _ttl_set(_leaderboard_cache, cache_key, {"institutes": []})
 
     ensure_warehouse()
     con = connect_warehouse(read_only=not uses_motherduck())
@@ -1219,7 +1320,7 @@ def institute_leaderboard_payload() -> dict[str, Any]:
 
     tuples = _election_tuples_for_backtest(pnames)
     if not tuples:
-        return {"institutes": []}
+        return _ttl_set(_leaderboard_cache, cache_key, {"institutes": []})
 
     records = backtest_institutes(points, tuples)
     per_parliament = institute_accuracy_scores(records, by_parliament=True)
@@ -1250,10 +1351,15 @@ def institute_leaderboard_payload() -> dict[str, Any]:
                 ],
             }
         )
-    return {"institutes": institutes}
+    return _ttl_set(_leaderboard_cache, cache_key, {"institutes": institutes})
 
 
 def europe_overview_payload() -> dict[str, Any]:
+    cache_key: tuple[Any, ...] = ()
+    cached = _ttl_get(_europe_cache, cache_key)
+    if cached is not _TTL_MISS:
+        return cached
+
     ensure_warehouse()
     con = connect_warehouse(read_only=not uses_motherduck())
     try:
@@ -1328,7 +1434,11 @@ def europe_overview_payload() -> dict[str, Any]:
             }
         )
 
-    return {"as_of": date.today(), "countries": countries_out}
+    return _ttl_set(
+        _europe_cache,
+        cache_key,
+        {"as_of": date.today(), "countries": countries_out},
+    )
 
 
 BUNDESRAT_DISCLAIMER = (
