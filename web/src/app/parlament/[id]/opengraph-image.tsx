@@ -1,10 +1,12 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { ImageResponse } from "next/og";
 import { headers } from "next/headers";
 import { partyColor } from "@/lib/colors";
 import { displayNameForParliament } from "@/lib/deParliaments";
 import { INK, MIST, PAPER, SEA } from "@/lib/theme";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export const alt = "Poll-Position Sitzprojektion";
 export const size = { width: 1200, height: 630 };
@@ -62,7 +64,33 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   }
 }
 
+async function loadSeatsFromDisk(
+  parliamentId: string,
+): Promise<SeatsPayload | null> {
+  try {
+    const file = path.join(
+      process.cwd(),
+      "public",
+      "data",
+      staticSegment(parliamentId),
+      "seats.json",
+    );
+    const raw = await readFile(file, "utf8");
+    return JSON.parse(raw) as SeatsPayload;
+  } catch {
+    return null;
+  }
+}
+
 async function loadSeats(parliamentId: string): Promise<SeatsPayload | null> {
+  const fromDisk = await loadSeatsFromDisk(parliamentId);
+  if (
+    fromDisk?.seats_by_name &&
+    Object.keys(fromDisk.seats_by_name).length > 0
+  ) {
+    return fromDisk;
+  }
+
   const site = await resolveSiteOrigin();
   const segment = encodeURIComponent(staticSegment(parliamentId));
   const q = new URLSearchParams({ parliament_id: parliamentId });
