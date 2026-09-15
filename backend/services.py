@@ -1151,6 +1151,7 @@ def uncertainty_payload(
         "current_government_parties": None,
         "current_government_label": None,
         "current_government_majority_probability": None,
+        "current_government_missing_parties": [],
     }
 
     votes, _names = _votes_from_averages(parliament_id)
@@ -1224,11 +1225,13 @@ def uncertainty_payload(
     gov_canon: list[str] | None = None
     gov_label: str | None = None
     gov_wh_ids: tuple[str, ...] | None = None
+    gov_missing: list[str] = []
     if gov_cfg is not None:
         raw_parties, gov_label = gov_cfg
         gov_canon = _normalize_gov_parties_for_simulation(raw_parties, canon_to_id)
+        gov_missing = [p for p in gov_canon if p not in canon_to_id]
         ids = tuple(sorted(canon_to_id[p] for p in gov_canon if p in canon_to_id))
-        if ids and len(ids) == len(gov_canon):
+        if ids and not gov_missing and len(ids) == len(gov_canon):
             gov_wh_ids = ids
             if ids not in mapped_set:
                 mapped_set.add(ids)
@@ -1299,6 +1302,7 @@ def uncertainty_payload(
             "current_government_parties": gov_canon,
             "current_government_label": gov_label,
             "current_government_majority_probability": gov_prob,
+            "current_government_missing_parties": gov_missing,
         },
     )
 

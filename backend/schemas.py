@@ -155,6 +155,7 @@ class UncertaintyResponse(BaseModel):
     current_government_parties: list[str] | None = None
     current_government_label: str | None = None
     current_government_majority_probability: float | None = None
+    current_government_missing_parties: list[str] = Field(default_factory=list)
 
 
 class ThresholdWatchPartyOut(BaseModel):

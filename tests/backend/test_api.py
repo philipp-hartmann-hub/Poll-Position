@@ -715,6 +715,62 @@ def test_uncertainty(client):
     assert match["majority_probability"] == pytest.approx(
         body["current_government_majority_probability"]
     )
+    assert body.get("current_government_missing_parties") == []
+
+
+def test_uncertainty_missing_government_party_reports_reason(monkeypatch, api_warehouse):
+    """
+    Fehlt eine Regierungspartei in den aktuellen Umfrage-Durchschnitten,
+    bleibt die Wiederwahl-Wahrscheinlichkeit null — mit expliziter Liste.
+    """
+    from backend import services
+
+    votes = {"cdu": 40.0, "spd": 25.0, "gru": 15.0, "afd": 20.0}
+    names = {
+        "cdu": "CDU",
+        "spd": "SPD",
+        "gru": "Grüne",
+        "afd": "AfD",
+    }
+    # CDU+FDP-Regierung, aber FDP ohne aktuellen Umfragewert
+    monkeypatch.setattr(
+        services, "_votes_from_averages", lambda _pid: (votes, names)
+    )
+    monkeypatch.setattr(
+        services, "_party_house_variance", lambda _pid: {k: 1.0 for k in votes}
+    )
+    monkeypatch.setattr(
+        services,
+        "_allocate_for_parliament",
+        lambda _pid, v: (services.sainte_lague_schepers(v, 100, 0.05), 100),
+    )
+    monkeypatch.setattr(
+        services,
+        "coalitions_payload",
+        lambda *_a, **_k: {
+            "parliament_id": "de_nw_landtag",
+            "total_seats": 100,
+            "majority_threshold": 51,
+            "coalitions": [],
+        },
+    )
+    monkeypatch.setattr(
+        services,
+        "_election_system_for",
+        lambda _pid: (None, None),
+    )
+    monkeypatch.setattr(
+        services,
+        "_incumbent_government_for_parliament",
+        lambda _pid: (["de:cdu", "de:fdp"], "CDU + FDP"),
+    )
+    services.clear_payload_caches()
+
+    payload = services.uncertainty_payload("de_nw_landtag", n_simulations=40)
+    assert payload["current_government_parties"] == ["de:cdu", "de:fdp"]
+    assert payload["current_government_label"] == "CDU + FDP"
+    assert payload["current_government_majority_probability"] is None
+    assert payload["current_government_missing_parties"] == ["de:fdp"]
 
 
 def test_uncertainty_respects_apply_exclusions(client):
@@ -825,6 +881,7 @@ def test_party_forecast_indispensable_survives_db_name_mismatch(
             "current_government_parties": None,
             "current_government_label": None,
             "current_government_majority_probability": None,
+            "current_government_missing_parties": [],
         },
     )
 

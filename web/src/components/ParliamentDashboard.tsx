@@ -55,12 +55,14 @@ function SeatCompareBlock({
   averages,
   gov,
   reelectionProbability,
+  missingGovernmentParties,
 }: {
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
   averages: AveragesResponse | null;
   gov: IncumbentGov | null;
   reelectionProbability: number | null;
+  missingGovernmentParties: string[];
 }) {
   const pollParties =
     averages?.parties.map((p) => ({
@@ -141,18 +143,29 @@ function SeatCompareBlock({
         <IncumbentCoalitionCard
           gov={gov}
           reelectionProbability={reelectionProbability}
+          missingGovernmentParties={missingGovernmentParties}
         />
       </div>
     </div>
   );
 }
 
+function formatMissingPartyNames(partyIds: string[]): string {
+  const names = partyIds.map(labelPartyId);
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} und ${names[1]}`;
+  return `${names.slice(0, -1).join(", ")} und ${names[names.length - 1]}`;
+}
+
 function IncumbentCoalitionCard({
   gov,
   reelectionProbability,
+  missingGovernmentParties,
 }: {
   gov: IncumbentGov | null;
   reelectionProbability: number | null;
+  missingGovernmentParties: string[];
 }) {
   if (!gov) {
     return (
@@ -194,6 +207,12 @@ function IncumbentCoalitionCard({
             <InfoTooltip text={TIP_REELECTION} />
           </p>
         </div>
+      ) : missingGovernmentParties.length > 0 ? (
+        <p className="mt-4 border-t border-ink/10 pt-3 text-sm text-ink/55">
+          Keine Wiederwahl-Schätzung möglich — für{" "}
+          {formatMissingPartyNames(missingGovernmentParties)} liegen aktuell
+          keine Umfragewerte vor.
+        </p>
       ) : null}
     </div>
   );
@@ -213,6 +232,9 @@ export function ParliamentDashboard({
   const [reelectionProbability, setReelectionProbability] = useState<
     number | null
   >(null);
+  const [missingGovernmentParties, setMissingGovernmentParties] = useState<
+    string[]
+  >([]);
   const [headerError, setHeaderError] = useState<string | null>(null);
   const [headerLoading, setHeaderLoading] = useState(true);
   const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
@@ -241,6 +263,7 @@ export function ParliamentDashboard({
       setAverages(d.averages as AveragesResponse | null);
       setIncumbent(d.incumbent);
       setReelectionProbability(d.reelectionProbability);
+      setMissingGovernmentParties(d.missingGovernmentParties ?? []);
       setCacheUpdatedAt(cached.updatedAt);
       overviewSigRef.current = contentSignature(d);
       setHeaderLoading(false);
@@ -254,6 +277,7 @@ export function ParliamentDashboard({
       setAverages(null);
       setIncumbent(null);
       setReelectionProbability(null);
+      setMissingGovernmentParties([]);
       overviewSigRef.current = "";
     }
 
@@ -305,12 +329,16 @@ export function ParliamentDashboard({
 
         const p = unc?.current_government_majority_probability;
         const nextReelect = typeof p === "number" ? p : null;
+        const nextMissing = Array.isArray(unc?.current_government_missing_parties)
+          ? unc.current_government_missing_parties
+          : [];
         const nextData: OverviewCacheData = {
           lastElection: election,
           pollSeats: seats,
           averages: avg,
           incumbent: nextIncumbent,
           reelectionProbability: nextReelect,
+          missingGovernmentParties: nextMissing,
         };
         const sig = contentSignature(nextData);
         if (sig !== overviewSigRef.current) {
@@ -320,6 +348,7 @@ export function ParliamentDashboard({
           setAverages(avg);
           setIncumbent(nextIncumbent);
           setReelectionProbability(nextReelect);
+          setMissingGovernmentParties(nextMissing);
         }
         const now = Date.now();
         writeOverviewCache(parliamentId, nextData, now);
@@ -425,6 +454,7 @@ export function ParliamentDashboard({
             averages={averages}
             gov={incumbent}
             reelectionProbability={reelectionProbability}
+            missingGovernmentParties={missingGovernmentParties}
           />
         )}
       </section>

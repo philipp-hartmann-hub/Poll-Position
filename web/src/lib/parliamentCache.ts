@@ -18,6 +18,8 @@ export type OverviewCacheData = {
   averages: unknown;
   incumbent: { label: string; parties: string[] } | null;
   reelectionProbability: number | null;
+  /** Kanonische IDs ohne aktuellen Umfragewert (Wiederwahl nicht schätzbar). */
+  missingGovernmentParties?: string[] | null;
 };
 
 export type CoalitionsCacheData = {
@@ -80,6 +82,12 @@ function isOverviewData(data: unknown): data is OverviewCacheData {
   if (
     data.reelectionProbability != null &&
     typeof data.reelectionProbability !== "number"
+  ) {
+    return false;
+  }
+  if (
+    data.missingGovernmentParties != null &&
+    !Array.isArray(data.missingGovernmentParties)
   ) {
     return false;
   }

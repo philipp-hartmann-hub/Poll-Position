@@ -123,6 +123,7 @@ export type UncertaintyResponse = {
   current_government_parties?: string[] | null;
   current_government_label?: string | null;
   current_government_majority_probability?: number | null;
+  current_government_missing_parties?: string[];
 };
 
 export type ThresholdWatchParty = {
