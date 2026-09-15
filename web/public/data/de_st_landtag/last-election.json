@@ -1,0 +1,33 @@
+{
+  "parliament_id": "de_st_landtag",
+  "election_date": "2026-09-06",
+  "label": "Landtagswahl Sachsen-Anhalt 2026",
+  "source": "https://wahlergebnisse.sachsen-anhalt.de/wahlen/lt26/erg_land.html",
+  "seats": {
+    "de:afd": 39,
+    "de:cdu": 15,
+    "de:spd": 8,
+    "de:gruene": 8,
+    "de:linke": 8,
+    "de:bsw": 5
+  },
+  "seats_by_name": {
+    "AfD": 39,
+    "CDU": 15,
+    "SPD": 8,
+    "Grüne": 8,
+    "Linke": 8,
+    "BSW": 5
+  },
+  "vote_share_by_name": {
+    "AfD": 43.8,
+    "CDU": 17.2,
+    "SPD": 9.3,
+    "Grüne": 8.9,
+    "Linke": 8.6,
+    "BSW": 5.3,
+    "FDP": 2.6,
+    "Freie Wähler": 1.2
+  },
+  "total_seats": 83
+}

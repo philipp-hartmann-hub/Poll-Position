@@ -1,0 +1,29 @@
+{
+  "parliament_id": "de_bw_landtag",
+  "election_date": "2026-03-08",
+  "label": "Landtagswahl Baden-Württemberg 2026",
+  "source": "https://im.baden-wuerttemberg.de/de/service/presse-und-oeffentlichkeitsarbeit/pressemitteilung/pid/endgueltiges-landesergebnis-der-landtagswahl-2026-festgestellt",
+  "seats": {
+    "de:gruene": 43,
+    "de:cdu": 42,
+    "de:afd": 27,
+    "de:spd": 8
+  },
+  "seats_by_name": {
+    "Grüne": 43,
+    "CDU": 42,
+    "AfD": 27,
+    "SPD": 8
+  },
+  "vote_share_by_name": {
+    "Grüne": 30.2,
+    "CDU": 29.7,
+    "AfD": 18.8,
+    "SPD": 5.5,
+    "FDP": 4.4,
+    "Linke": 4.4,
+    "Freie Wähler": 1.9,
+    "BSW": 1.4
+  },
+  "total_seats": 120
+}

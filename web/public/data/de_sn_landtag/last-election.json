@@ -1,0 +1,34 @@
+{
+  "parliament_id": "de_sn_landtag",
+  "election_date": "2024-09-01",
+  "label": "Landtagswahl Sachsen 2024",
+  "source": "https://www.landtag.sachsen.de/de/aktuelles/landtagswahl-2024/wahlergebnisse-und-sitzverteilung-29953.cshtml",
+  "seats": {
+    "de:cdu": 42,
+    "de:afd": 40,
+    "de:bsw": 15,
+    "de:spd": 10,
+    "de:gruene": 7,
+    "de:linke": 6
+  },
+  "seats_by_name": {
+    "CDU": 42,
+    "AfD": 40,
+    "BSW": 15,
+    "SPD": 10,
+    "Grüne": 7,
+    "Linke": 6
+  },
+  "vote_share_by_name": {
+    "CDU": 31.9,
+    "AfD": 30.6,
+    "BSW": 11.8,
+    "SPD": 7.3,
+    "Grüne": 5.1,
+    "Linke": 4.5,
+    "Freie Wähler": 2.3,
+    "Freie Sachsen": 2.2,
+    "FDP": 0.9
+  },
+  "total_seats": 120
+}

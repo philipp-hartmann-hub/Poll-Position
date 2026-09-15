@@ -1,0 +1,71 @@
+{
+  "parliament_id": "de_mv_landtag",
+  "threshold_percent": 5.0,
+  "n_simulations": 400,
+  "n_deadlock": 116,
+  "parties": [
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 36.57034033497518,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.97,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0035211267605633804
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 31.838964435177807,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.03,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.9964788732394366
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 10.59502853943911,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.6830985915492958
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "average_share": 7.346520930772244,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.96,
+      "probability_indispensable": 0.01056338028169014
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 5.185138380093524,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.5625,
+      "probability_indispensable": 0.6161971830985915
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "average_share": 4.194380686918,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.25,
+      "probability_indispensable": 0.22535211267605634
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 2.1852964146246032,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.0,
+      "probability_indispensable": 0.01056338028169014
+    }
+  ]
+}

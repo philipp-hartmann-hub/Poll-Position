@@ -1,0 +1,29 @@
+{
+  "parliament_id": "de_rp_landtag",
+  "election_date": "2026-03-22",
+  "label": "Landtagswahl Rheinland-Pfalz 2026",
+  "source": "https://www.wahlen.rlp.de/nachrichten/nachichtendetailseite/endgueltiges-ergebnis-der-landtagswahl-2026-steht-fest",
+  "seats": {
+    "de:cdu": 37,
+    "de:spd": 31,
+    "de:afd": 23,
+    "de:gruene": 10
+  },
+  "seats_by_name": {
+    "CDU": 37,
+    "SPD": 31,
+    "AfD": 23,
+    "Grüne": 10
+  },
+  "vote_share_by_name": {
+    "CDU": 31.0,
+    "SPD": 25.9,
+    "AfD": 19.5,
+    "Grüne": 7.9,
+    "Linke": 4.4,
+    "Freie Wähler": 4.2,
+    "FDP": 2.1,
+    "BSW": 1.9
+  },
+  "total_seats": 101
+}

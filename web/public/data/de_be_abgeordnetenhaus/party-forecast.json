@@ -1,0 +1,71 @@
+{
+  "parliament_id": "de_be_abgeordnetenhaus",
+  "threshold_percent": 5.0,
+  "n_simulations": 400,
+  "n_deadlock": 0,
+  "parties": [
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 20.5149554150661,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.5475,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.005
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "average_share": 19.9315080387395,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.3925,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 17.791865847458812,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.055,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 16.050950931800212,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.005,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 1.0
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 12.16044990896679,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.9925
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "average_share": 3.8236452190700225,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.18,
+      "probability_indispensable": 0.01
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 3.2653959456179935,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.0425,
+      "probability_indispensable": 0.0
+    }
+  ]
+}

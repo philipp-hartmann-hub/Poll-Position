@@ -1,0 +1,28 @@
+{
+  "parliament_id": "de_he_landtag",
+  "election_date": "2023-10-08",
+  "label": "Landtagswahl Hessen 2023",
+  "source": "https://statistik.hessen.de/",
+  "seats": {
+    "de:cdu": 43,
+    "de:afd": 23,
+    "de:spd": 19,
+    "de:gruene": 19,
+    "de:fdp": 6
+  },
+  "seats_by_name": {
+    "CDU": 43,
+    "AfD": 23,
+    "SPD": 19,
+    "Grüne": 19,
+    "FDP": 6
+  },
+  "vote_share_by_name": {
+    "CDU": 34.6,
+    "AfD": 18.4,
+    "SPD": 15.1,
+    "Grüne": 14.8,
+    "FDP": 5.0
+  },
+  "total_seats": 110
+}

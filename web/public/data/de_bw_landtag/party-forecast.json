@@ -1,0 +1,71 @@
+{
+  "parliament_id": "de_bw_landtag",
+  "threshold_percent": 5.0,
+  "n_simulations": 400,
+  "n_deadlock": 0,
+  "parties": [
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 29.068275314256034,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.7,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.995
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "average_share": 26.736643513682765,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.3,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.8825
+    },
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 20.688825415244718,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 6.536588881066794,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.7875,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 5.430986521301892,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.6475,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 4.790570009641213,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.4425,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "average_share": 3.0,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.0275,
+      "probability_indispensable": 0.0
+    }
+  ]
+}

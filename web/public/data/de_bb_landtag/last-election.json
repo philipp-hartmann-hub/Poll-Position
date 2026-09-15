@@ -1,0 +1,28 @@
+{
+  "parliament_id": "de_bb_landtag",
+  "election_date": "2024-09-22",
+  "label": "Landtagswahl Brandenburg 2024",
+  "source": "https://wahlergebnisse.brandenburg.de/12/500/20240922/landtagswahl_land/ergebnisse.html",
+  "seats": {
+    "de:spd": 32,
+    "de:afd": 30,
+    "de:bsw": 14,
+    "de:cdu": 12
+  },
+  "seats_by_name": {
+    "SPD": 32,
+    "AfD": 30,
+    "BSW": 14,
+    "CDU": 12
+  },
+  "vote_share_by_name": {
+    "SPD": 30.89,
+    "AfD": 29.23,
+    "BSW": 13.48,
+    "CDU": 12.1,
+    "Grüne": 4.13,
+    "Linke": 2.98,
+    "BVB/FW": 2.57
+  },
+  "total_seats": 88
+}

@@ -1,0 +1,31 @@
+{
+  "parliament_id": "de_hb_buergerschaft",
+  "election_date": "2023-05-14",
+  "label": "Bürgerschaftswahl Bremen 2023",
+  "source": "https://www.statistik.bremen.de/sixcms/media.php/13/StatBeitragRepraesentativeWahlstatistikBuerger2023_pdfa.pdf",
+  "seats": {
+    "de:spd": 28,
+    "de:cdu": 24,
+    "de:gruene": 11,
+    "de:linke": 10,
+    "de:biw": 9,
+    "de:fdp": 5
+  },
+  "seats_by_name": {
+    "SPD": 28,
+    "CDU": 24,
+    "Grüne": 11,
+    "Linke": 10,
+    "BIW": 9,
+    "FDP": 5
+  },
+  "vote_share_by_name": {
+    "SPD": 29.8,
+    "CDU": 26.2,
+    "Grüne": 11.9,
+    "Linke": 10.9,
+    "BIW": 9.4,
+    "FDP": 5.1
+  },
+  "total_seats": 87
+}

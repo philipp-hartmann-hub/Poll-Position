@@ -1,0 +1,28 @@
+{
+  "parliament_id": "de_by_landtag",
+  "election_date": "2023-10-08",
+  "label": "Landtagswahl Bayern 2023",
+  "source": "https://www.statistik.bayern.de/wahlen/landtagswahlen/",
+  "seats": {
+    "de:csu": 74,
+    "de:fw": 31,
+    "de:afd": 29,
+    "de:gruene": 29,
+    "de:spd": 17
+  },
+  "seats_by_name": {
+    "CSU": 74,
+    "Freie Wähler": 31,
+    "AfD": 29,
+    "Grüne": 29,
+    "SPD": 17
+  },
+  "vote_share_by_name": {
+    "CSU": 37.2,
+    "Freie Wähler": 15.8,
+    "AfD": 14.6,
+    "Grüne": 14.4,
+    "SPD": 8.4
+  },
+  "total_seats": 180
+}

@@ -152,8 +152,8 @@
     "seats_total": 83,
     "election_system_key": "de_st_lt",
     "shortcut": "Sachsen-Anhalt",
-    "next_election_date": "2026-09-06",
-    "next_election_note": null
+    "next_election_date": null,
+    "next_election_note": "voraussichtlich Herbst 2031 (nach Landtagswahl 6. September 2026; Termin noch nicht festgesetzt)"
   },
   {
     "id": "de_sh_landtag",

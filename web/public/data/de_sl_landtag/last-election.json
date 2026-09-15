@@ -1,0 +1,27 @@
+{
+  "parliament_id": "de_sl_landtag",
+  "election_date": "2022-03-27",
+  "label": "Landtagswahl Saarland 2022",
+  "source": "https://www.bpb.de/kurz-knapp/hintergrund-aktuell/506485/landtagswahl-im-saarland-2022/",
+  "seats": {
+    "de:spd": 27,
+    "de:cdu": 18,
+    "de:afd": 3,
+    "de:gruene": 3
+  },
+  "seats_by_name": {
+    "SPD": 27,
+    "CDU": 18,
+    "AfD": 3,
+    "Grüne": 3
+  },
+  "vote_share_by_name": {
+    "SPD": 43.5,
+    "CDU": 28.5,
+    "AfD": 5.7,
+    "Grüne": 5.0,
+    "FDP": 4.8,
+    "Linke": 2.6
+  },
+  "total_seats": 51
+}

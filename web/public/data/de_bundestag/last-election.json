@@ -1,0 +1,33 @@
+{
+  "parliament_id": "de_bundestag",
+  "election_date": "2025-02-23",
+  "label": "Bundestagswahl 2025",
+  "source": "https://www.bundeswahlleiterin.de/info/presse/mitteilungen/bundestagswahl-2025/29_25_endgueltiges-ergebnis.html",
+  "seats": {
+    "de:afd": 152,
+    "de:spd": 119,
+    "de:gruene": 85,
+    "de:linke": 64,
+    "de:ssw": 1,
+    "de:cdu_csu": 209
+  },
+  "seats_by_name": {
+    "AfD": 152,
+    "SPD": 119,
+    "Grüne": 85,
+    "Linke": 64,
+    "SSW": 1,
+    "CDU/CSU": 209
+  },
+  "vote_share_by_name": {
+    "AfD": 20.8,
+    "SPD": 16.4,
+    "Grüne": 11.6,
+    "Linke": 8.8,
+    "FDP": 4.3,
+    "BSW": 4.981,
+    "SSW": 0.2,
+    "CDU/CSU": 28.52
+  },
+  "total_seats": 630
+}

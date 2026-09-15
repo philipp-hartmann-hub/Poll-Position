@@ -1,0 +1,31 @@
+{
+  "parliament_id": "de_mv_landtag",
+  "election_date": "2021-09-26",
+  "label": "Landtagswahl Mecklenburg-Vorpommern 2021",
+  "source": "https://de.wikipedia.org/wiki/Landtagswahl_in_Mecklenburg-Vorpommern_2021",
+  "seats": {
+    "de:spd": 31,
+    "de:afd": 13,
+    "de:cdu": 10,
+    "de:linke": 8,
+    "de:gruene": 5,
+    "de:fdp": 4
+  },
+  "seats_by_name": {
+    "SPD": 31,
+    "AfD": 13,
+    "CDU": 10,
+    "Linke": 8,
+    "Grüne": 5,
+    "FDP": 4
+  },
+  "vote_share_by_name": {
+    "SPD": 39.6,
+    "AfD": 16.7,
+    "CDU": 13.3,
+    "Linke": 9.9,
+    "Grüne": 6.3,
+    "FDP": 5.8
+  },
+  "total_seats": 71
+}

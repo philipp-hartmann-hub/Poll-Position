@@ -1,0 +1,62 @@
+{
+  "parliament_id": "de_hh_buergerschaft",
+  "threshold_percent": 5.0,
+  "n_simulations": 400,
+  "n_deadlock": 0,
+  "parties": [
+    {
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
+      "average_share": 30.977926791520893,
+      "threshold_percent": 5.0,
+      "probability_strongest": 1.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 1.0
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 17.066219625437327,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.08
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "average_share": 16.088292833916437,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "average_share": 13.955853583041783,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:7",
+      "party_name": "AfD",
+      "average_share": 11.955853583041783,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.0
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "average_share": 3.0,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 0.0325,
+      "probability_indispensable": 0.0
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "parliament_id": "de_sh_landtag",
+  "election_date": "2022-05-08",
+  "label": "Landtagswahl Schleswig-Holstein 2022",
+  "source": "https://www.wahlen-sh.de/ltw_2022/index.html",
+  "seats": {
+    "de:cdu": 34,
+    "de:gruene": 14,
+    "de:spd": 12,
+    "de:fdp": 5,
+    "de:ssw": 4
+  },
+  "seats_by_name": {
+    "CDU": 34,
+    "Grüne": 14,
+    "SPD": 12,
+    "FDP": 5,
+    "SSW": 4
+  },
+  "vote_share_by_name": {
+    "CDU": 43.4,
+    "Grüne": 18.3,
+    "SPD": 16.0,
+    "FDP": 6.4,
+    "SSW": 5.7,
+    "AfD": 4.4,
+    "Linke": 1.7
+  },
+  "total_seats": 69
+}

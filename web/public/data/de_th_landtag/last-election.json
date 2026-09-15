@@ -1,0 +1,30 @@
+{
+  "parliament_id": "de_th_landtag",
+  "election_date": "2024-09-01",
+  "label": "Landtagswahl Thüringen 2024",
+  "source": "https://www.bpb.de/kurz-knapp/hintergrund-aktuell/551667/landtagswahl-thueringen-2024/",
+  "seats": {
+    "de:afd": 31,
+    "de:cdu": 23,
+    "de:bsw": 15,
+    "de:linke": 13,
+    "de:spd": 6
+  },
+  "seats_by_name": {
+    "AfD": 31,
+    "CDU": 23,
+    "BSW": 15,
+    "Linke": 13,
+    "SPD": 6
+  },
+  "vote_share_by_name": {
+    "AfD": 32.8,
+    "CDU": 23.6,
+    "BSW": 15.8,
+    "Linke": 13.1,
+    "SPD": 6.1,
+    "Grüne": 3.2,
+    "FDP": 1.1
+  },
+  "total_seats": 88
+}

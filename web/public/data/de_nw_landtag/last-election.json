@@ -1,0 +1,29 @@
+{
+  "parliament_id": "de_nw_landtag",
+  "election_date": "2022-05-15",
+  "label": "Landtagswahl Nordrhein-Westfalen 2022",
+  "source": "https://www.wahlergebnisse.nrw/landtagswahlen/2022/aktuell/a000lw2200.shtml",
+  "seats": {
+    "de:cdu": 70,
+    "de:spd": 52,
+    "de:gruene": 36,
+    "de:fdp": 12,
+    "de:afd": 11
+  },
+  "seats_by_name": {
+    "CDU": 70,
+    "SPD": 52,
+    "Grüne": 36,
+    "FDP": 12,
+    "AfD": 11
+  },
+  "vote_share_by_name": {
+    "CDU": 35.7,
+    "SPD": 26.7,
+    "Grüne": 18.2,
+    "FDP": 5.9,
+    "AfD": 5.4,
+    "Linke": 2.1
+  },
+  "total_seats": 181
+}

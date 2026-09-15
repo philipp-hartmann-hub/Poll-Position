@@ -1,0 +1,27 @@
+{
+  "parliament_id": "de_ni_landtag",
+  "election_date": "2022-10-09",
+  "label": "Landtagswahl Niedersachsen 2022",
+  "source": "https://de.wikipedia.org/wiki/Landtagswahl_in_Niedersachsen_2022",
+  "seats": {
+    "de:spd": 52,
+    "de:cdu": 44,
+    "de:gruene": 22,
+    "de:afd": 17
+  },
+  "seats_by_name": {
+    "SPD": 52,
+    "CDU": 44,
+    "Grüne": 22,
+    "AfD": 17
+  },
+  "vote_share_by_name": {
+    "SPD": 33.4,
+    "CDU": 28.1,
+    "Grüne": 14.5,
+    "AfD": 10.9,
+    "FDP": 4.7,
+    "Linke": 2.7
+  },
+  "total_seats": 135
+}
