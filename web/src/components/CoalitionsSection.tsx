@@ -22,6 +22,13 @@ import {
   exclusionStatesEqual,
   searchParamsWithExclusion,
 } from "@/lib/exclusionUrl";
+import {
+  contentSignature,
+  formatCacheAge,
+  isAbortError,
+  readCoalitionsCache,
+  writeCoalitionsCache,
+} from "@/lib/parliamentCache";
 import { TIP_COALITION_UNCERTAINTY } from "@/lib/tooltipCopy";
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
@@ -29,6 +36,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const prevParliamentId = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const dataSigRef = useRef<string>("");
 
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
@@ -41,6 +50,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const [uncertaintyBusy, setUncertaintyBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const syncExclusionToUrl = useCallback(
     (state: ExclusionUiState) => {
@@ -64,8 +75,11 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   );
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const { signal } = ac;
+
     setError(null);
 
     const switchedParliament =
@@ -76,13 +90,36 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
     const hasExclusionQuery =
       searchParams.has("apply_exclusions") ||
       searchParams.has("disabled_rules");
-    // Parlamentwechsel ohne Query → Default (kein Altlast). Mit Query (z. B. Zurück
-    // im Browser) → URL übernehmen.
     const nextExclusion =
       switchedParliament && !hasExclusionQuery
         ? DEFAULT_EXCLUSION_UI
         : exclusionFromSearchParams(searchParams);
     setExclusionState(nextExclusion);
+
+    const useDefaultExclusions =
+      nextExclusion.applyExclusions &&
+      nextExclusion.disabledRuleIds.length === 0;
+    const cached = useDefaultExclusions
+      ? readCoalitionsCache(parliamentId)
+      : null;
+
+    if (cached) {
+      const c = cached.data.coalitions as CoalitionsResponse;
+      const s = cached.data.seats as SeatsResponse;
+      setCoalitions(c);
+      setSeats(s);
+      dataSigRef.current = contentSignature(cached.data);
+      setCacheUpdatedAt(cached.updatedAt);
+      setLoading(false);
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+      setRefreshing(false);
+      setCacheUpdatedAt(null);
+      setCoalitions(null);
+      setSeats(null);
+      dataSigRef.current = "";
+    }
 
     (async () => {
       try {
@@ -92,22 +129,38 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
             disabled_rule_ids: nextExclusion.applyExclusions
               ? nextExclusion.disabledRuleIds
               : [],
+            signal,
           }),
-          fetchSeats(parliamentId),
+          fetchSeats(parliamentId, { signal }),
         ]);
-        if (cancelled) return;
-        setCoalitions(c);
-        setSeats(s);
+        if (signal.aborted) return;
+        const next = { coalitions: c, seats: s };
+        const sig = contentSignature(next);
+        if (sig !== dataSigRef.current) {
+          dataSigRef.current = sig;
+          setCoalitions(c);
+          setSeats(s);
+        }
+        if (useDefaultExclusions) {
+          const now = Date.now();
+          writeCoalitionsCache(parliamentId, next, now);
+          setCacheUpdatedAt(now);
+        }
       } catch (e) {
-        if (!cancelled) {
+        if (isAbortError(e) || signal.aborted) return;
+        if (!cached) {
           setError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!signal.aborted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
     })();
+
     return () => {
-      cancelled = true;
+      ac.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Query nur bei Toggle / Parlamentwechsel
   }, [parliamentId]);
@@ -115,6 +168,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const disabledKey = exclusionState.disabledRuleIds.join("\0");
 
   useEffect(() => {
+    const ac = new AbortController();
+    const { signal } = ac;
     let cancelled = false;
     const t = setTimeout(() => {
       setUncertaintyBusy(true);
@@ -123,20 +178,23 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
         disabledRuleIds: exclusionState.applyExclusions
           ? exclusionState.disabledRuleIds
           : [],
+        signal,
       })
         .then((u) => {
-          if (!cancelled) setUncertainty(u);
+          if (!cancelled && !signal.aborted) setUncertainty(u);
         })
-        .catch(() => {
-          if (!cancelled) setUncertainty(null);
+        .catch((e) => {
+          if (isAbortError(e) || cancelled || signal.aborted) return;
+          setUncertainty(null);
         })
         .finally(() => {
-          if (!cancelled) setUncertaintyBusy(false);
+          if (!cancelled && !signal.aborted) setUncertaintyBusy(false);
         });
     }, 200);
     return () => {
       cancelled = true;
       clearTimeout(t);
+      ac.abort();
     };
   }, [parliamentId, exclusionState.applyExclusions, disabledKey]);
 
@@ -158,6 +216,12 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
 
   return (
     <div className="space-y-10">
+      {cacheUpdatedAt != null ? (
+        <p className="text-xs text-ink/45">
+          Stand: {formatCacheAge(cacheUpdatedAt)}
+          {refreshing ? " · aktualisiert…" : ""}
+        </p>
+      ) : null}
       <CoalitionPanel
         key={parliamentId}
         parliamentId={parliamentId}

@@ -65,20 +65,25 @@ export function CoalitionPanel({
   );
   /** Nur die neueste refresh()-Antwort darf setData/setLoading anfassen. */
   const refreshSeq = useRef(0);
+  const refreshAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     return () => {
       // Pending refresh()-Responses nach Unmount verwerfen.
       refreshSeq.current += 1;
+      refreshAbortRef.current?.abort();
     };
   }, []);
 
   useEffect(() => {
     let cancelled = false;
+    const ac = new AbortController();
     (async () => {
       try {
-        const res = await fetchCoalitionRules(parliamentId);
-        if (cancelled) return;
+        const res = await fetchCoalitionRules(parliamentId, {
+          signal: ac.signal,
+        });
+        if (cancelled || ac.signal.aborted) return;
         setRules(res.rules);
         const disabled = new Set(initialExclusion?.disabledRuleIds ?? []);
         setEnabled(
@@ -86,6 +91,7 @@ export function CoalitionPanel({
         );
         setApplyExclusions(initialExclusion?.applyExclusions ?? true);
       } catch (e) {
+        if (cancelled || ac.signal.aborted) return;
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Regeln laden fehlgeschlagen");
         }
@@ -93,6 +99,7 @@ export function CoalitionPanel({
     })();
     return () => {
       cancelled = true;
+      ac.abort();
     };
     // Nur bei Parlamentwechsel neu laden; initialExclusion kommt mit key={parliamentId} + Remount.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: URL-State nur beim Mount / Parlamentwechsel
@@ -113,6 +120,9 @@ export function CoalitionPanel({
       applyExclusions: nextApply,
       disabledRuleIds: nextDisabled,
     });
+    refreshAbortRef.current?.abort();
+    const ac = new AbortController();
+    refreshAbortRef.current = ac;
     const seq = ++refreshSeq.current;
     setLoading(true);
     setError(null);
@@ -120,15 +130,17 @@ export function CoalitionPanel({
       const res = await fetchCoalitionsFn(parliamentId, {
         apply_exclusions: nextApply,
         disabled_rule_ids: nextApply ? nextDisabled : [],
+        signal: ac.signal,
       });
-      if (seq !== refreshSeq.current) return;
+      if (seq !== refreshSeq.current || ac.signal.aborted) return;
       setData({
         majority_threshold: res.majority_threshold,
         excluded_by_rules: res.excluded_by_rules,
         coalitions: res.coalitions,
       });
     } catch (e) {
-      if (seq !== refreshSeq.current) return;
+      if (seq !== refreshSeq.current || ac.signal.aborted) return;
+      if (e instanceof Error && e.name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Fehler");
     } finally {
       if (seq === refreshSeq.current) {

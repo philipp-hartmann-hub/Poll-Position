@@ -19,6 +19,13 @@ import {
   exclusionStatesEqual,
   searchParamsWithExclusion,
 } from "@/lib/exclusionUrl";
+import {
+  contentSignature,
+  formatCacheAge,
+  isAbortError,
+  readLastElectionCache,
+  writeLastElectionCache,
+} from "@/lib/parliamentCache";
 import { TIP_ELECTION_COALITIONS } from "@/lib/tooltipCopy";
 
 export function LastElectionSection({
@@ -30,6 +37,8 @@ export function LastElectionSection({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const prevParliamentId = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const dataSigRef = useRef<string>("");
 
   const [election, setElection] = useState<LastElectionResponse | null>(null);
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
@@ -38,6 +47,8 @@ export function LastElectionSection({
   );
   const [missing, setMissing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const syncExclusionToUrl = useCallback(
     (state: ExclusionUiState) => {
@@ -61,11 +72,12 @@ export function LastElectionSection({
   );
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const { signal } = ac;
+
     setMissing(false);
-    setElection(null);
-    setCoalitions(null);
 
     const switchedParliament =
       prevParliamentId.current != null &&
@@ -81,33 +93,77 @@ export function LastElectionSection({
         : exclusionFromSearchParams(searchParams);
     setExclusionState(nextExclusion);
 
+    const useDefaultExclusions =
+      nextExclusion.applyExclusions &&
+      nextExclusion.disabledRuleIds.length === 0;
+    const cached = useDefaultExclusions
+      ? readLastElectionCache(parliamentId)
+      : null;
+
+    if (cached?.data.election) {
+      setElection(cached.data.election as LastElectionResponse);
+      setCoalitions(
+        (cached.data.coalitions as CoalitionsResponse | null) ?? null,
+      );
+      dataSigRef.current = contentSignature(cached.data);
+      setCacheUpdatedAt(cached.updatedAt);
+      setLoading(false);
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+      setRefreshing(false);
+      setCacheUpdatedAt(null);
+      setElection(null);
+      setCoalitions(null);
+      dataSigRef.current = "";
+    }
+
     (async () => {
       try {
-        const el = await fetchLastElection(parliamentId);
-        if (cancelled) return;
-        setElection(el);
+        const el = await fetchLastElection(parliamentId, { signal });
+        if (signal.aborted) return;
+        let coal: CoalitionsResponse | null = null;
         try {
-          const coal = await fetchLastElectionCoalitions(parliamentId, {
+          coal = await fetchLastElectionCoalitions(parliamentId, {
             apply_exclusions: nextExclusion.applyExclusions,
             disabled_rule_ids: nextExclusion.applyExclusions
               ? nextExclusion.disabledRuleIds
               : [],
+            signal,
           });
-          if (!cancelled) setCoalitions(coal);
-        } catch {
-          if (!cancelled) setCoalitions(null);
+        } catch (e) {
+          if (isAbortError(e)) throw e;
+          coal = null;
         }
-      } catch {
-        if (!cancelled) {
+        if (signal.aborted) return;
+        const next = { election: el, coalitions: coal };
+        const sig = contentSignature(next);
+        if (sig !== dataSigRef.current) {
+          dataSigRef.current = sig;
+          setElection(el);
+          setCoalitions(coal);
+        }
+        if (useDefaultExclusions) {
+          const now = Date.now();
+          writeLastElectionCache(parliamentId, next, now);
+          setCacheUpdatedAt(now);
+        }
+      } catch (e) {
+        if (isAbortError(e) || signal.aborted) return;
+        if (!cached) {
           setMissing(true);
           setElection(null);
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!signal.aborted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
     })();
+
     return () => {
-      cancelled = true;
+      ac.abort();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Query nur bei Toggle / Parlamentwechsel
   }, [parliamentId]);
@@ -130,6 +186,12 @@ export function LastElectionSection({
 
   return (
     <div className="space-y-8">
+      {cacheUpdatedAt != null ? (
+        <p className="text-xs text-ink/45">
+          Stand: {formatCacheAge(cacheUpdatedAt)}
+          {refreshing ? " · aktualisiert…" : ""}
+        </p>
+      ) : null}
       <section>
         <h2 className="mb-1 font-display text-2xl text-ink">
           {election.label}

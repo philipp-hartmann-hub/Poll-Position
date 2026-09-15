@@ -291,15 +291,26 @@ async function fetchStaticOrApi<T>(
   try {
     const res = await fetch(staticPath, {
       headers: { Accept: "application/json" },
-      next: { revalidate: REVALIDATE_SECONDS },
+      signal: init?.signal,
+      ...(init?.signal
+        ? { cache: "no-store" as const }
+        : { next: { revalidate: REVALIDATE_SECONDS } }),
     });
     if (res.ok) {
       return (await res.json()) as T;
     }
-  } catch {
+  } catch (e) {
+    if (isDomAbort(e)) throw e;
     // Netzwerk / lokal ohne Export → API
   }
   return apiFetch<T>(apiPath, init);
+}
+
+function isDomAbort(e: unknown): boolean {
+  return (
+    (e instanceof DOMException && e.name === "AbortError") ||
+    (e instanceof Error && e.name === "AbortError")
+  );
 }
 
 /** Spiegel zu data_pipeline.export_static.static_path_segment (Artifact/NTFS). */
@@ -331,18 +342,21 @@ export function fetchGermanyMapLeaders(): Promise<GermanyMapLeadersResponse> {
 export function fetchAverages(
   parliamentId: string,
   days = 365,
+  opts?: { signal?: AbortSignal },
 ): Promise<AveragesResponse> {
   const q = new URLSearchParams({
     parliament_id: parliamentId,
     days: String(days),
   });
   const apiPath = `/api/parties/averages?${q}`;
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
   if (days !== 365) {
-    return apiFetch(apiPath);
+    return apiFetch(apiPath, init);
   }
   return fetchStaticOrApi(
     `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/averages.json`,
     apiPath,
+    init,
   );
 }
 
@@ -376,21 +390,29 @@ export function fetchRawSurveys(
   return apiFetch(`/api/surveys?${q}`);
 }
 
-export function fetchSeats(parliamentId: string): Promise<SeatsResponse> {
+export function fetchSeats(
+  parliamentId: string,
+  opts?: { signal?: AbortSignal },
+): Promise<SeatsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
   return fetchStaticOrApi(
     `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/seats.json`,
     `/api/seats?${q}`,
+    init,
   );
 }
 
 export function fetchLastElection(
   parliamentId: string,
+  opts?: { signal?: AbortSignal },
 ): Promise<LastElectionResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
   return fetchStaticOrApi(
     `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/last-election.json`,
     `/api/parliaments/last-election?${q}`,
+    init,
   );
 }
 
@@ -400,6 +422,7 @@ export function fetchCoalitions(
     apply_exclusions?: boolean;
     max_parties?: number;
     disabled_rule_ids?: string[];
+    signal?: AbortSignal;
   },
 ): Promise<CoalitionsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
@@ -414,6 +437,7 @@ export function fetchCoalitions(
     q.append("disabled_rule_ids", id);
   }
   const apiPath = `/api/coalitions?${q}`;
+  const signalInit = opts?.signal ? { signal: opts.signal } : {};
   // Static-JSON nur für den Default-Export (kein opts). Jede UI-Interaktion
   // (Ausschluss an/aus, einzelne Regeln, max_parties) muss die API treffen —
   // sonst bleibt die Übersicht auf dem gecachten Snapshot mit Exclusions.
@@ -423,11 +447,12 @@ export function fetchCoalitions(
       disabled.length > 0 ||
       (opts.max_parties !== undefined && opts.max_parties !== 4));
   if (interactive) {
-    return apiFetch(apiPath, { noStore: true });
+    return apiFetch(apiPath, { noStore: true, ...signalInit });
   }
   return fetchStaticOrApi(
     `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/coalitions.json`,
     apiPath,
+    signalInit,
   );
 }
 
@@ -437,6 +462,7 @@ export function fetchLastElectionCoalitions(
     apply_exclusions?: boolean;
     max_parties?: number;
     disabled_rule_ids?: string[];
+    signal?: AbortSignal;
   },
 ): Promise<CoalitionsResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
@@ -451,6 +477,7 @@ export function fetchLastElectionCoalitions(
     q.append("disabled_rule_ids", id);
   }
   const apiPath = `/api/coalitions/last-election?${q}`;
+  const signalInit = opts?.signal ? { signal: opts.signal } : {};
   // Wie /api/coalitions: jede UI-Interaktion (Ausschluss an/aus, einzelne Regeln)
   // muss frisch von der API kommen — sonst bleibt die Übersicht auf dem
   // Default-Snapshot mit aktiven Ausschlüssen.
@@ -459,7 +486,10 @@ export function fetchLastElectionCoalitions(
     (opts.apply_exclusions !== undefined ||
       disabled.length > 0 ||
       (opts.max_parties !== undefined && opts.max_parties !== 4));
-  return apiFetch(apiPath, interactive ? { noStore: true } : undefined);
+  return apiFetch(
+    apiPath,
+    interactive ? { noStore: true, ...signalInit } : signalInit,
+  );
 }
 
 export type FetchCoalitionsFn = (
@@ -468,14 +498,16 @@ export type FetchCoalitionsFn = (
     apply_exclusions?: boolean;
     max_parties?: number;
     disabled_rule_ids?: string[];
+    signal?: AbortSignal;
   },
 ) => Promise<CoalitionsResponse>;
 
 export function fetchCoalitionRules(
   parliamentId: string,
+  opts?: { signal?: AbortSignal },
 ): Promise<CoalitionRulesResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
-  return apiFetch(`/api/coalitions/rules?${q}`);
+  return apiFetch(`/api/coalitions/rules?${q}`, opts?.signal ? { signal: opts.signal } : undefined);
 }
 
 export function fetchUncertainty(
@@ -484,6 +516,7 @@ export function fetchUncertainty(
   opts?: {
     applyExclusions?: boolean;
     disabledRuleIds?: string[];
+    signal?: AbortSignal;
   },
 ): Promise<UncertaintyResponse> {
   const q = new URLSearchParams({
@@ -500,7 +533,11 @@ export function fetchUncertainty(
   const interactive =
     opts !== undefined &&
     (opts.applyExclusions !== undefined || disabled.length > 0);
-  return apiFetch(`/api/uncertainty?${q}`, interactive ? { noStore: true } : undefined);
+  const signalInit = opts?.signal ? { signal: opts.signal } : {};
+  return apiFetch(
+    `/api/uncertainty?${q}`,
+    interactive ? { noStore: true, ...signalInit } : signalInit,
+  );
 }
 
 export function fetchThresholdWatch(
@@ -666,8 +703,13 @@ export type GovernmentResponse = {
   poll_presets: GovernmentPollPreset[];
 };
 
-export function fetchGovernment(): Promise<GovernmentResponse> {
-  return apiFetch("/api/government");
+export function fetchGovernment(opts?: {
+  signal?: AbortSignal;
+}): Promise<GovernmentResponse> {
+  return apiFetch(
+    "/api/government",
+    opts?.signal ? { signal: opts.signal } : undefined,
+  );
 }
 
 export type StagingElectionDraft = {
@@ -688,8 +730,13 @@ export function fetchDataFreshness(): Promise<DataFreshnessResponse> {
   return apiFetch("/api/data-freshness");
 }
 
-export function fetchBundesratStatus(): Promise<BundesratStatusResponse> {
-  return apiFetch("/api/bundesrat/status");
+export function fetchBundesratStatus(opts?: {
+  signal?: AbortSignal;
+}): Promise<BundesratStatusResponse> {
+  return apiFetch(
+    "/api/bundesrat/status",
+    opts?.signal ? { signal: opts.signal } : undefined,
+  );
 }
 
 export function fetchBundesratMajorityCheck(

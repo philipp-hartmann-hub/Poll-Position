@@ -26,6 +26,14 @@ import {
   TIP_REELECTION,
   TIP_SEAT_PROJECTION,
 } from "@/lib/tooltipCopy";
+import {
+  contentSignature,
+  formatCacheAge,
+  isAbortError,
+  readOverviewCache,
+  writeOverviewCache,
+  type OverviewCacheData,
+} from "@/lib/parliamentCache";
 
 type TagKey = "umfragen" | "koalitionen" | "prognose" | "letzte-wahl";
 
@@ -207,64 +215,130 @@ export function ParliamentDashboard({
   >(null);
   const [headerError, setHeaderError] = useState<string | null>(null);
   const [headerLoading, setHeaderLoading] = useState(true);
+  const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [activeTag, setActiveTag] = useState<TagKey>("umfragen");
   const baseId = useId();
   const tabRefs = useRef<Partial<Record<TagKey, HTMLButtonElement | null>>>({});
+  const abortRef = useRef<AbortController | null>(null);
+  const overviewSigRef = useRef<string>("");
 
   useEffect(() => {
-    let cancelled = false;
-    setHeaderLoading(true);
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+    const { signal } = ac;
+
     setHeaderError(null);
     setActiveTag("umfragen");
-    setReelectionProbability(null);
+
+    const cached = readOverviewCache(parliamentId);
+    if (cached) {
+      const d = cached.data;
+      setLastElection(d.lastElection as LastElectionResponse | null);
+      setPollSeats(d.pollSeats as SeatsResponse | null);
+      setAverages(d.averages as AveragesResponse | null);
+      setIncumbent(d.incumbent);
+      setReelectionProbability(d.reelectionProbability);
+      setCacheUpdatedAt(cached.updatedAt);
+      overviewSigRef.current = contentSignature(d);
+      setHeaderLoading(false);
+      setRefreshing(true);
+    } else {
+      setHeaderLoading(true);
+      setRefreshing(false);
+      setCacheUpdatedAt(null);
+      setLastElection(null);
+      setPollSeats(null);
+      setAverages(null);
+      setIncumbent(null);
+      setReelectionProbability(null);
+      overviewSigRef.current = "";
+    }
 
     (async () => {
       try {
         const [election, seats, avg, gov, br, unc] = await Promise.all([
-          fetchLastElection(parliamentId).catch(() => null),
-          fetchSeats(parliamentId).catch(() => null),
-          fetchAverages(parliamentId).catch(() => null),
-          fetchGovernment().catch(() => null),
-          fetchBundesratStatus().catch(() => null),
-          // Gleiche Simulationsgröße wie Koalitionen-Tab (200)
-          fetchUncertainty(parliamentId, 200).catch(() => null),
+          fetchLastElection(parliamentId, { signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
+          fetchSeats(parliamentId, { signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
+          fetchAverages(parliamentId, 365, { signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
+          fetchGovernment({ signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
+          fetchBundesratStatus({ signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
+          fetchUncertainty(parliamentId, 200, { signal }).catch((e) => {
+            if (isAbortError(e)) throw e;
+            return null;
+          }),
         ]);
-        if (cancelled) return;
-        setLastElection(election);
-        setPollSeats(seats);
-        setAverages(avg);
+        if (signal.aborted) return;
 
+        let nextIncumbent: IncumbentGov | null = null;
         if (parliamentId === "de_bundestag" && gov?.bundesregierung) {
-          setIncumbent({
+          nextIncumbent = {
             label: gov.bundesregierung.label,
             parties: gov.bundesregierung.parties,
-          });
+          };
         } else {
           const land = br?.laender.find((l) => l.parliament_id === parliamentId);
           if (land) {
-            setIncumbent({
+            nextIncumbent = {
               label: land.default_government_label,
               parties: land.default_government,
-            });
-          } else {
-            setIncumbent(null);
+            };
           }
         }
 
         const p = unc?.current_government_majority_probability;
-        setReelectionProbability(typeof p === "number" ? p : null);
+        const nextReelect = typeof p === "number" ? p : null;
+        const nextData: OverviewCacheData = {
+          lastElection: election,
+          pollSeats: seats,
+          averages: avg,
+          incumbent: nextIncumbent,
+          reelectionProbability: nextReelect,
+        };
+        const sig = contentSignature(nextData);
+        if (sig !== overviewSigRef.current) {
+          overviewSigRef.current = sig;
+          setLastElection(election);
+          setPollSeats(seats);
+          setAverages(avg);
+          setIncumbent(nextIncumbent);
+          setReelectionProbability(nextReelect);
+        }
+        const now = Date.now();
+        writeOverviewCache(parliamentId, nextData, now);
+        setCacheUpdatedAt(now);
       } catch (e) {
-        if (!cancelled) {
+        if (isAbortError(e) || signal.aborted) return;
+        if (!cached) {
           setHeaderError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
         }
       } finally {
-        if (!cancelled) setHeaderLoading(false);
+        if (!signal.aborted) {
+          setHeaderLoading(false);
+          setRefreshing(false);
+        }
       }
     })();
 
     return () => {
-      cancelled = true;
+      ac.abort();
     };
   }, [parliamentId]);
 
@@ -327,9 +401,17 @@ export function ParliamentDashboard({
       <DataFreshnessBanner />
 
       <section className="space-y-4">
-        <h2 className="font-display text-2xl text-ink">
-          Sitze & aktuelle Regierung
-        </h2>
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <h2 className="font-display text-2xl text-ink">
+            Sitze & aktuelle Regierung
+          </h2>
+          {cacheUpdatedAt != null && !headerLoading ? (
+            <p className="text-xs text-ink/45">
+              Stand: {formatCacheAge(cacheUpdatedAt)}
+              {refreshing ? " · aktualisiert…" : ""}
+            </p>
+          ) : null}
+        </div>
         {headerLoading ? (
           <p className="text-sm text-ink/50">Lade Übersicht…</p>
         ) : headerError ? (
