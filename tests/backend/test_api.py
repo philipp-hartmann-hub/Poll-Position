@@ -853,7 +853,7 @@ def test_party_forecast_api_exposes_indispensable(client):
 
 
 def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
-    """~46 % der Sitze → 1-Parteien-Kandidat; ~25 % → nicht."""
+    """~46 % der Sitze (mit Hürde) → 1-Parteien-Kandidat; ~25 % → nicht."""
     from backend import services
 
     total = 100
@@ -864,13 +864,12 @@ def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
         "tiny": "FDP",
     }
 
-    # Sainte-Lague ohne Hürde: Anteile so wählen, dass big ~46 Sitze bekommt
-    votes_near = {"big": 46.0, "mid": 28.0, "small": 16.0, "tiny": 10.0}
     monkeypatch.setattr(
         services,
         "_election_system_for",
         lambda _pid: (None, None),
     )
+    votes_near = {"big": 46.0, "mid": 28.0, "small": 16.0, "tiny": 10.0}
     near = services._expanded_coalition_candidates(
         "toy",
         votes_near,
@@ -890,6 +889,98 @@ def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
     )
     assert ("de:cdu_csu",) not in far
     assert all(len(c) != 1 or c[0] != "de:cdu_csu" for c in far)
+
+
+def test_expanded_singleton_uses_real_seats_not_nominal(monkeypatch):
+    """
+    Ohne Hürde verlieren große Parteien Sitze an Kleinstparteien und fallen
+    fälschlich aus dem Alleinregierungs-Band — die echte Zuteilung muss gelten.
+    """
+    from types import SimpleNamespace
+
+    from backend import services
+
+    total = 180
+    names = {
+        "csu": "CSU",
+        "afd": "AfD",
+        "gru": "Grüne",
+        "fw": "Freie Wähler",
+        "spd": "SPD",
+        "bp": "Bayernpartei",
+    }
+    votes = {
+        "csu": 38.0,
+        "afd": 20.0,
+        "gru": 13.0,
+        "fw": 12.0,
+        "spd": 6.0,
+        "bp": 11.0,  # unter 5 %-Hürde → 0 Sitze real, sitzt nominal
+    }
+
+    # Nominal (hürdenfrei): CSU unter Band-Cutoff; real (5 %): CSU im Band
+    nominal = {
+        "csu": 69,
+        "afd": 36,
+        "gru": 24,
+        "fw": 22,
+        "spd": 11,
+        "bp": 18,
+    }
+    real = {
+        "csu": 77,  # >= 91 - 18 = 73
+        "afd": 40,
+        "gru": 27,
+        "fw": 24,
+        "spd": 12,
+    }
+    parliament = SimpleNamespace(id="de_by_landtag")
+    system = SimpleNamespace(
+        threshold_percent=5.0,
+        seats_total=total,
+        model_copy=lambda update: SimpleNamespace(
+            threshold_percent=update.get("threshold_percent", 5.0),
+            seats_total=total,
+        ),
+    )
+
+    def fake_allocate(_parliament, _votes, election_system=None):
+        thr = getattr(election_system, "threshold_percent", 5.0)
+        return dict(nominal if thr == 0.0 else real)
+
+    monkeypatch.setattr(
+        services, "_election_system_for", lambda _pid: (parliament, system)
+    )
+    monkeypatch.setattr(services, "allocate_seats", fake_allocate)
+
+    expanded = services._expanded_coalition_candidates(
+        "de_by_landtag",
+        votes,
+        names,
+        total_seats=total,
+        apply_exclusions=False,
+    )
+    assert ("de:csu",) in expanded, expanded
+
+
+def test_cap_uncertainty_candidates_keeps_singletons():
+    from backend import services
+
+    mapped = [
+        ("a", "b"),
+        ("a", "c"),
+        ("a",),
+        ("b", "c", "d"),
+        ("e", "f"),
+    ]
+    # Viele Mehrparteien-Kandidaten, Limit klein — Alleinregierung bleibt
+    capped = services._cap_uncertainty_candidates(
+        mapped + [("x", "y")] * 30,
+        limit=3,
+    )
+    assert ("a",) in capped
+    assert len(capped) == 3
+    assert capped[0] == ("a",)
 
 
 def test_expanded_coalition_candidates_includes_subthreshold_party(monkeypatch):

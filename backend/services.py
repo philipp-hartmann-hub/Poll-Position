@@ -1000,6 +1000,21 @@ def _present_parties_for_exclusion_ui(parliament_id: str) -> set[str]:
     return present
 
 
+def _cap_uncertainty_candidates(
+    mapped: Sequence[tuple[str, ...]],
+    *,
+    limit: int = 20,
+) -> list[tuple[str, ...]]:
+    """Kürzt die Kandidatenliste, behält aber alle 1-Partei-Kandidaten."""
+    if limit < 1:
+        return []
+    singles = [c for c in mapped if len(c) == 1]
+    multi = [c for c in mapped if len(c) != 1]
+    if len(singles) >= limit:
+        return list(singles[:limit])
+    return list(singles) + list(multi[: max(0, limit - len(singles))])
+
+
 def _expanded_coalition_candidates(
     parliament_id: str,
     votes: dict[str, float],
@@ -1022,10 +1037,12 @@ def _expanded_coalition_candidates(
        nie in possible_majorities() auftauchen. Koalitionen, die eine
        solche Partei enthalten, werden hier zusätzlich ermittelt.
     2. Alleinregierung "falls sinnvoll": eine einzelne Partei, deren
-       NOMINALE Sitzzahl mindestens (50 − majority_band_points) % der
-       Kammer erreicht, wird zusätzlich als 1-Partei-Kandidat aufgenommen
-       — auch wenn sie im Punkt-Schätzwert noch keine Mehrheit hat.
-       Kleinere Parteien werden bewusst nicht einbezogen.
+       echte Sitzzahl (mit Sperrklausel, wie in der UI) mindestens
+       (50 − majority_band_points) % der Kammer erreicht, wird zusätzlich
+       als 1-Partei-Kandidat aufgenommen — auch wenn sie im Punkt-Schätzwert
+       noch keine Mehrheit hat. Die nominale (hürdenfreie) Verteilung
+       unterschätzt große Parteien, sobald Kleinstparteien Sitze abziehen,
+       und darf hier nicht die Basis sein.
 
     Rein additiv zu den deterministischen Top-8; ob ein Kandidat am Ende
     in der Antwort auftaucht, entscheidet uncertainty_payload() über
@@ -1040,8 +1057,10 @@ def _expanded_coalition_candidates(
         nominal_seats = allocate_seats(
             parliament, votes, election_system=nominal_system
         )
+        real_seats = allocate_seats(parliament, votes, election_system=system)
     else:
         nominal_seats = sainte_lague_schepers(votes, total_seats, 0.0)
+        real_seats = sainte_lague_schepers(votes, total_seats, 0.05)
 
     canon_nominal = _seats_to_canonical(nominal_seats, names)
     if not canon_nominal:
@@ -1057,16 +1076,19 @@ def _expanded_coalition_candidates(
     )
     candidates: list[tuple[str, ...]] = [c.parties for c in result.coalitions]
 
+    canon_real = _seats_to_canonical(real_seats, names)
     thr = majority_threshold(total_seats)
     seat_margin = max(0, round(majority_band_points / 100 * total_seats))
     have_singleton = {c[0] for c in candidates if len(c) == 1}
-    for pid, seats_n in canon_nominal.items():
+    for pid, seats_n in canon_real.items():
         if pid in have_singleton:
             continue
         if seats_n >= thr - seat_margin:
             candidates.append((pid,))
 
-    candidates.sort(key=lambda c: -sum(canon_nominal.get(p, 0) for p in c))
+    # Sortierung nach realen Sitzen (Alleinregierung / Mehrheitsnähe), Fallback nominal
+    seat_rank = {**canon_nominal, **canon_real}
+    candidates.sort(key=lambda c: -sum(seat_rank.get(p, 0) for p in c))
     return candidates
 
 
@@ -1195,7 +1217,7 @@ def uncertainty_payload(
         )
         for combo in expanded:
             _add_candidate(combo)
-        mapped = mapped[:20]
+        mapped = _cap_uncertainty_candidates(mapped, limit=20)
 
     # Amtierende Regierung immer als Kandidat (auch nach Truncation).
     gov_cfg = _incumbent_government_for_parliament(parliament_id)
@@ -1872,7 +1894,7 @@ def _bundesrat_coalition_options(parliament_id: str) -> list[dict[str, Any]]:
     options: list[dict[str, Any]] = []
     for c in data.get("coalitions") or []:
         parties = list(c.get("parties") or [])
-        if len(parties) < 2:
+        if not parties:
             continue
         options.append(
             {
