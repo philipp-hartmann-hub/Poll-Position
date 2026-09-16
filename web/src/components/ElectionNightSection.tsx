@@ -96,7 +96,8 @@ function deltaClass(delta: number | null): string {
 
 function parseShare(raw: string | undefined): number | null {
   if (raw == null) return null;
-  const t = raw.trim().replace(",", ".");
+  // Mobile-DE-Tastatur liefert Komma als Dezimaltrenner; type=number verwirft das.
+  const t = raw.trim().replace(/\s/g, "").replace(",", ".");
   if (t === "") return null;
   const n = Number(t);
   return Number.isFinite(n) ? n : null;
@@ -220,10 +221,8 @@ export function ElectionNightSection({
   const partySharesNumeric = useMemo(() => {
     const out: Record<string, number> = {};
     for (const [pid, raw] of Object.entries(shares)) {
-      const t = raw.trim().replace(",", ".");
-      if (t === "") continue;
-      const n = Number(t);
-      if (!Number.isFinite(n) || n < 0) continue;
+      const n = parseShare(raw);
+      if (n == null || n < 0) continue;
       out[pid] = n;
     }
     return out;
@@ -345,11 +344,10 @@ export function ElectionNightSection({
                     {p.partyName}
                   </span>
                   <input
-                    type="number"
+                    type="text"
                     inputMode="decimal"
-                    min={0}
-                    max={100}
-                    step={0.1}
+                    autoComplete="off"
+                    enterKeyHint="done"
                     value={shares[p.partyId] ?? ""}
                     onChange={(e) =>
                       setShares((prev) => ({
