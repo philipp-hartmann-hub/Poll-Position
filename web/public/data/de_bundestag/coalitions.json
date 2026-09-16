@@ -10,7 +10,7 @@
         "de:gruene",
         "de:spd"
       ],
-      "seats": 343,
+      "seats": 344,
       "is_minimal_winning": true,
       "compatibility_span": 3.7
     }

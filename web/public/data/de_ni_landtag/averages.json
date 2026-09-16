@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_ni_landtag",
-  "as_of": "2026-09-15",
+  "as_of": "2026-09-16",
   "parties": [
     {
       "parliament_id": "de_ni_landtag",
@@ -51,7 +51,7 @@
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 4.9989887116876774,
+      "average_share": 4.998988711687678,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 5.0
