@@ -450,7 +450,6 @@ class ElectionNightRequest(BaseModel):
         min_length=1,
         description="Partei-ID oder Anzeigename → Anteil in Prozent",
     )
-    count_progress_percent: float = Field(20.0, ge=0.0, le=100.0)
     n_simulations: int = Field(200, ge=50, le=2000)
     apply_exclusions: bool = True
     disabled_rule_ids: list[str] = Field(default_factory=list)
@@ -458,7 +457,6 @@ class ElectionNightRequest(BaseModel):
 
 class ElectionNightResponse(BaseModel):
     parliament_id: str
-    count_progress_percent: float
     model_sd_pp: float
     model_note: str
     n_simulations: int

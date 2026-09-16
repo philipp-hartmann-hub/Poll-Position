@@ -449,7 +449,6 @@ def post_election_night(
         data = services.election_night_payload(
             parliament_id,
             body.party_shares,
-            count_progress_percent=body.count_progress_percent,
             n_simulations=body.n_simulations,
             apply_exclusions=body.apply_exclusions,
             disabled_rule_ids=body.disabled_rule_ids or None,

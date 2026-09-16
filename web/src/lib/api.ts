@@ -802,7 +802,6 @@ export function postCoalitionCheck(
 
 export type ElectionNightResponse = {
   parliament_id: string;
-  count_progress_percent: number;
   model_sd_pp: number;
   model_note: string;
   n_simulations: number;
@@ -816,7 +815,6 @@ export function postElectionNight(
   parliamentId: string,
   body: {
     party_shares: Record<string, number>;
-    count_progress_percent?: number;
     n_simulations?: number;
     apply_exclusions?: boolean;
     disabled_rule_ids?: string[];
@@ -829,7 +827,6 @@ export function postElectionNight(
       method: "POST",
       body: JSON.stringify({
         party_shares: body.party_shares,
-        count_progress_percent: body.count_progress_percent ?? 20,
         n_simulations: body.n_simulations ?? 200,
         apply_exclusions: body.apply_exclusions ?? true,
         disabled_rule_ids: body.disabled_rule_ids ?? [],

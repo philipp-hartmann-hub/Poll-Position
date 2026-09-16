@@ -1,31 +1,34 @@
-"""Tests für Wahlabend-SD-Interpolation (analysis.uncertainty)."""
+"""Tests für Wahlabend-Unsicherheit (feste 18-Uhr-SD)."""
 
 from __future__ import annotations
 
 import pytest
 
-from analysis.uncertainty import election_night_sd_pp, party_uncertainties_election_night
+from analysis.uncertainty import (
+    WAHLABEND_SD_PP,
+    party_uncertainties_election_night,
+    party_uncertainties_from_means,
+    total_sd_pp,
+)
 
 
-def test_election_night_sd_monotone_in_count_progress():
-    """0 % → 50 % → 95 %: SD fällt monoton (Modellannahme)."""
-    sd0 = election_night_sd_pp(0.0)
-    sd50 = election_night_sd_pp(50.0)
-    sd95 = election_night_sd_pp(95.0)
-    assert 1.5 <= sd0 <= 2.0
-    assert 0.05 <= sd95 <= 0.25
-    assert sd0 > sd50 > sd95
+def test_wahlabend_sd_in_target_band():
+    """Modell-SD liegt im Band 1,5–2 Pp (WAHLABEND_SD_PP)."""
+    assert 1.5 <= WAHLABEND_SD_PP <= 2.0
+    parties = party_uncertainties_election_night({"a": 35.0, "b": 5.0, "c": 12.0})
+    for p in parties:
+        sd = total_sd_pp(p.mean_share, p.sample_size, p.house_variance)
+        assert sd == pytest.approx(WAHLABEND_SD_PP, abs=1e-9)
 
 
-def test_election_night_sd_clamps_progress():
-    assert election_night_sd_pp(-10.0) == election_night_sd_pp(0.0)
-    assert election_night_sd_pp(150.0) == election_night_sd_pp(100.0)
-
-
-def test_election_night_uncertainties_use_fixed_sd():
-    parties = party_uncertainties_election_night(
-        {"a": 35.0, "b": 30.0}, count_progress_percent=20.0
-    )
-    sd = election_night_sd_pp(20.0)
-    assert all(p.fixed_sd_pp == pytest.approx(sd) for p in parties)
-    assert all(p.house_variance == 0.0 for p in parties)
+def test_wahlabend_sd_tighter_than_poll_sd():
+    """Wahlabend-SD ist spürbar enger als typische Umfrage-SD (gleiche Mittelwerte)."""
+    means = {"x": 30.0, "y": 4.8}
+    night = party_uncertainties_election_night(means)
+    # Typische Umfrage: sample_size=1000 + Institutsstreuung → Gesamt-SD ~4–6 Pp
+    poll = party_uncertainties_from_means(means, sample_size=1000, house_variance=16.0)
+    for n, p in zip(night, poll, strict=True):
+        night_sd = total_sd_pp(n.mean_share, n.sample_size, n.house_variance)
+        poll_sd = total_sd_pp(p.mean_share, p.sample_size, p.house_variance)
+        assert night_sd < poll_sd - 1.5
+        assert 1.5 <= night_sd <= 2.0

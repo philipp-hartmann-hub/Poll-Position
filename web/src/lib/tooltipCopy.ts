@@ -61,4 +61,4 @@ export const TIP_COALITION_CHECKER =
   "Du stellst selbst eine Parteien-Kombination zusammen. Gezählt wird die reine Sitzsumme — auch wenn einzelne Partner für die Mehrheit überflüssig wären. Das unterscheidet sich bewusst von der Liste inklusionsminimaler Mehrheiten im Tab „Koalitionen“.";
 
 export const TIP_ELECTION_NIGHT =
-  "Manuelle Eingabe von Prognose oder Hochrechnung. Die Unsicherheit folgt einer Modellannahme nach Auszählungsstand (enger als Umfragen, ohne Instituts-Streuung) — nicht einer amtlichen Institutstabelle.";
+  "Manuelle Eingabe von Prognose oder Hochrechnung. Die Unsicherheit folgt der festen Modellannahme für die 18-Uhr-Prognose (enger als Umfragen, ohne Instituts-Streuung) — nicht einer amtlichen Institutstabelle.";

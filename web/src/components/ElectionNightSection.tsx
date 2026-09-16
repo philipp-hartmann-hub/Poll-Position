@@ -12,7 +12,6 @@ import {
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { displayPartyName, labelPartyId, partyColor } from "@/lib/colors";
-import { leftRightPosition } from "@/lib/partyPositions";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 import {
   TIP_COALITION_UNCERTAINTY,
@@ -23,11 +22,10 @@ import {
 } from "@/lib/tooltipCopy";
 import { isAbortError } from "@/lib/parliamentCache";
 
-const STORAGE_PREFIX = "poll-position:election-night-v1:";
+const STORAGE_PREFIX = "poll-position:election-night-v2:";
 
 type StoredState = {
   shares: Record<string, string>;
-  countProgress: number;
   applyExclusions: boolean;
   disabledRuleIds: string[];
 };
@@ -45,8 +43,6 @@ function readStored(parliamentId: string): StoredState | null {
     if (!parsed || typeof parsed !== "object") return null;
     return {
       shares: parsed.shares ?? {},
-      countProgress:
-        typeof parsed.countProgress === "number" ? parsed.countProgress : 20,
       applyExclusions: parsed.applyExclusions !== false,
       disabledRuleIds: Array.isArray(parsed.disabledRuleIds)
         ? parsed.disabledRuleIds
@@ -69,6 +65,11 @@ function writeStored(parliamentId: string, state: StoredState): void {
 type PartyRow = {
   partyId: string;
   partyName: string;
+  pollShare: number | null;
+  electionShare: number | null;
+};
+
+type ResidualRefs = {
   pollShare: number | null;
   electionShare: number | null;
 };
@@ -107,9 +108,12 @@ export function ElectionNightSection({
   parliamentId: string;
 }) {
   const [parties, setParties] = useState<PartyRow[]>([]);
+  const [residualRefs, setResidualRefs] = useState<ResidualRefs>({
+    pollShare: null,
+    electionShare: null,
+  });
   const [electionDate, setElectionDate] = useState<string | null>(null);
   const [shares, setShares] = useState<Record<string, string>>({});
-  const [countProgress, setCountProgress] = useState(20);
   const [rules, setRules] = useState<ExclusionRule[]>([]);
   const [applyExclusions, setApplyExclusions] = useState(true);
   const [enabled, setEnabled] = useState<Record<string, boolean>>({});
@@ -137,6 +141,20 @@ export function ElectionNightSection({
         if (cancelled || ac.signal.aborted) return;
         const electionShares = election?.vote_share_by_name ?? {};
         setElectionDate(election?.election_date ?? null);
+        const sonstigePoll = avg.parties.find(
+          (p) =>
+            p.party_name === "Sonstige" ||
+            /sonstige$|:others$|:other$/i.test(p.party_id),
+        );
+        const sonstigeElection =
+          typeof electionShares["Sonstige"] === "number"
+            ? electionShares["Sonstige"]
+            : null;
+        setResidualRefs({
+          pollShare: sonstigePoll?.average_share ?? null,
+          electionShare: sonstigeElection,
+        });
+        // Reihenfolge nach Umfrageanteil (stärkste zuerst)
         const rows = avg.parties
           .filter(
             (p) =>
@@ -152,12 +170,11 @@ export function ElectionNightSection({
                 ? electionShares[p.party_name]
                 : null,
           }))
-          .sort((a, b) => {
-            const lr =
-              leftRightPosition(a.partyName) - leftRightPosition(b.partyName);
-            if (lr !== 0) return lr;
-            return a.partyName.localeCompare(b.partyName, "de");
-          });
+          .sort(
+            (a, b) =>
+              (b.pollShare ?? 0) - (a.pollShare ?? 0) ||
+              a.partyName.localeCompare(b.partyName, "de"),
+          );
         setParties(rows);
         setRules(rulesRes.rules);
         const nextShares: Record<string, string> = {};
@@ -172,7 +189,6 @@ export function ElectionNightSection({
           }
         }
         setShares(nextShares);
-        setCountProgress(stored?.countProgress ?? 20);
         setApplyExclusions(stored?.applyExclusions ?? true);
         const disabled = new Set(stored?.disabledRuleIds ?? []);
         setEnabled(
@@ -185,6 +201,7 @@ export function ElectionNightSection({
         setError(e instanceof Error ? e.message : "Laden fehlgeschlagen");
         setParties([]);
         setElectionDate(null);
+        setResidualRefs({ pollShare: null, electionShare: null });
       } finally {
         if (!cancelled && !ac.signal.aborted) setLoadingParties(false);
       }
@@ -212,6 +229,11 @@ export function ElectionNightSection({
     return out;
   }, [shares]);
 
+  const residualTo100 = useMemo(() => {
+    const sum = Object.values(partySharesNumeric).reduce((s, n) => s + n, 0);
+    return Math.round((100 - sum) * 10) / 10;
+  }, [partySharesNumeric]);
+
   const sharesKey = useMemo(
     () => JSON.stringify(partySharesNumeric),
     [partySharesNumeric],
@@ -221,11 +243,10 @@ export function ElectionNightSection({
   useEffect(() => {
     writeStored(parliamentId, {
       shares,
-      countProgress,
       applyExclusions,
       disabledRuleIds,
     });
-  }, [parliamentId, shares, countProgress, applyExclusions, disabledRuleIds]);
+  }, [parliamentId, shares, applyExclusions, disabledRuleIds]);
 
   useEffect(() => {
     const parsed = JSON.parse(sharesKey) as Record<string, number>;
@@ -244,7 +265,6 @@ export function ElectionNightSection({
         parliamentId,
         {
           party_shares: parsed,
-          count_progress_percent: countProgress,
           n_simulations: 200,
           apply_exclusions: applyExclusions,
           disabled_rule_ids: disabledKey ? disabledKey.split("|") : [],
@@ -268,7 +288,7 @@ export function ElectionNightSection({
       if (debounceRef.current) clearTimeout(debounceRef.current);
       abortRef.current?.abort();
     };
-  }, [parliamentId, sharesKey, countProgress, applyExclusions, disabledKey]);
+  }, [parliamentId, sharesKey, applyExclusions, disabledKey]);
 
   if (loadingParties) {
     return <p className="text-sm text-ink/50">Lade Parteien…</p>;
@@ -286,43 +306,19 @@ export function ElectionNightSection({
           <InfoTooltip text={TIP_ELECTION_NIGHT} />
         </h2>
         <p className="mt-1 max-w-2xl text-sm text-ink/55">
-          Manuelle Hochrechnung oder Prognose eingeben. Die Summe muss nicht
-          100 % ergeben. Unsicherheit folgt einer dokumentierten Modellannahme
-          nach Auszählungsstand — enger als bei normalen Umfragen, ohne
-          Instituts-Streuung.
+          Manuelle Hochrechnung oder Prognose eingeben. Der Rest zu 100 % erscheint
+          als „Sonstige“ (nur Anzeige). Unsicherheit folgt der festen Modellannahme
+          für die 18-Uhr-Prognose — enger als bei normalen Umfragen, unabhängig vom
+          Auszählungsstand.
         </p>
       </div>
-
-      <section className="space-y-3 rounded-xl border border-ink/10 bg-mist/40 p-4">
-        <label className="block text-sm font-medium text-ink">
-          Auszählungsstand:{" "}
-          <span className="font-display tabular-nums">{countProgress} %</span>
-        </label>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          step={1}
-          value={countProgress}
-          onChange={(e) => setCountProgress(Number(e.target.value))}
-          className="w-full accent-sea"
-        />
-        <p className="text-xs text-ink/50">
-          Modell-SD derzeit ca.{" "}
-          {result
-            ? `${result.model_sd_pp.toFixed(2)} Pp`
-            : "wird berechnet…"}
-          {result?.model_note ? ` · ${result.model_note}` : ""}
-        </p>
-      </section>
 
       <section className="space-y-3">
         <h3 className="text-sm font-semibold text-ink">Partei-Anteile in %</h3>
         <p className="text-xs text-ink/50">
-          Δ Umfrage = Eingabe − aktueller Umfragemittelwert
-          {electionDate
-            ? ` · Δ Wahl = Eingabe − letzte Wahl (${electionDate})`
-            : " · keine letzte Wahl hinterlegt"}
+          Reihenfolge nach aktuellem Umfragemittel · Δ Umfrage / Δ Wahl unter
+          jeder Eingabe
+          {electionDate ? ` · letzte Wahl: ${electionDate}` : ""}
         </p>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {parties.map((p) => {
@@ -381,78 +377,49 @@ export function ElectionNightSection({
               </div>
             );
           })}
-        </div>
-
-        <div className="overflow-x-auto rounded-xl border border-ink/10">
-          <table className="w-full min-w-[28rem] border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-ink/15 text-left text-ink/50">
-                <th className="px-3 py-2 font-medium">Partei</th>
-                <th className="px-3 py-2 text-right font-medium">Eingabe</th>
-                <th className="px-3 py-2 text-right font-medium">Umfrage</th>
-                <th className="px-3 py-2 text-right font-medium">Δ Umfrage</th>
-                <th className="px-3 py-2 text-right font-medium">
-                  Letzte Wahl
-                  {electionDate ? (
-                    <span className="block text-[10px] font-normal normal-case tracking-normal text-ink/40">
-                      {electionDate}
-                    </span>
-                  ) : null}
-                </th>
-                <th className="px-3 py-2 text-right font-medium">Δ Wahl</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parties.map((p) => {
-                const entered = parseShare(shares[p.partyId]);
-                const vsPoll =
-                  entered != null && p.pollShare != null
-                    ? entered - p.pollShare
-                    : null;
-                const vsElection =
-                  entered != null && p.electionShare != null
-                    ? entered - p.electionShare
-                    : null;
-                return (
-                  <tr
-                    key={`cmp-${p.partyId}`}
-                    className="border-b border-ink/8 last:border-0"
-                  >
-                    <td className="px-3 py-2">
-                      <span className="inline-flex items-center gap-2 font-medium text-ink">
-                        <span
-                          className={`${PARTY_SWATCH_CLASS} h-2 w-2`}
-                          style={{ background: partyColor(p.partyName) }}
-                        />
-                        {p.partyName}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-ink">
-                      {entered != null ? `${entered.toFixed(1)} %` : "—"}
-                    </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-ink/70">
-                      {p.pollShare != null ? `${p.pollShare.toFixed(1)} %` : "—"}
-                    </td>
-                    <td
-                      className={`px-3 py-2 text-right tabular-nums ${deltaClass(vsPoll)}`}
-                    >
-                      {formatDeltaPp(vsPoll)}
-                    </td>
-                    <td className="px-3 py-2 text-right tabular-nums text-ink/70">
-                      {p.electionShare != null
-                        ? `${p.electionShare.toFixed(1)} %`
-                        : "—"}
-                    </td>
-                    <td
-                      className={`px-3 py-2 text-right tabular-nums ${deltaClass(vsElection)}`}
-                    >
-                      {formatDeltaPp(vsElection)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          {(() => {
+            const vsPoll =
+              residualRefs.pollShare != null
+                ? residualTo100 - residualRefs.pollShare
+                : null;
+            const vsElection =
+              residualRefs.electionShare != null
+                ? residualTo100 - residualRefs.electionShare
+                : null;
+            return (
+              <div className="rounded-md border border-dashed border-ink/15 bg-mist/30 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
+                    style={{ background: partyColor("Sonstige") }}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink/70">
+                    Sonstige
+                  </span>
+                  <span className="w-20 text-right text-sm tabular-nums text-ink/70">
+                    {residualTo100.toFixed(1)}
+                  </span>
+                </div>
+                <p className="mt-1 pl-4 text-xs text-ink/45">
+                  Rest zu 100 % (keine Eingabe)
+                </p>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 pl-4 text-xs tabular-nums">
+                  <span className={deltaClass(vsPoll)}>
+                    Δ Umfrage {formatDeltaPp(vsPoll)}
+                    {residualRefs.pollShare != null
+                      ? ` (${residualRefs.pollShare.toFixed(1)} %)`
+                      : ""}
+                  </span>
+                  <span className={deltaClass(vsElection)}>
+                    Δ Wahl {formatDeltaPp(vsElection)}
+                    {residualRefs.electionShare != null
+                      ? ` (${residualRefs.electionShare.toFixed(1)} %)`
+                      : ""}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

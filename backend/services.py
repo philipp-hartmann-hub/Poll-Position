@@ -53,7 +53,7 @@ from analysis.seat_allocation import (
 )
 from analysis.uncertainty import (
     UncertaintyConfig,
-    election_night_sd_pp,
+    WAHLABEND_SD_PP,
     party_uncertainties_election_night,
     party_uncertainties_from_means,
     simulate_party_forecast,
@@ -2300,7 +2300,6 @@ def election_night_payload(
     parliament_id: str,
     party_shares: Mapping[str, float],
     *,
-    count_progress_percent: float = 20.0,
     n_simulations: int = 200,
     apply_exclusions: bool = True,
     disabled_rule_ids: list[str] | None = None,
@@ -2308,12 +2307,9 @@ def election_night_payload(
     """
     Wahlabend: Sitze, Koalitionen, Prognose und Unsicherheit aus manuellen Anteilen.
 
-    Unsicherheit nutzt ``election_night_sd_pp`` (Modellannahme) statt Umfrage-
-    house_variance. ``n_simulations`` Default 200.
+    Unsicherheit nutzt feste 18-Uhr-SD (``WAHLABEND_SD_PP``, Modellannahme) statt
+    Umfrage-house_variance. ``n_simulations`` Default 200.
     """
-    progress = min(max(float(count_progress_percent), 0.0), 100.0)
-    sd_pp = election_night_sd_pp(progress)
-
     avg_votes, avg_names = _votes_from_averages(parliament_id)
     names = dict(avg_names)
     try:
@@ -2385,9 +2381,7 @@ def election_night_payload(
     minority = list(system.minority_exempt_party_ids) if system else []
     total = int(seats_data.get("total_seats") or 0)
 
-    unc_parties = party_uncertainties_election_night(
-        votes, count_progress_percent=progress
-    )
+    unc_parties = party_uncertainties_election_night(votes)
 
     # Koalitions-Kandidaten aus Punktschätzer (Top) + erweiterte Singletons
     canon_to_id = {
@@ -2474,12 +2468,11 @@ def election_night_payload(
 
     return {
         "parliament_id": parliament_id,
-        "count_progress_percent": progress,
-        "model_sd_pp": sd_pp,
+        "model_sd_pp": WAHLABEND_SD_PP,
         "model_note": (
-            "Modellannahme zur Wahlabend-Unsicherheit (nicht institutionell "
-            "verifiziert): SD interpoliert nach Auszählungsstand, ohne "
-            "Instituts-house_variance."
+            "Modellannahme für die 18-Uhr-Prognose (nicht institutionell "
+            "verifiziert): feste SD ≈ 1,5–2 Pp je Partei, ohne "
+            "Instituts-house_variance — unabhängig vom Auszählungsstand."
         ),
         "n_simulations": n_simulations,
         "seats": seats_data,

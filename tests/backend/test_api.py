@@ -830,7 +830,8 @@ def test_coalition_check_api_endpoint(client, monkeypatch, api_warehouse):
 
 
 def test_election_night_near_threshold_stays_uncertain(monkeypatch, api_warehouse):
-    """Partei knapp unter 5 % bleibt bei niedrigem Auszählungsstand unsicher."""
+    """Partei knapp an der 5-%-Hürde bleibt trotz enger Wahlabend-SD unsicher."""
+    from analysis.uncertainty import WAHLABEND_SD_PP
     from backend import services
 
     votes = {
@@ -857,27 +858,19 @@ def test_election_night_near_threshold_stays_uncertain(monkeypatch, api_warehous
     monkeypatch.setattr(services, "_seat_projection_enabled", lambda _pid: True)
     services.clear_payload_caches()
 
-    low = services.election_night_payload(
+    payload = services.election_night_payload(
         "de_bundestag",
         votes,
-        count_progress_percent=10.0,
         n_simulations=300,
         apply_exclusions=False,
     )
-    fdp = next(p for p in low["party_forecast"]["parties"] if p["party_id"] == "fdp")
+    fdp = next(
+        p for p in payload["party_forecast"]["parties"] if p["party_id"] == "fdp"
+    )
     assert 0.05 < fdp["probability_above_threshold"] < 0.95
-    assert low["model_sd_pp"] > 1.0
-
-    high = services.election_night_payload(
-        "de_bundestag",
-        votes,
-        count_progress_percent=95.0,
-        n_simulations=300,
-        apply_exclusions=False,
-    )
-    assert high["model_sd_pp"] < low["model_sd_pp"]
-    assert high["seats"]["total_seats"] == 100
-    assert isinstance(high["coalitions"]["coalitions"], list)
+    assert payload["model_sd_pp"] == pytest.approx(WAHLABEND_SD_PP)
+    assert payload["seats"]["total_seats"] == 100
+    assert isinstance(payload["coalitions"]["coalitions"], list)
 
 
 def test_uncertainty_missing_government_party_reports_reason(monkeypatch, api_warehouse):
