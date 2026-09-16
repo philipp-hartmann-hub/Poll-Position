@@ -415,3 +415,54 @@ class BundesratMajorityCheckResponse(BaseModel):
     federal_government: BundesratFederalGovernmentOut | None = None
     coalition_balance: list[BundesratCoalitionBalanceSlice] = Field(default_factory=list)
     coalitions: list[BundesratMajorityCheckItem]
+
+
+class CoalitionCheckRequest(BaseModel):
+    parties: list[str] = Field(
+        min_length=1,
+        description="Kanonische Partei-IDs, z. B. de:cdu_csu, de:gruene",
+    )
+    n_simulations: int = Field(400, ge=50, le=5000)
+
+
+class CoalitionCheckPartySeats(BaseModel):
+    party_id: str
+    party_name: str
+    seats: int
+
+
+class CoalitionCheckResponse(BaseModel):
+    parliament_id: str
+    parties: list[str]
+    total_seats: int
+    majority_threshold: int
+    point_seats: int
+    point_has_majority: bool
+    majority_probability: float
+    n_majority: int
+    n_simulations: int
+    seats_by_party: list[CoalitionCheckPartySeats] = Field(default_factory=list)
+    seats_by_name: dict[str, int] = Field(default_factory=dict)
+
+
+class ElectionNightRequest(BaseModel):
+    party_shares: dict[str, float] = Field(
+        min_length=1,
+        description="Partei-ID oder Anzeigename → Anteil in Prozent",
+    )
+    count_progress_percent: float = Field(20.0, ge=0.0, le=100.0)
+    n_simulations: int = Field(200, ge=50, le=2000)
+    apply_exclusions: bool = True
+    disabled_rule_ids: list[str] = Field(default_factory=list)
+
+
+class ElectionNightResponse(BaseModel):
+    parliament_id: str
+    count_progress_percent: float
+    model_sd_pp: float
+    model_note: str
+    n_simulations: int
+    seats: SeatsResponse
+    coalitions: CoalitionsResponse
+    party_forecast: PartyForecastResponse
+    uncertainty: UncertaintyResponse

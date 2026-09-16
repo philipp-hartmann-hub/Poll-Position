@@ -241,6 +241,24 @@ export type ScenarioResponse = {
   coalitions: Coalition[];
 };
 
+export type CoalitionCheckResponse = {
+  parliament_id: string;
+  parties: string[];
+  total_seats: number;
+  majority_threshold: number;
+  point_seats: number;
+  point_has_majority: boolean;
+  majority_probability: number;
+  n_majority: number;
+  n_simulations: number;
+  seats_by_party: {
+    party_id: string;
+    party_name: string;
+    seats: number;
+  }[];
+  seats_by_name: Record<string, number>;
+};
+
 function apiBase(): string {
   const base = process.env.NEXT_PUBLIC_API_BASE?.trim();
   if (base) return base.replace(/\/$/, "");
@@ -761,4 +779,63 @@ export function postScenario(body: ScenarioRequest): Promise<ScenarioResponse> {
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+export function postCoalitionCheck(
+  parliamentId: string,
+  parties: string[],
+  opts?: { n_simulations?: number; signal?: AbortSignal },
+): Promise<CoalitionCheckResponse> {
+  return apiFetch(
+    `/api/parliaments/${encodeURIComponent(parliamentId)}/coalition-check`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        parties,
+        n_simulations: opts?.n_simulations ?? 400,
+      }),
+      signal: opts?.signal,
+      noStore: true,
+    },
+  );
+}
+
+export type ElectionNightResponse = {
+  parliament_id: string;
+  count_progress_percent: number;
+  model_sd_pp: number;
+  model_note: string;
+  n_simulations: number;
+  seats: SeatsResponse;
+  coalitions: CoalitionsResponse;
+  party_forecast: PartyForecastResponse;
+  uncertainty: UncertaintyResponse;
+};
+
+export function postElectionNight(
+  parliamentId: string,
+  body: {
+    party_shares: Record<string, number>;
+    count_progress_percent?: number;
+    n_simulations?: number;
+    apply_exclusions?: boolean;
+    disabled_rule_ids?: string[];
+  },
+  opts?: { signal?: AbortSignal },
+): Promise<ElectionNightResponse> {
+  return apiFetch(
+    `/api/parliaments/${encodeURIComponent(parliamentId)}/election-night`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        party_shares: body.party_shares,
+        count_progress_percent: body.count_progress_percent ?? 20,
+        n_simulations: body.n_simulations ?? 200,
+        apply_exclusions: body.apply_exclusions ?? true,
+        disabled_rule_ids: body.disabled_rule_ids ?? [],
+      }),
+      signal: opts?.signal,
+      noStore: true,
+    },
+  );
 }

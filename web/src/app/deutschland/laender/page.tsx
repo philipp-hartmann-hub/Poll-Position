@@ -1,7 +1,10 @@
 import { GermanyMap } from "@/components/GermanyMap";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { LaenderIndex } from "@/components/LaenderIndex";
-import { TIP_GERMANY_MAP } from "@/lib/tooltipCopy";
+import {
+  TIP_GERMANY_MAP,
+  TIP_GERMANY_MAP_LAST_ELECTION,
+} from "@/lib/tooltipCopy";
 import Link from "next/link";
 
 export default function LaenderPage() {
@@ -13,9 +16,9 @@ export default function LaenderPage() {
           Land wählen
         </h1>
         <p className="max-w-2xl text-ink/60">
-          Karte nach stärkster Partei im aktuellen Umfragemittel — Klick öffnet
-          Sitze, Koalitionen und Szenarien. Darunter die vollständige Liste für
-          Tastatur und Screenreader.
+          Zwei Karten: stärkste Partei im aktuellen Umfragemittel und bei der
+          letzten Landtagswahl — Klick öffnet Sitze, Koalitionen und Szenarien.
+          Darunter die vollständige Liste für Tastatur und Screenreader.
         </p>
         <p className="text-sm text-ink/55">
           Oder direkt zum{" "}
@@ -31,13 +34,25 @@ export default function LaenderPage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-2xl text-ink">
-          Karte
+          Stärkste Partei in den Umfragen
           <InfoTooltip text={TIP_GERMANY_MAP} />
         </h2>
         <p className="text-sm text-ink/55">
           Farbe = stärkste Partei (ohne Sonstige). Grau = noch keine Umfragedaten.
         </p>
-        <GermanyMap />
+        <GermanyMap mode="polls" />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-2xl text-ink">
+          Stärkste Partei bei der letzten Wahl
+          <InfoTooltip text={TIP_GERMANY_MAP_LAST_ELECTION} />
+        </h2>
+        <p className="text-sm text-ink/55">
+          Farbe = stärkste Partei beim letzten amtlichen Wahlergebnis (ohne
+          Sonstige). Grau = kein hinterlegtes Ergebnis.
+        </p>
+        <GermanyMap mode="last-election" />
       </section>
 
       <section className="space-y-3">

@@ -414,3 +414,46 @@ def post_scenario(body: schemas.ScenarioRequest) -> schemas.ScenarioResponse:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return schemas.ScenarioResponse.model_validate(data)
+
+
+@app.post(
+    "/api/parliaments/{parliament_id}/coalition-check",
+    response_model=schemas.CoalitionCheckResponse,
+)
+def post_coalition_check(
+    parliament_id: str,
+    body: schemas.CoalitionCheckRequest,
+) -> schemas.CoalitionCheckResponse:
+    """Frei gewählte Parteien: Punktschätzer-Mehrheit + MC-Wahrscheinlichkeit (Sitzsumme)."""
+    try:
+        data = services.coalition_check_payload(
+            parliament_id,
+            body.parties,
+            n_simulations=body.n_simulations,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return schemas.CoalitionCheckResponse.model_validate(data)
+
+
+@app.post(
+    "/api/parliaments/{parliament_id}/election-night",
+    response_model=schemas.ElectionNightResponse,
+)
+def post_election_night(
+    parliament_id: str,
+    body: schemas.ElectionNightRequest,
+) -> schemas.ElectionNightResponse:
+    """Wahlabend: manuelle Anteile → Sitze, Koalitionen, Prognose, Unsicherheit."""
+    try:
+        data = services.election_night_payload(
+            parliament_id,
+            body.party_shares,
+            count_progress_percent=body.count_progress_percent,
+            n_simulations=body.n_simulations,
+            apply_exclusions=body.apply_exclusions,
+            disabled_rule_ids=body.disabled_rule_ids or None,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return schemas.ElectionNightResponse.model_validate(data)

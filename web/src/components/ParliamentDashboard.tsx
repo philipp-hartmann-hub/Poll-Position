@@ -14,7 +14,9 @@ import {
 } from "@/lib/api";
 import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
+import { CoalitionCheckerSection } from "@/components/CoalitionCheckerSection";
 import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
+import { ElectionNightSection } from "@/components/ElectionNightSection";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { LastElectionSection } from "@/components/LastElectionSection";
 import { PartyForecast } from "@/components/PartyForecast";
@@ -35,12 +37,20 @@ import {
   type OverviewCacheData,
 } from "@/lib/parliamentCache";
 
-type TagKey = "umfragen" | "koalitionen" | "prognose" | "letzte-wahl";
+type TagKey =
+  | "umfragen"
+  | "koalitionen"
+  | "koalitionspruefer"
+  | "prognose"
+  | "wahlabend"
+  | "letzte-wahl";
 
 const TAGS: { key: TagKey; label: string }[] = [
   { key: "umfragen", label: "Umfragen" },
   { key: "koalitionen", label: "Koalitionen" },
+  { key: "koalitionspruefer", label: "Koalitionsprüfer" },
   { key: "prognose", label: "Prognose" },
+  { key: "wahlabend", label: "Wahlabend" },
   { key: "letzte-wahl", label: "Letzte Wahl" },
 ];
 
@@ -409,8 +419,12 @@ export function ParliamentDashboard({
             <CoalitionsSection parliamentId={parliamentId} />
           </Suspense>
         );
+      case "koalitionspruefer":
+        return <CoalitionCheckerSection parliamentId={parliamentId} />;
       case "prognose":
         return <PartyForecast parliamentId={parliamentId} />;
+      case "wahlabend":
+        return <ElectionNightSection parliamentId={parliamentId} />;
       case "letzte-wahl":
         return (
           <Suspense

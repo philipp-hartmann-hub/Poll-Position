@@ -53,3 +53,12 @@ export const TIP_EUROPE_OVERVIEW =
 
 export const TIP_GERMANY_MAP =
   "Jedes Bundesland ist in der Farbe der Partei eingefärbt, die laut aktuellem Umfrage-Durchschnitt dort vorn liegt. Momentaufnahme der Umfragen — keine Sitzhochrechnung und keine Wahlprognose.";
+
+export const TIP_GERMANY_MAP_LAST_ELECTION =
+  "Jedes Bundesland ist in der Farbe der Partei eingefärbt, die bei der letzten Landtagswahl den höchsten Stimmenanteil hatte. Amtliches Ergebnis — kein aktueller Umfragestand.";
+
+export const TIP_COALITION_CHECKER =
+  "Du stellst selbst eine Parteien-Kombination zusammen. Gezählt wird die reine Sitzsumme — auch wenn einzelne Partner für die Mehrheit überflüssig wären. Das unterscheidet sich bewusst von der Liste inklusionsminimaler Mehrheiten im Tab „Koalitionen“.";
+
+export const TIP_ELECTION_NIGHT =
+  "Manuelle Eingabe von Prognose oder Hochrechnung. Die Unsicherheit folgt einer Modellannahme nach Auszählungsstand (enger als Umfragen, ohne Instituts-Streuung) — nicht einer amtlichen Institutstabelle.";

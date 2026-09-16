@@ -718,6 +718,168 @@ def test_uncertainty(client):
     assert body.get("current_government_missing_parties") == []
 
 
+def test_coalition_check_seat_sum_allows_redundant_parties(monkeypatch, api_warehouse):
+    """
+    Koalitionsprüfer zählt reine Sitzsumme — überzählige Partner senken die
+    Quote nicht (im Gegensatz zu is_minimal_winning / possible_majorities).
+    """
+    from analysis.coalitions import is_minimal_winning
+    from backend import services
+
+    runs = (
+        [{"a": 60, "b": 25, "c": 15}] * 50
+        + [{"a": 40, "b": 35, "c": 25}] * 50
+    )
+    monkeypatch.setattr(
+        services,
+        "uncertainty_payload",
+        lambda *_a, **_k: {
+            "parliament_id": "toy",
+            "n_simulations": 100,
+            "n_deadlock": 0,
+            "mean_seats": {},
+            "coalition_probabilities": [],
+            "party_indispensability": [],
+            "party_id_to_canonical": {},
+            "current_government_parties": None,
+            "current_government_label": None,
+            "current_government_majority_probability": None,
+            "current_government_missing_parties": [],
+            "_seat_distributions": runs,
+            "_canon_to_id": {
+                "de:cdu": "a",
+                "de:spd": "b",
+                "de:gruene": "c",
+            },
+            "_id_to_canon": {"a": "de:cdu", "b": "de:spd", "c": "de:gruene"},
+            "_names": {"a": "CDU", "b": "SPD", "c": "Grüne"},
+            "_total_seats": 100,
+        },
+    )
+    monkeypatch.setattr(
+        services,
+        "seats_payload",
+        lambda _pid: {
+            "parliament_id": "toy",
+            "total_seats": 100,
+            "seats": {"a": 50, "b": 30, "c": 20},
+            "seats_by_name": {"CDU": 50, "SPD": 30, "Grüne": 20},
+            "reason": None,
+        },
+    )
+    services.clear_payload_caches()
+
+    alone = services.coalition_check_payload("toy", ["de:cdu"], n_simulations=100)
+    assert alone["point_seats"] == 50
+    assert alone["point_has_majority"] is False
+    assert alone["majority_probability"] == pytest.approx(0.5)
+    assert alone["n_majority"] == 50
+
+    pair = services.coalition_check_payload(
+        "toy", ["de:cdu", "de:spd"], n_simulations=100
+    )
+    assert pair["point_seats"] == 80
+    assert pair["point_has_majority"] is True
+    assert pair["majority_probability"] == pytest.approx(1.0)
+
+    triple = services.coalition_check_payload(
+        "toy", ["de:cdu", "de:spd", "de:gruene"], n_simulations=100
+    )
+    assert triple["point_seats"] == 100
+    assert triple["point_has_majority"] is True
+    # Sitzsumme der Dreier-Kombi hat in allen Ziehungen Mehrheit …
+    assert triple["majority_probability"] == pytest.approx(1.0)
+    # … obwohl sie nirgends inklusionsminimal wäre:
+    assert all(
+        not is_minimal_winning(dict(run), ["a", "b", "c"], total_seats=100)
+        for run in runs
+    )
+
+
+def test_coalition_check_api_endpoint(client, monkeypatch, api_warehouse):
+    from backend import services
+
+    monkeypatch.setattr(
+        services,
+        "coalition_check_payload",
+        lambda parliament_id, parties, **_k: {
+            "parliament_id": parliament_id,
+            "parties": list(parties),
+            "total_seats": 100,
+            "majority_threshold": 51,
+            "point_seats": 55,
+            "point_has_majority": True,
+            "majority_probability": 0.42,
+            "n_majority": 42,
+            "n_simulations": 100,
+            "seats_by_party": [
+                {"party_id": "de:cdu", "party_name": "CDU", "seats": 55},
+            ],
+            "seats_by_name": {"CDU": 55, "SPD": 45},
+        },
+    )
+    r = client.post(
+        "/api/parliaments/de_bundestag/coalition-check",
+        json={"parties": ["de:cdu"], "n_simulations": 100},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["point_has_majority"] is True
+    assert body["majority_probability"] == pytest.approx(0.42)
+    assert body["parties"] == ["de:cdu"]
+
+
+def test_election_night_near_threshold_stays_uncertain(monkeypatch, api_warehouse):
+    """Partei knapp unter 5 % bleibt bei niedrigem Auszählungsstand unsicher."""
+    from backend import services
+
+    votes = {
+        "cdu": 34.0,
+        "spd": 28.0,
+        "gru": 14.0,
+        "afd": 19.0,
+        "fdp": 4.6,
+    }
+    names = {
+        "cdu": "CDU/CSU",
+        "spd": "SPD",
+        "gru": "Grüne",
+        "afd": "AfD",
+        "fdp": "FDP",
+    }
+    monkeypatch.setattr(services, "_votes_from_averages", lambda _pid: (votes, names))
+    monkeypatch.setattr(services, "_election_system_for", lambda _pid: (None, None))
+    monkeypatch.setattr(
+        services,
+        "_allocate_for_parliament",
+        lambda _pid, v: (services.sainte_lague_schepers(v, 100, 0.05), 100),
+    )
+    monkeypatch.setattr(services, "_seat_projection_enabled", lambda _pid: True)
+    services.clear_payload_caches()
+
+    low = services.election_night_payload(
+        "de_bundestag",
+        votes,
+        count_progress_percent=10.0,
+        n_simulations=300,
+        apply_exclusions=False,
+    )
+    fdp = next(p for p in low["party_forecast"]["parties"] if p["party_id"] == "fdp")
+    assert 0.05 < fdp["probability_above_threshold"] < 0.95
+    assert low["model_sd_pp"] > 1.0
+
+    high = services.election_night_payload(
+        "de_bundestag",
+        votes,
+        count_progress_percent=95.0,
+        n_simulations=300,
+        apply_exclusions=False,
+    )
+    assert high["model_sd_pp"] < low["model_sd_pp"]
+    assert high["seats"]["total_seats"] == 100
+    assert isinstance(high["coalitions"]["coalitions"], list)
+
+
 def test_uncertainty_missing_government_party_reports_reason(monkeypatch, api_warehouse):
     """
     Fehlt eine Regierungspartei in den aktuellen Umfrage-Durchschnitten,

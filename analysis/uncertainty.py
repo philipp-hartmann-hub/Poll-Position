@@ -25,6 +25,12 @@ class PartyUncertainty:
     house_variance: float = 1.0
     """Zusätzliche Haus-/Methoden-Varianz in Prozentpunkt²."""
 
+    fixed_sd_pp: float | None = None
+    """
+    Wenn gesetzt: feste SD in Prozentpunkten (überschreibt SE + house_variance).
+    Genutzt z. B. für Wahlabend-Modellannahmen.
+    """
+
 
 @dataclass(frozen=True)
 class UncertaintyConfig:
@@ -53,6 +59,32 @@ def total_sd_pp(mean_share: float, sample_size: int, house_variance: float) -> f
     return math.sqrt(se**2 + max(house_variance, 0.0))
 
 
+# Anker für Wahlabend-SD (Prozentpunkte).
+# Modellannahme, nicht institutionell verifiziert — siehe election_night_sd_pp.
+_ELECTION_NIGHT_SD_AT_0 = 1.75
+_ELECTION_NIGHT_SD_AT_90 = 0.15
+_ELECTION_NIGHT_SD_AT_100 = 0.10
+
+
+def election_night_sd_pp(count_progress_percent: float) -> float:
+    """
+    Auszählungsstand → SD in Prozentpunkten für Wahlabend-Monte-Carlo.
+
+    **Modellannahme, nicht institutionell verifiziert.** Die Institute veröffentlichen
+    keine verbindliche Fehlerspannen-Tabelle nach Auszählungsanteil. Orientierung:
+    18-Uhr-Prognosen weichen laut infratest dimap im Schnitt ~0,5 Pp vom Endergebnis
+    ab (Mittel über Parteien/Wahlen); wir setzen bei 0 % Auszählung bewusst höher
+    (1,75 Pp) und lassen die SD bis ≥90 % auf ~0,15 Pp (bei 100 % 0,10 Pp) fallen.
+    Interpolation: linear 0→90 %, danach linear 90→100 %.
+    """
+    p = min(max(float(count_progress_percent), 0.0), 100.0)
+    if p <= 90.0:
+        t = p / 90.0
+        return _ELECTION_NIGHT_SD_AT_0 + (_ELECTION_NIGHT_SD_AT_90 - _ELECTION_NIGHT_SD_AT_0) * t
+    t = (p - 90.0) / 10.0
+    return _ELECTION_NIGHT_SD_AT_90 + (_ELECTION_NIGHT_SD_AT_100 - _ELECTION_NIGHT_SD_AT_90) * t
+
+
 def draw_share_vector(
     parties: Sequence[PartyUncertainty],
     rng: random.Random,
@@ -64,7 +96,10 @@ def draw_share_vector(
     """Zieht eine Anteilswerte-Vektor aus Normalverteilungen je Partei."""
     raw: dict[str, float] = {}
     for party in parties:
-        sd = total_sd_pp(party.mean_share, party.sample_size, party.house_variance)
+        if party.fixed_sd_pp is not None:
+            sd = max(float(party.fixed_sd_pp), 0.0)
+        else:
+            sd = total_sd_pp(party.mean_share, party.sample_size, party.house_variance)
         drawn = rng.gauss(party.mean_share, sd)
         raw[party.party_id] = min(max(drawn, min_share), max_share)
 
@@ -200,6 +235,29 @@ def party_uncertainties_from_means(
             mean_share=float(share),
             sample_size=sample_size,
             house_variance=_hv(pid),
+        )
+        for pid, share in means.items()
+    ]
+
+
+def party_uncertainties_election_night(
+    means: Mapping[str, float],
+    *,
+    count_progress_percent: float,
+) -> list[PartyUncertainty]:
+    """
+    Wahlabend: feste SD je Partei aus ``election_night_sd_pp``, ohne house_variance.
+
+    sample_size ist nur Platzhalter (wird bei fixed_sd_pp nicht genutzt).
+    """
+    sd = election_night_sd_pp(count_progress_percent)
+    return [
+        PartyUncertainty(
+            party_id=pid,
+            mean_share=float(share),
+            sample_size=1,
+            house_variance=0.0,
+            fixed_sd_pp=sd,
         )
         for pid, share in means.items()
     ]

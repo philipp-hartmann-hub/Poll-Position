@@ -19,7 +19,7 @@ import {
 } from "recharts";
 import { displayPartyName, partyColor, relabelSeatMap } from "@/lib/colors";
 import { leftRightPosition } from "@/lib/partyPositions";
-import { INK, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { INK, NEUTRAL_MUTED, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { TIP_AVERAGES_TREND, TIP_SWING } from "@/lib/tooltipCopy";
 import { InfoTooltip } from "@/components/InfoTooltip";
 
@@ -386,16 +386,24 @@ export function PollAndSwingAlignedCharts({
 
 export type HemicycleStyle = "official" | "projection";
 
+const REMAINDER_LABEL = "Übrige";
+
 /** Halbkreis-Flächen (Donut): Keile proportional zu Sitzen, links→rechts. */
 export function Hemicycle({
   seats,
   highlightParties,
+  collapseOthers = false,
   size = "md",
   style = "official",
 }: {
   seats: Record<string, number>;
   /** Wenn gesetzt: nur diese Parteien voll sichtbar, übrige mit Opacity 0.25 */
   highlightParties?: string[];
+  /**
+   * Mit ``highlightParties``: nicht ausgewählte Sitze zu einem neutralen
+   * „Übrige“-Segment zusammenfassen (statt nur zu dimmen).
+   */
+  collapseOthers?: boolean;
   /** Kompakte Variante für Nebeneinander-Vergleiche */
   size?: "sm" | "md";
   /**
@@ -408,18 +416,31 @@ export function Hemicycle({
   const highlightLabeled = highlightParties?.map((p) =>
     displayPartyName(p, p),
   );
-  const items = Object.entries(labeled)
+  const highlightSet =
+    highlightLabeled && highlightLabeled.length > 0
+      ? new Set(highlightLabeled)
+      : null;
+
+  let items = Object.entries(labeled)
     .filter(([, n]) => n > 0)
     .sort((a, b) => {
       const lr = leftRightPosition(a[0]) - leftRightPosition(b[0]);
       if (lr !== 0) return lr;
       return a[0].localeCompare(b[0], "de");
     });
+
+  if (collapseOthers && highlightSet) {
+    let remainder = 0;
+    const focused: [string, number][] = [];
+    for (const [name, n] of items) {
+      if (highlightSet.has(name)) focused.push([name, n]);
+      else remainder += n;
+    }
+    items = focused;
+    if (remainder > 0) items.push([REMAINDER_LABEL, remainder]);
+  }
+
   const total = items.reduce((s, [, n]) => s + n, 0) || 1;
-  const highlightSet =
-    highlightLabeled && highlightLabeled.length > 0
-      ? new Set(highlightLabeled)
-      : null;
 
   const data = items.map(([name, value]) => ({
     name,
@@ -435,6 +456,11 @@ export function Hemicycle({
 
   const isProjection = style === "projection";
   const hatchId = "hemicycle-proj-hatch";
+
+  function cellFill(name: string): string {
+    if (name === REMAINDER_LABEL) return NEUTRAL_MUTED;
+    return partyColor(name);
+  }
 
   return (
     <div className="w-full">
@@ -481,12 +507,15 @@ export function Hemicycle({
             >
               {data.map((d) => {
                 const dimmed = Boolean(
-                  highlightSet && !highlightSet.has(d.name),
+                  !collapseOthers &&
+                    highlightSet &&
+                    !highlightSet.has(d.name) &&
+                    d.name !== REMAINDER_LABEL,
                 );
                 return (
                   <Cell
                     key={d.name}
-                    fill={partyColor(d.name)}
+                    fill={cellFill(d.name)}
                     fillOpacity={dimmed ? 0.25 : 1}
                     stroke={INK}
                     strokeOpacity={0.3}
@@ -530,7 +559,8 @@ export function Hemicycle({
       </div>
       <ul className={legendCls}>
         {items.map(([name, n]) => {
-          const dimmed = highlightSet && !highlightSet.has(name);
+          const dimmed =
+            !collapseOthers && highlightSet && !highlightSet.has(name);
           return (
             <li
               key={name}
@@ -539,7 +569,7 @@ export function Hemicycle({
             >
               <span
                 className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
-                style={{ background: partyColor(name) }}
+                style={{ background: cellFill(name) }}
               />
               <span className="font-medium">{name}</span>
               <span className="tabular-nums text-ink/50">{n}</span>

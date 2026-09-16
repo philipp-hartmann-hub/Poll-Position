@@ -28,6 +28,7 @@ from analysis.bundesrat import (
 )
 from analysis.coalitions import (
     CoalitionRulesConfig,
+    has_majority,
     list_active_exclusion_rules,
     majority_threshold,
     possible_majorities,
@@ -52,6 +53,8 @@ from analysis.seat_allocation import (
 )
 from analysis.uncertainty import (
     UncertaintyConfig,
+    election_night_sd_pp,
+    party_uncertainties_election_night,
     party_uncertainties_from_means,
     simulate_party_forecast,
     simulate_threshold_watch,
@@ -1167,6 +1170,11 @@ def uncertainty_payload(
                 "coalition_probabilities": [],
                 "party_indispensability": [],
                 "party_id_to_canonical": {},
+                "_seat_distributions": [],
+                "_canon_to_id": {},
+                "_id_to_canon": {},
+                "_names": {},
+                "_total_seats": 0,
                 **empty_gov,
             },
         )
@@ -1303,8 +1311,114 @@ def uncertainty_payload(
             "current_government_label": gov_label,
             "current_government_majority_probability": gov_prob,
             "current_government_missing_parties": gov_missing,
+            # Internals für coalition_check_payload (API-Schema ignoriert Extra-Felder)
+            "_seat_distributions": result.seat_distributions,
+            "_canon_to_id": dict(canon_to_id),
+            "_id_to_canon": dict(id_to_canon),
+            "_names": dict(names),
+            "_total_seats": int(total or 630),
         },
     )
+
+
+def coalition_check_payload(
+    parliament_id: str,
+    parties: Sequence[str],
+    *,
+    n_simulations: int = 400,
+) -> dict[str, Any]:
+    """
+    Prüft eine frei gewählte Parteien-Liste (reine Sitzsumme, nicht minimal winning).
+
+    Nutzt die gecachten Monte-Carlo-Ziehungen aus ``uncertainty_payload`` sowie
+    den Punktschätzer aus ``seats_payload``.
+    """
+    raw = [p.strip() for p in parties if p and str(p).strip()]
+    if not raw:
+        raise ValueError("Mindestens eine Partei angeben")
+
+    unc = uncertainty_payload(parliament_id, n_simulations=n_simulations)
+    seat_runs: list[Mapping[str, int]] = list(unc.get("_seat_distributions") or [])
+    canon_to_id: dict[str, str] = dict(unc.get("_canon_to_id") or {})
+    names: dict[str, str] = dict(unc.get("_names") or {})
+    sim_total = int(unc.get("_total_seats") or 0)
+
+    if not seat_runs or sim_total <= 0:
+        raise ValueError("Keine Simulationsdaten für dieses Parlament")
+
+    # CDU+CSU → Aggregat, wenn die Simulation nur das kennt
+    gov_like = _normalize_gov_parties_for_simulation(raw, canon_to_id)
+    # Reihenfolge stabil, Duplikate entfernen
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for p in gov_like:
+        if p in seen:
+            continue
+        seen.add(p)
+        ordered.append(p)
+
+    wh_ids = [canon_to_id[p] for p in ordered if p in canon_to_id]
+    # Parteien ohne Umfragewert: 0 Sitze in allen Ziehungen (kein Mapping)
+
+    seats_data = seats_payload(parliament_id)
+    point_seats_map = dict(seats_data.get("seats") or {})
+    by_name = dict(seats_data.get("seats_by_name") or {})
+    chamber = int(seats_data.get("total_seats") or sim_total or 0)
+    if chamber <= 0:
+        chamber = sim_total
+    thr = majority_threshold(chamber)
+
+    seats_by_party: list[dict[str, Any]] = []
+    point_sum = 0
+    for canon in ordered:
+        wid = canon_to_id.get(canon)
+        n = 0
+        if wid is not None and wid in point_seats_map:
+            n = int(point_seats_map[wid])
+        elif canon in point_seats_map:
+            n = int(point_seats_map[canon])
+        else:
+            label = resolve_party_display_name(wid or canon, names)
+            if label in by_name:
+                n = int(by_name[label])
+            else:
+                for short, c in SHORT_TO_CANONICAL.items():
+                    if c == canon and short in by_name:
+                        n = int(by_name[short])
+                        break
+        point_sum += n
+        seats_by_party.append(
+            {
+                "party_id": canon,
+                "party_name": resolve_party_display_name(wid or canon, names),
+                "seats": n,
+            }
+        )
+
+    point_seat_lookup = {row["party_id"]: int(row["seats"]) for row in seats_by_party}
+    point_has = has_majority(point_seat_lookup, ordered, total_seats=chamber)
+
+    hits = 0
+    for run in seat_runs:
+        run_lookup = {wid: int(run.get(wid, 0) or 0) for wid in wh_ids}
+        if has_majority(run_lookup, wh_ids, total_seats=chamber):
+            hits += 1
+    n_sim = len(seat_runs)
+    prob = hits / n_sim if n_sim else 0.0
+
+    return {
+        "parliament_id": parliament_id,
+        "parties": ordered,
+        "total_seats": chamber,
+        "majority_threshold": thr,
+        "point_seats": point_sum,
+        "point_has_majority": bool(point_has),
+        "majority_probability": prob,
+        "n_majority": hits,
+        "n_simulations": n_sim,
+        "seats_by_party": seats_by_party,
+        "seats_by_name": by_name,
+    }
 
 
 def _election_system_for(parliament_id: str):
@@ -2112,4 +2226,293 @@ def scenario_payload(
             }
             for c in result.majorities.coalitions
         ],
+    }
+
+
+def seats_from_votes_payload(
+    parliament_id: str,
+    votes: Mapping[str, float],
+    names: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """
+    Sitzprojektion aus expliziten Partei-Anteilen (Wahlabend).
+
+    Identisch zur Umfrage-Pipeline, ohne party_averages_payload.
+    """
+    name_map = dict(names or {})
+    filtered = {
+        pid: float(share)
+        for pid, share in votes.items()
+        if share is not None
+        and float(share) >= 0
+        and not is_residual_party_id(pid)
+        and not _is_residual_party(pid, name_map.get(pid))
+    }
+    if not filtered:
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": 0,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "no_averages",
+        }
+
+    projection = _seat_projection_enabled(parliament_id)
+    if projection is False:
+        _parliament, system = _election_system_for(parliament_id)
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": int(system.seats_total) if system else 0,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "no_seat_projection",
+        }
+
+    seats, total = _allocate_for_parliament(parliament_id, filtered)
+    seats = {
+        pid: n
+        for pid, n in seats.items()
+        if n > 0 and not _is_residual_party(pid, name_map.get(pid))
+    }
+    by_name = {
+        resolve_party_display_name(k, dict(name_map)): v for k, v in seats.items()
+    }
+    if parliament_id == "de_bundestag":
+        _aggregate_cdu_csu_bundestag_display(seats, by_name)
+    if not seats:
+        return {
+            "parliament_id": parliament_id,
+            "total_seats": total,
+            "seats": {},
+            "seats_by_name": {},
+            "reason": "all_below_threshold",
+        }
+    return {
+        "parliament_id": parliament_id,
+        "total_seats": total,
+        "seats": seats,
+        "seats_by_name": by_name,
+        "reason": None,
+    }
+
+
+def election_night_payload(
+    parliament_id: str,
+    party_shares: Mapping[str, float],
+    *,
+    count_progress_percent: float = 20.0,
+    n_simulations: int = 200,
+    apply_exclusions: bool = True,
+    disabled_rule_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    """
+    Wahlabend: Sitze, Koalitionen, Prognose und Unsicherheit aus manuellen Anteilen.
+
+    Unsicherheit nutzt ``election_night_sd_pp`` (Modellannahme) statt Umfrage-
+    house_variance. ``n_simulations`` Default 200.
+    """
+    progress = min(max(float(count_progress_percent), 0.0), 100.0)
+    sd_pp = election_night_sd_pp(progress)
+
+    avg_votes, avg_names = _votes_from_averages(parliament_id)
+    names = dict(avg_names)
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        pass
+
+    # Eingabe-Keys: Warehouse-ID, kanonische ID oder Anzeigename
+    name_to_id = {str(v): k for k, v in names.items()}
+    for short, canon in SHORT_TO_CANONICAL.items():
+        name_to_id.setdefault(short, canon)
+    canon_to_wh = {
+        SHORT_TO_CANONICAL[name]: pid
+        for pid, name in names.items()
+        if name in SHORT_TO_CANONICAL
+    }
+
+    votes: dict[str, float] = {}
+    for key, share in party_shares.items():
+        if share is None:
+            continue
+        try:
+            val = float(share)
+        except (TypeError, ValueError):
+            continue
+        if val < 0:
+            continue
+        pid = str(key).strip()
+        if not pid:
+            continue
+        if pid in avg_votes or pid in names:
+            votes[pid] = val
+        elif pid in canon_to_wh:
+            votes[canon_to_wh[pid]] = val
+        elif pid in name_to_id:
+            votes[name_to_id[pid]] = val
+        elif pid.startswith("de:"):
+            votes[pid] = val
+
+    residual_ids = [
+        pid
+        for pid in list(votes)
+        if is_residual_party_id(pid) or _is_residual_party(pid, names.get(pid))
+    ]
+    for pid in residual_ids:
+        votes.pop(pid, None)
+
+    if not votes:
+        raise ValueError("Mindestens eine Partei mit Anteil ≥ 0 angeben")
+
+    seats_data = seats_from_votes_payload(parliament_id, votes, names)
+    coal = _coalitions_from_seats(
+        parliament_id,
+        dict(seats_data.get("seats") or {}),
+        names,
+        total_seats=int(seats_data.get("total_seats") or 0),
+        apply_exclusions=apply_exclusions,
+        max_parties=4,
+        disabled_rule_ids=disabled_rule_ids,
+    )
+
+    _parliament, system = _election_system_for(parliament_id)
+    threshold = float(system.threshold_percent) if system else 5.0
+    minority = list(system.minority_exempt_party_ids) if system else []
+    total = int(seats_data.get("total_seats") or 0)
+
+    unc_parties = party_uncertainties_election_night(
+        votes, count_progress_percent=progress
+    )
+
+    # Koalitions-Kandidaten aus Punktschätzer (Top) + erweiterte Singletons
+    canon_to_id = {
+        SHORT_TO_CANONICAL[name]: pid
+        for pid, name in names.items()
+        if name in SHORT_TO_CANONICAL
+    }
+    id_to_canon = {v: k for k, v in canon_to_id.items()}
+
+    mapped: list[tuple[str, ...]] = []
+    mapped_set: set[tuple[str, ...]] = set()
+
+    def _add_candidate(canon_parties: Sequence[str]) -> None:
+        ids = tuple(sorted(canon_to_id[p] for p in canon_parties if p in canon_to_id))
+        if not ids or len(ids) != len(canon_parties) or ids in mapped_set:
+            return
+        mapped_set.add(ids)
+        mapped.append(ids)
+
+    for c in (coal.get("coalitions") or [])[:8]:
+        _add_candidate(c["parties"])
+    if total > 0:
+        for combo in _expanded_coalition_candidates(
+            parliament_id,
+            votes,
+            names,
+            total_seats=total,
+            apply_exclusions=apply_exclusions,
+            disabled_rule_ids=disabled_rule_ids,
+        ):
+            _add_candidate(combo)
+        mapped = _cap_uncertainty_candidates(mapped, limit=20)
+
+    def alloc(v: dict[str, float]) -> dict[str, int]:
+        seats_n, _ = _allocate_for_parliament(parliament_id, v)
+        return seats_n
+
+    if not mapped:
+        # Mindestens Einzelsitze als Kandidaten, damit die Liste nicht leer ist
+        for pid in votes:
+            mapped.append((pid,))
+            mapped_set.add((pid,))
+
+    mc = simulate_uncertainty(
+        unc_parties,
+        mapped,
+        allocate=alloc,
+        total_seats=total or 630,
+        config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
+    )
+    indis = party_indispensability_from_seat_distributions(
+        mc.seat_distributions,
+        names,
+        total_seats=total or 630,
+        parliament_id=parliament_id,
+        apply_exclusions=apply_exclusions,
+        disabled_rule_ids=disabled_rule_ids,
+        max_parties=4,
+    )
+    indis_by_canon = {
+        e["party_id"]: float(e["probability"])
+        for e in indis.get("party_indispensability", [])
+    }
+
+    exempt = _threshold_exempt_ids(names, minority_exempt_party_ids=minority)
+    forecast_rows = simulate_party_forecast(
+        unc_parties,
+        threshold_percent=threshold,
+        exempt_party_ids=sorted(exempt),
+        residual_party_ids=residual_ids,
+        config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
+    )
+
+    coalition_probabilities = [
+        {
+            "parties": [id_to_canon.get(p, p) for p in c.parties],
+            "majority_probability": c.majority_probability,
+            "n_majority": c.n_majority,
+            "n_simulations": c.n_simulations,
+        }
+        for c in mc.coalition_probabilities
+        if c.n_majority > 0 or c.parties in mapped_set
+    ]
+
+    return {
+        "parliament_id": parliament_id,
+        "count_progress_percent": progress,
+        "model_sd_pp": sd_pp,
+        "model_note": (
+            "Modellannahme zur Wahlabend-Unsicherheit (nicht institutionell "
+            "verifiziert): SD interpoliert nach Auszählungsstand, ohne "
+            "Instituts-house_variance."
+        ),
+        "n_simulations": n_simulations,
+        "seats": seats_data,
+        "coalitions": coal,
+        "party_forecast": {
+            "parliament_id": parliament_id,
+            "threshold_percent": threshold,
+            "n_simulations": n_simulations,
+            "n_deadlock": indis.get("n_deadlock", 0),
+            "parties": [
+                {
+                    "party_id": r.party_id,
+                    "party_name": resolve_party_display_name(r.party_id, names),
+                    "average_share": r.mean_share,
+                    "threshold_percent": r.threshold_percent,
+                    "probability_strongest": r.probability_strongest,
+                    "probability_above_threshold": r.probability_above_threshold,
+                    "probability_indispensable": _indispensable_probability_for_party(
+                        r.party_id,
+                        indis_by_canon=indis_by_canon,
+                        party_id_to_canonical=id_to_canon,
+                        names=avg_names,
+                    ),
+                }
+                for r in forecast_rows
+            ],
+        },
+        "uncertainty": {
+            "parliament_id": parliament_id,
+            "n_simulations": n_simulations,
+            "n_deadlock": indis.get("n_deadlock", 0),
+            "mean_seats": mc.mean_seats,
+            "coalition_probabilities": coalition_probabilities,
+            "party_indispensability": indis.get("party_indispensability", []),
+        },
     }
