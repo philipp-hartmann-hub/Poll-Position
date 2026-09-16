@@ -2229,6 +2229,21 @@ def scenario_payload(
     }
 
 
+def _with_implicit_residual_to_100(votes: Mapping[str, float]) -> dict[str, float]:
+    """
+    Ergänzt fehlende Reststimme zu 100 % als ``de:sonstige``.
+
+    Die Sitzzuteilung prüft die Sperrklausel gegen ``sum(votes)``; ohne Rest
+    (Wahlabend-Eingabe ohne Sonstige) würde der Nenner künstlich schrumpfen und
+    Parteien knapp unter 5 % fälschlich über die Hürde heben.
+    """
+    out = {str(pid): float(share) for pid, share in votes.items()}
+    missing = max(0.0, 100.0 - sum(out.values()))
+    if missing > 0:
+        out["de:sonstige"] = missing
+    return out
+
+
 def seats_from_votes_payload(
     parliament_id: str,
     votes: Mapping[str, float],
@@ -2268,7 +2283,8 @@ def seats_from_votes_payload(
             "reason": "no_seat_projection",
         }
 
-    seats, total = _allocate_for_parliament(parliament_id, filtered)
+    votes_for_allocation = _with_implicit_residual_to_100(filtered)
+    seats, total = _allocate_for_parliament(parliament_id, votes_for_allocation)
     seats = {
         pid: n
         for pid, n in seats.items()
@@ -2365,6 +2381,12 @@ def election_night_payload(
     if not votes:
         raise ValueError("Mindestens eine Partei mit Anteil ≥ 0 angeben")
 
+    # Sonstige-freier ``votes`` bleibt für Anzeige/Eingabe; Allokation & MC
+    # brauchen den Hürden-Nenner inkl. Rest zu 100 % (wie seats_payload).
+    votes_for_allocation = _with_implicit_residual_to_100(votes)
+    if "de:sonstige" in votes_for_allocation and "de:sonstige" not in residual_ids:
+        residual_ids.append("de:sonstige")
+
     seats_data = seats_from_votes_payload(parliament_id, votes, names)
     coal = _coalitions_from_seats(
         parliament_id,
@@ -2381,7 +2403,7 @@ def election_night_payload(
     minority = list(system.minority_exempt_party_ids) if system else []
     total = int(seats_data.get("total_seats") or 0)
 
-    unc_parties = party_uncertainties_election_night(votes)
+    unc_parties = party_uncertainties_election_night(votes_for_allocation)
 
     # Koalitions-Kandidaten aus Punktschätzer (Top) + erweiterte Singletons
     canon_to_id = {
@@ -2406,7 +2428,7 @@ def election_night_payload(
     if total > 0:
         for combo in _expanded_coalition_candidates(
             parliament_id,
-            votes,
+            votes_for_allocation,
             names,
             total_seats=total,
             apply_exclusions=apply_exclusions,
