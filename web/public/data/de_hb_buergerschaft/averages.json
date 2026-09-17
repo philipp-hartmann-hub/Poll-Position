@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_hb_buergerschaft",
-  "as_of": "2026-09-16",
+  "as_of": "2026-09-17",
   "parties": [
     {
       "parliament_id": "de_hb_buergerschaft",
@@ -69,7 +69,7 @@
       "parliament_id": "de_hb_buergerschaft",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.0,
+      "average_share": 2.9999999999999996,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 3.0
