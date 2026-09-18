@@ -7,34 +7,34 @@
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 20.209522242318933,
+      "average_share": 20.518967072421233,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.5,
+      "probability_strongest": 0.54,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.0025
+      "probability_indispensable": 0.005
     },
     {
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 19.945316820482883,
+      "average_share": 19.954767609314263,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.4325,
+      "probability_strongest": 0.4,
       "probability_above_threshold": 1.0,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 17.833828196975954,
+      "average_share": 17.862547350360558,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.0625,
+      "probability_strongest": 0.055,
       "probability_above_threshold": 1.0,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 16.04067861661662,
+      "average_share": 15.8608201311769,
       "threshold_percent": 5.0,
       "probability_strongest": 0.005,
       "probability_above_threshold": 1.0,
@@ -43,7 +43,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 12.329713278123629,
+      "average_share": 12.272729565874906,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -52,11 +52,11 @@
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.8592004468210557,
+      "average_share": 3.8835345630227383,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.1875,
-      "probability_indispensable": 0.0075
+      "probability_above_threshold": 0.2,
+      "probability_indispensable": 0.01
     },
     {
       "party_id": "dawum:party:3",

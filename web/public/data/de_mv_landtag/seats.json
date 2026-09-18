@@ -3,16 +3,16 @@
   "total_seats": 71,
   "seats": {
     "dawum:party:7": 28,
-    "dawum:party:2": 25,
+    "dawum:party:2": 26,
     "dawum:party:5": 8,
-    "dawum:party:101": 6,
+    "dawum:party:101": 5,
     "dawum:party:4": 4
   },
   "seats_by_name": {
     "AfD": 28,
-    "SPD": 25,
+    "SPD": 26,
     "Linke": 8,
-    "CDU": 6,
+    "CDU": 5,
     "Grüne": 4
   },
   "reason": null

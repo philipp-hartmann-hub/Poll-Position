@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_ni_landtag",
-  "as_of": "2026-09-17",
+  "as_of": "2026-09-18",
   "parties": [
     {
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 25.99902440765657,
+      "average_share": 25.999024407656574,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 26.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 20.999023920223262,
+      "average_share": 20.99902392022326,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 21.0

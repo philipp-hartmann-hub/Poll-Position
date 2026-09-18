@@ -25,7 +25,7 @@
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 12.08958962142227,
+      "average_share": 12.089589621422272,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -52,7 +52,7 @@
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.9309641447215475,
+      "average_share": 3.930964144721548,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.2075,
@@ -61,7 +61,7 @@
     {
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 2.8932193771823616,
+      "average_share": 2.893219377182361,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.025,
