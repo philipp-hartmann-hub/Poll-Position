@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_sh_landtag",
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-19",
   "parties": [
     {
       "parliament_id": "de_sh_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 27.06704477666647,
+      "average_share": 27.067044776666467,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 27.0
@@ -69,9 +69,9 @@
       "parliament_id": "de_sh_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 4.022348258888823,
+      "average_share": 4.022348258888822,
       "n_surveys": 2,
-      "swing": -0.07765174111117634,
+      "swing": -0.07765174111117723,
       "trend_share": 4.0
     }
   ]

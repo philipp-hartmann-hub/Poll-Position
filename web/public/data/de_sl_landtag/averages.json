@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_sl_landtag",
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-19",
   "parties": [
     {
       "parliament_id": "de_sl_landtag",
@@ -51,7 +51,7 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 2.9999999999999996,
+      "average_share": 3.0,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 3.0
