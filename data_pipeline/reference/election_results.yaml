@@ -146,6 +146,21 @@ elections:
       de:sonstige: 2.2
 
   - parliament_id: de_mv_landtag
+    election_date: "2026-09-20"
+    label: Landtagswahl Mecklenburg-Vorpommern 2026
+    source: "https://tagesspiegel.de/politik/wahl-in-mecklenburg-vorpommern-2026afd-in-hochrechnung-vor-schwesigs-spd--cdu-mit-historisch-schlechtem-ergebnis-16058943.html"
+    results:
+      de:afd: 38.3
+      de:spd: 35.5
+      de:linke: 6.5
+      de:gruene: 5.7
+      de:cdu: 4.9
+      de:bsw: 4.8
+      de:fdp: 1.0
+      de:fw: 0.4
+      de:sonstige: 2.9
+
+  - parliament_id: de_mv_landtag
     election_date: "2021-09-26"
     label: Landtagswahl Mecklenburg-Vorpommern 2021
     source: "https://de.wikipedia.org/wiki/Landtagswahl_in_Mecklenburg-Vorpommern_2021"
