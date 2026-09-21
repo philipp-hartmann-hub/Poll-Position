@@ -77,6 +77,20 @@ elections:
       de:sonstige: 3.7
 
   - parliament_id: de_be_abgeordnetenhaus
+    election_date: "2026-09-20"
+    label: Wahl zum Abgeordnetenhaus von Berlin 2026
+    source: "https://www.tagesspiegel.de/berlin/vorlaufiges-amtliches-endergebnis-der-berlin-wahl-linke-erstmals-starkste-kraft--spd-mit-historischem-tief-16036412.html"
+    results:
+      de:linke: 25.7
+      de:cdu: 18.8
+      de:afd: 16.3
+      de:gruene: 14.3
+      de:spd: 12.1
+      de:bsw: 4.7
+      de:fdp: 2.5
+      de:sonstige: 5.6
+
+  - parliament_id: de_be_abgeordnetenhaus
     election_date: "2023-02-12"
     label: Wiederholungswahl zum Abgeordnetenhaus von Berlin 2023
     source: "https://de.wikipedia.org/wiki/Wahl_zum_Abgeordnetenhaus_von_Berlin_2023"
