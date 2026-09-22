@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_he_landtag",
-  "as_of": "2026-09-21",
+  "as_of": "2026-09-22",
   "parties": [
     {
       "parliament_id": "de_he_landtag",
@@ -15,7 +15,7 @@
       "parliament_id": "de_he_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 21.84855177946853,
+      "average_share": 21.848551779468526,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 22.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_he_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 3.1194341658111044,
+      "average_share": 3.119434165811104,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 3.0
