@@ -25,32 +25,10 @@
         {
           "as_of": "2026-06-25",
           "trend_share": 32.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:2",
-      "party_name": "SPD",
-      "points": [
-        {
-          "as_of": "2025-11-18",
-          "trend_share": 19.0
         },
         {
-          "as_of": "2026-01-29",
-          "trend_share": 20.0
-        },
-        {
-          "as_of": "2026-04-14",
-          "trend_share": 14.0
-        },
-        {
-          "as_of": "2026-05-05",
-          "trend_share": 18.0
-        },
-        {
-          "as_of": "2026-06-25",
-          "trend_share": 17.0
+          "as_of": "2026-09-18",
+          "trend_share": 29.0
         }
       ]
     },
@@ -77,6 +55,10 @@
         {
           "as_of": "2026-06-25",
           "trend_share": 17.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 22.0
         }
       ]
     },
@@ -98,37 +80,45 @@
         },
         {
           "as_of": "2026-05-05",
-          "trend_share": 14.999999999999998
+          "trend_share": 15.0
         },
         {
           "as_of": "2026-06-25",
           "trend_share": 15.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 18.0
         }
       ]
     },
     {
-      "party_id": "de:sonstige",
-      "party_name": "Sonstige",
+      "party_id": "dawum:party:2",
+      "party_name": "SPD",
       "points": [
         {
           "as_of": "2025-11-18",
-          "trend_share": 5.0
+          "trend_share": 19.0
         },
         {
           "as_of": "2026-01-29",
-          "trend_share": 7.0
+          "trend_share": 20.0
         },
         {
           "as_of": "2026-04-14",
-          "trend_share": 8.0
+          "trend_share": 14.0
         },
         {
           "as_of": "2026-05-05",
-          "trend_share": 3.0
+          "trend_share": 18.0
         },
         {
           "as_of": "2026-06-25",
-          "trend_share": 8.0
+          "trend_share": 17.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 14.0
         }
       ]
     },
@@ -138,7 +128,7 @@
       "points": [
         {
           "as_of": "2025-11-18",
-          "trend_share": 7.000000000000001
+          "trend_share": 7.0
         },
         {
           "as_of": "2026-01-29",
@@ -154,6 +144,40 @@
         },
         {
           "as_of": "2026-06-25",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 8.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2025-11-18",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 7.000000000000001
+        },
+        {
+          "as_of": "2026-04-14",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-05-05",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-06-25",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-09-18",
           "trend_share": 6.0
         }
       ]
@@ -181,6 +205,10 @@
         {
           "as_of": "2026-06-25",
           "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 3.0
         }
       ]
     }
