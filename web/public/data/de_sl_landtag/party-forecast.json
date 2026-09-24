@@ -16,7 +16,7 @@
     {
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 25.000000000000004,
+      "average_share": 25.0,
       "threshold_percent": 5.0,
       "probability_strongest": 0.2075,
       "probability_above_threshold": 1.0,
@@ -25,7 +25,7 @@
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 22.999999999999996,
+      "average_share": 23.0,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0225,
       "probability_above_threshold": 1.0,
