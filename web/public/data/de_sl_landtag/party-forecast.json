@@ -7,7 +7,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 27.0,
+      "average_share": 26.999999999999996,
       "threshold_percent": 5.0,
       "probability_strongest": 0.77,
       "probability_above_threshold": 1.0,
@@ -52,7 +52,7 @@
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.0000000000000004,
+      "average_share": 3.0,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.0325,
