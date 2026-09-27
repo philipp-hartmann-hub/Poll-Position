@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_mv_landtag",
-  "as_of": "2026-09-26",
+  "as_of": "2026-09-27",
   "parties": [
     {
       "parliament_id": "de_mv_landtag",
@@ -42,7 +42,7 @@
       "parliament_id": "de_mv_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 5.121638939309413,
+      "average_share": 5.121638939309414,
       "n_surveys": 15,
       "swing": null,
       "trend_share": 5.137269588276864
@@ -60,7 +60,7 @@
       "parliament_id": "de_mv_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 2.185296414624603,
+      "average_share": 2.1852964146246032,
       "n_surveys": 5,
       "swing": null,
       "trend_share": 2.0
