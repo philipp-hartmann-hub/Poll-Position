@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_by_landtag",
-  "as_of": "2026-09-28",
+  "as_of": "2026-09-29",
   "parties": [
     {
       "parliament_id": "de_by_landtag",
@@ -33,7 +33,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 11.999296309099272,
+      "average_share": 11.99929630909927,
       "n_surveys": 17,
       "swing": null,
       "trend_share": 12.0
