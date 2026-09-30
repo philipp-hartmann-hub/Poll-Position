@@ -7,10 +7,6 @@
       "party_name": "CSU",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 38.322959014444635
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 38.16325654041226
         },
@@ -80,10 +76,6 @@
       "party_id": "dawum:party:7",
       "party_name": "AfD",
       "points": [
-        {
-          "as_of": "2025-09-29",
-          "trend_share": 19.726991361468333
-        },
         {
           "as_of": "2025-10-09",
           "trend_share": 19.836743459587737
@@ -155,10 +147,6 @@
       "party_name": "Grüne",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 11.061004425002636
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 11.0
         },
@@ -228,10 +216,6 @@
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
       "points": [
-        {
-          "as_of": "2025-09-29",
-          "trend_share": 10.27116629701672
-        },
         {
           "as_of": "2025-10-09",
           "trend_share": 10.163256540412261
@@ -303,10 +287,6 @@
       "party_name": "SPD",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 7.728833702983279
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 7.836743459587738
         },
@@ -377,10 +357,6 @@
       "party_name": "BSW",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 1.9981576584850556
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 2.0
         },
@@ -446,10 +422,6 @@
       "party_id": "dawum:party:5",
       "party_name": "Linke",
       "points": [
-        {
-          "as_of": "2025-09-29",
-          "trend_share": 3.9213897531006556
-        },
         {
           "as_of": "2025-10-09",
           "trend_share": 4.0
@@ -521,10 +493,6 @@
       "party_name": "Sonstige",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 4.725149019953392
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 4.836743459587739
         },
@@ -595,10 +563,6 @@
       "party_name": "FDP",
       "points": [
         {
-          "as_of": "2025-09-29",
-          "trend_share": 1.9731824705285705
-        },
-        {
           "as_of": "2025-10-09",
           "trend_share": 2.0
         },
@@ -664,10 +628,6 @@
       "party_id": "dawum:party:11",
       "party_name": "Bayernpartei",
       "points": [
-        {
-          "as_of": "2025-09-29",
-          "trend_share": 1.0
-        },
         {
           "as_of": "2026-01-05",
           "trend_share": 1.0
