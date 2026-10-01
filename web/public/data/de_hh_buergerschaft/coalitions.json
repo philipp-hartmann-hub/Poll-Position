@@ -9,18 +9,18 @@
         "de:gruene",
         "de:spd"
       ],
-      "seats": 64,
+      "seats": 65,
       "is_minimal_winning": true,
       "compatibility_span": 0.5
     },
     {
       "parties": [
-        "de:cdu",
+        "de:linke",
         "de:spd"
       ],
-      "seats": 63,
+      "seats": 61,
       "is_minimal_winning": true,
-      "compatibility_span": 3.0
+      "compatibility_span": 2.5
     }
   ]
 }

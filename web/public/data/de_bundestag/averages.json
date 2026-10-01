@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_bundestag",
-  "as_of": "2026-09-30",
+  "as_of": "2026-10-01",
   "parties": [
     {
       "parliament_id": "de_bundestag",
@@ -15,7 +15,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
-      "average_share": 20.041924279199918,
+      "average_share": 20.041924279199915,
       "n_surveys": 243,
       "swing": null,
       "trend_share": 19.630736444200096
@@ -24,7 +24,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 14.748667707603447,
+      "average_share": 14.748667707603445,
       "n_surveys": 243,
       "swing": null,
       "trend_share": 14.988408324956751
@@ -42,7 +42,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 11.1892220861028,
+      "average_share": 11.189222086102799,
       "n_surveys": 243,
       "swing": null,
       "trend_share": 11.16618511590487

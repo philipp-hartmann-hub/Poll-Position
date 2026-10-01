@@ -8,11 +8,15 @@
       "points": [
         {
           "as_of": "2026-03-23",
-          "trend_share": 29.999999999999996
+          "trend_share": 30.000000000000004
         },
         {
           "as_of": "2026-06-09",
           "trend_share": 31.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 29.0
         }
       ]
     },
@@ -27,20 +31,10 @@
         {
           "as_of": "2026-06-09",
           "trend_share": 17.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:101",
-      "party_name": "CDU",
-      "points": [
-        {
-          "as_of": "2026-03-23",
-          "trend_share": 20.0
         },
         {
-          "as_of": "2026-06-09",
-          "trend_share": 16.0
+          "as_of": "2026-09-27",
+          "trend_share": 18.0
         }
       ]
     },
@@ -55,6 +49,10 @@
         {
           "as_of": "2026-06-09",
           "trend_share": 14.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 15.0
         }
       ]
     },
@@ -69,6 +67,52 @@
         {
           "as_of": "2026-06-09",
           "trend_share": 12.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 13.999999999999998
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
+      "points": [
+        {
+          "as_of": "2026-03-23",
+          "trend_share": 20.0
+        },
+        {
+          "as_of": "2026-06-09",
+          "trend_share": 16.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 12.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 3.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2026-06-09",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 3.0
         }
       ]
     },
@@ -83,16 +127,20 @@
         {
           "as_of": "2026-06-09",
           "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-09-27",
+          "trend_share": 3.0
         }
       ]
     },
     {
-      "party_id": "dawum:party:3",
-      "party_name": "FDP",
+      "party_id": "dawum:party:18",
+      "party_name": "Volt",
       "points": [
         {
-          "as_of": "2026-06-09",
-          "trend_share": 3.0
+          "as_of": "2026-09-27",
+          "trend_share": 2.0
         }
       ]
     }
