@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_by_landtag",
-  "as_of": "2026-10-01",
+  "as_of": "2026-10-02",
   "parties": [
     {
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:102",
       "party_name": "CSU",
-      "average_share": 37.94885657870625,
+      "average_share": 37.948856578706256,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 38.0
@@ -15,7 +15,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 19.939023661620595,
+      "average_share": 19.9390236616206,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 20.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 13.059896923007095,
+      "average_share": 13.059896923007097,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 13.0
@@ -33,7 +33,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 11.999296321402058,
+      "average_share": 11.99929632140206,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 12.0
@@ -51,7 +51,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 3.0000015649198883,
+      "average_share": 3.000001564919889,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 3.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 2.9999143210156145,
+      "average_share": 2.999914321015615,
       "n_surveys": 15,
       "swing": null,
       "trend_share": 3.0
@@ -69,7 +69,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 1.9999997466439665,
+      "average_share": 1.999999746643967,
       "n_surveys": 15,
       "swing": null,
       "trend_share": 2.0
