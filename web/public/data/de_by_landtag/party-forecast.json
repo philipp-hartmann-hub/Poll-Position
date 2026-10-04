@@ -7,7 +7,7 @@
     {
       "party_id": "dawum:party:102",
       "party_name": "CSU",
-      "average_share": 37.948856578706256,
+      "average_share": 37.94885657870625,
       "threshold_percent": 5.0,
       "probability_strongest": 1.0,
       "probability_above_threshold": 1.0,
@@ -34,7 +34,7 @@
     {
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 11.99929632140206,
+      "average_share": 11.999296321402058,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -43,7 +43,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 6.002765010328765,
+      "average_share": 6.002765010328764,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.8,
