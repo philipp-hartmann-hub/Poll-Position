@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_nw_landtag",
-  "as_of": "2026-10-05",
+  "as_of": "2026-10-06",
   "parties": [
     {
       "parliament_id": "de_nw_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 29.053456976850843,
+      "average_share": 29.05345697685084,
       "n_surveys": 6,
       "swing": null,
       "trend_share": 29.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_nw_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 17.949868803408872,
+      "average_share": 17.94986880340887,
       "n_surveys": 6,
       "swing": null,
       "trend_share": 18.0

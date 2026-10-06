@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_sn_landtag",
-  "as_of": "2026-10-05",
+  "as_of": "2026-10-06",
   "parties": [
     {
       "parliament_id": "de_sn_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 41.986848963806544,
+      "average_share": 41.98684896380655,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 42.0
