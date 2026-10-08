@@ -7,10 +7,6 @@
       "party_name": "CDU",
       "points": [
         {
-          "as_of": "2025-10-07",
-          "trend_share": 28.721297329559064
-        },
-        {
           "as_of": "2026-01-20",
           "trend_share": 29.0
         },
@@ -44,10 +40,6 @@
       "party_id": "dawum:party:7",
       "party_name": "AfD",
       "points": [
-        {
-          "as_of": "2025-10-07",
-          "trend_share": 19.55740534088188
-        },
         {
           "as_of": "2026-01-20",
           "trend_share": 18.0
@@ -83,10 +75,6 @@
       "party_name": "SPD",
       "points": [
         {
-          "as_of": "2025-10-07",
-          "trend_share": 22.860648664779532
-        },
-        {
           "as_of": "2026-01-20",
           "trend_share": 26.0
         },
@@ -120,10 +108,6 @@
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
       "points": [
-        {
-          "as_of": "2025-10-07",
-          "trend_share": 9.86064866477953
-        },
         {
           "as_of": "2026-01-20",
           "trend_share": 10.0
@@ -159,10 +143,6 @@
       "party_name": "Sonstige",
       "points": [
         {
-          "as_of": "2025-10-07",
-          "trend_share": 8.024540653456715
-        },
-        {
           "as_of": "2026-01-20",
           "trend_share": 7.0
         },
@@ -196,10 +176,6 @@
       "party_id": "dawum:party:5",
       "party_name": "Linke",
       "points": [
-        {
-          "as_of": "2025-10-07",
-          "trend_share": 6.0
-        },
         {
           "as_of": "2026-01-20",
           "trend_share": 6.0
@@ -244,10 +220,6 @@
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
       "points": [
-        {
-          "as_of": "2025-10-07",
-          "trend_share": 3.860648664779531
-        },
         {
           "as_of": "2026-01-20",
           "trend_share": 4.0
