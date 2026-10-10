@@ -1,6 +1,16 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import {
   fetchAverages,
   fetchBundesratStatus,
@@ -503,37 +513,36 @@ export function ParliamentDashboard({
     [focusTab],
   );
 
-  const activePanel = useMemo(() => {
-    switch (activeTag) {
-      case "umfragen":
-        return <SurveysSection parliamentId={parliamentId} />;
-      case "koalitionen":
-        return (
-          <Suspense
-            fallback={<p className="text-sm text-ink/50">Lade Analyse…</p>}
-          >
-            <CoalitionsSection parliamentId={parliamentId} />
-          </Suspense>
-        );
-      case "koalitionspruefer":
-        return <CoalitionCheckerSection parliamentId={parliamentId} />;
-      case "prognose":
-        return <PartyForecast parliamentId={parliamentId} />;
-      case "wahlabend":
-        return <ElectionNightSection parliamentId={parliamentId} />;
-      case "letzte-wahl":
-        return (
-          <Suspense
-            fallback={<p className="text-sm text-ink/50">Lade Wahlergebnis…</p>}
-          >
-            <LastElectionSection parliamentId={parliamentId} />
-          </Suspense>
-        );
-    }
-  }, [activeTag, parliamentId]);
-
   const tabId = (key: TagKey) => `${baseId}-tab-${key}`;
   const panelId = (key: TagKey) => `${baseId}-panel-${key}`;
+
+  // Alle Panels gemountet halten (hidden statt Unmount), damit lokaler State
+  // und bereits geladene MC-/API-Daten beim Tab-Wechsel erhalten bleiben.
+  const panels: Record<TagKey, ReactNode> = useMemo(
+    () => ({
+      umfragen: <SurveysSection parliamentId={parliamentId} />,
+      koalitionen: (
+        <Suspense
+          fallback={<p className="text-sm text-ink/50">Lade Analyse…</p>}
+        >
+          <CoalitionsSection parliamentId={parliamentId} />
+        </Suspense>
+      ),
+      koalitionspruefer: (
+        <CoalitionCheckerSection parliamentId={parliamentId} />
+      ),
+      prognose: <PartyForecast parliamentId={parliamentId} />,
+      wahlabend: <ElectionNightSection parliamentId={parliamentId} />,
+      "letzte-wahl": (
+        <Suspense
+          fallback={<p className="text-sm text-ink/50">Lade Wahlergebnis…</p>}
+        >
+          <LastElectionSection parliamentId={parliamentId} />
+        </Suspense>
+      ),
+    }),
+    [parliamentId],
+  );
 
   return (
     <div className="space-y-8">
@@ -603,14 +612,22 @@ export function ParliamentDashboard({
         })}
       </div>
 
-      <div
-        role="tabpanel"
-        id={panelId(activeTag)}
-        aria-labelledby={tabId(activeTag)}
-        className="space-y-4"
-      >
-        {activePanel}
-      </div>
+      {TAGS.map((tag) => {
+        const selected = activeTag === tag.key;
+        return (
+          <div
+            key={tag.key}
+            role="tabpanel"
+            id={panelId(tag.key)}
+            aria-labelledby={tabId(tag.key)}
+            hidden={!selected}
+            aria-hidden={!selected}
+            className="space-y-4"
+          >
+            {panels[tag.key]}
+          </div>
+        );
+      })}
     </div>
   );
 }

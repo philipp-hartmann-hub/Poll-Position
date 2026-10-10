@@ -171,15 +171,25 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
     const ac = new AbortController();
     const { signal } = ac;
     let cancelled = false;
+    // Default-Ausschlüsse → Static uncertainty.json; Abweichungen → live API.
+    const isDefaultExclusion =
+      exclusionState.applyExclusions &&
+      exclusionState.disabledRuleIds.length === 0;
     const t = setTimeout(() => {
       setUncertaintyBusy(true);
-      void fetchUncertainty(parliamentId, 200, {
-        applyExclusions: exclusionState.applyExclusions,
-        disabledRuleIds: exclusionState.applyExclusions
-          ? exclusionState.disabledRuleIds
-          : [],
-        signal,
-      })
+      void fetchUncertainty(
+        parliamentId,
+        200,
+        isDefaultExclusion
+          ? { signal }
+          : {
+              applyExclusions: exclusionState.applyExclusions,
+              disabledRuleIds: exclusionState.applyExclusions
+                ? exclusionState.disabledRuleIds
+                : [],
+              signal,
+            },
+      )
         .then((u) => {
           if (!cancelled && !signal.aborted) setUncertainty(u);
         })
