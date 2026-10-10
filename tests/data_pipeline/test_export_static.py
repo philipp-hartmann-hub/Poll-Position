@@ -55,6 +55,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
     assert ok["last-election"] is True
     assert ok["party-forecast"] is True
     assert ok["uncertainty"] is True
+    assert ok["surveys"] is True
     for name in (
         "averages",
         "trend",
@@ -63,6 +64,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
         "last-election",
         "party-forecast",
         "uncertainty",
+        "surveys",
     ):
         path = out / "de_bundestag" / f"{name}.json"
         assert path.is_file()
@@ -131,6 +133,15 @@ def test_export_parliament_static_sanitizes_colon_ids(
             "_seat_distributions": [{"x": 1}],
         }
 
+    def fake_surveys(pid, **_kwargs):
+        return {
+            "parliament_id": pid,
+            "total": 0,
+            "limit": 20,
+            "offset": 0,
+            "surveys": [],
+        }
+
     monkeypatch.setattr("backend.services.party_averages_payload", fake_averages)
     monkeypatch.setattr("backend.services.party_trend_series_payload", fake_trend)
     monkeypatch.setattr("backend.services.seats_payload", fake_seats)
@@ -138,6 +149,7 @@ def test_export_parliament_static_sanitizes_colon_ids(
     monkeypatch.setattr("backend.services.last_election_payload", fake_last_election)
     monkeypatch.setattr("backend.services.party_forecast_payload", fake_forecast)
     monkeypatch.setattr("backend.services.uncertainty_payload", fake_uncertainty)
+    monkeypatch.setattr("backend.services.raw_surveys_payload", fake_surveys)
 
     ok = export_static.export_parliament_static("dawum:parliament:17", out_dir=out)
     assert all(ok.values())
@@ -150,6 +162,7 @@ def test_export_parliament_static_sanitizes_colon_ids(
         "last-election",
         "party-forecast",
         "uncertainty",
+        "surveys",
     ):
         path = out / "dawum_parliament_17" / f"{name}.json"
         assert path.is_file()
@@ -224,3 +237,24 @@ def test_export_uncertainty_matches_live_public_payload(export_warehouse, tmp_pa
     assert exported.get("n_simulations") == 200
     assert "current_government_majority_probability" in exported
     assert "coalition_probabilities" in exported
+
+
+def test_export_surveys_matches_live_first_page(export_warehouse, tmp_path):
+    """surveys.json entspricht raw_surveys_payload(limit=20, offset=0)."""
+    from backend import services
+    from data_pipeline.export_static import _json_default, export_parliament_static
+
+    services.clear_payload_caches()
+    out = tmp_path / "static"
+    ok = export_parliament_static("de_bundestag", out_dir=out)
+    assert ok["surveys"] is True
+
+    path = out / "de_bundestag" / "surveys.json"
+    assert path.is_file()
+    exported = json.loads(path.read_text(encoding="utf-8"))
+    live = services.raw_surveys_payload("de_bundestag", limit=20, offset=0)
+    live_json = json.loads(json.dumps(live, default=_json_default))
+    assert exported == live_json
+    assert exported.get("limit") == 20
+    assert exported.get("offset") == 0
+    assert len(exported.get("surveys") or []) <= 20

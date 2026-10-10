@@ -402,14 +402,35 @@ export function fetchTrendSeries(
 
 export function fetchRawSurveys(
   parliamentId: string,
-  opts?: { limit?: number; offset?: number },
+  opts?: { limit?: number; offset?: number; signal?: AbortSignal },
 ): Promise<RawSurveysResponse> {
+  const limit = opts?.limit ?? 50;
+  const offset = opts?.offset ?? 0;
   const q = new URLSearchParams({
     parliament_id: parliamentId,
-    limit: String(opts?.limit ?? 50),
-    offset: String(opts?.offset ?? 0),
+    limit: String(limit),
+    offset: String(offset),
   });
-  return apiFetch(`/api/surveys?${q}`);
+  const apiPath = `/api/surveys?${q}`;
+  const signalInit = opts?.signal ? { signal: opts.signal } : {};
+  // Static-JSON nur für die erste Seite (PAGE_SIZE=20, offset=0) — weitere
+  // Seiten beim Blättern bleiben live (kombinatorisch nicht sinnvoll vorab).
+  const useStatic =
+    (opts?.limit === undefined || opts.limit === 20) &&
+    (opts?.offset === undefined || opts.offset === 0);
+  if (!useStatic) {
+    return apiFetch(apiPath, { noStore: true, ...signalInit });
+  }
+  const staticFallbackQ = new URLSearchParams({
+    parliament_id: parliamentId,
+    limit: "20",
+    offset: "0",
+  });
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/surveys.json`,
+    `/api/surveys?${staticFallbackQ}`,
+    signalInit,
+  );
 }
 
 export function fetchSeats(

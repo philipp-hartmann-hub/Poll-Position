@@ -3,7 +3,7 @@
 Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
-- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty}.json``
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys}.json``
 
 Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
 Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
@@ -113,6 +113,13 @@ def export_parliament_static(
             lambda: _public_uncertainty_payload(parliament_id),
             False,
         ),
+        (
+            "surveys",
+            lambda: services.raw_surveys_payload(
+                parliament_id, limit=20, offset=0
+            ),
+            False,
+        ),
     ]
     segment = static_path_segment(parliament_id)
     for name, factory, skip_none in writers:
@@ -149,6 +156,7 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
     last_election_written = 0
     forecast_written = 0
     uncertainty_written = 0
+    surveys_written = 0
 
     index_path = target / "parliaments.json"
     try:
@@ -178,6 +186,8 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
             forecast_written += 1
         if ok.get("uncertainty"):
             uncertainty_written += 1
+        if ok.get("surveys"):
+            surveys_written += 1
         log.info(
             "Static-Export %s: %s",
             pid,
@@ -185,12 +195,14 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
         )
     log.info(
         "Static-Export fertig: %d Dateien unter %s (%d Parlamente); "
-        "+%d last-election.json, +%d party-forecast.json, +%d uncertainty.json",
+        "+%d last-election.json, +%d party-forecast.json, "
+        "+%d uncertainty.json, +%d surveys.json",
         written,
         target,
         len(parliaments),
         last_election_written,
         forecast_written,
         uncertainty_written,
+        surveys_written,
     )
     return written
