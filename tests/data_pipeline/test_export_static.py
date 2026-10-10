@@ -54,6 +54,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
     assert ok["coalitions"] is True
     assert ok["last-election"] is True
     assert ok["party-forecast"] is True
+    assert ok["uncertainty"] is True
     for name in (
         "averages",
         "trend",
@@ -61,6 +62,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
         "coalitions",
         "last-election",
         "party-forecast",
+        "uncertainty",
     ):
         path = out / "de_bundestag" / f"{name}.json"
         assert path.is_file()
@@ -116,12 +118,26 @@ def test_export_parliament_static_sanitizes_colon_ids(
     def fake_forecast(pid, **_kwargs):
         return {"parliament_id": pid, "parties": []}
 
+    def fake_uncertainty(pid, **_kwargs):
+        return {
+            "parliament_id": pid,
+            "n_simulations": 200,
+            "n_deadlock": 0,
+            "mean_seats": {},
+            "coalition_probabilities": [],
+            "party_indispensability": [],
+            "current_government_majority_probability": None,
+            "current_government_missing_parties": [],
+            "_seat_distributions": [{"x": 1}],
+        }
+
     monkeypatch.setattr("backend.services.party_averages_payload", fake_averages)
     monkeypatch.setattr("backend.services.party_trend_series_payload", fake_trend)
     monkeypatch.setattr("backend.services.seats_payload", fake_seats)
     monkeypatch.setattr("backend.services.coalitions_payload", fake_coalitions)
     monkeypatch.setattr("backend.services.last_election_payload", fake_last_election)
     monkeypatch.setattr("backend.services.party_forecast_payload", fake_forecast)
+    monkeypatch.setattr("backend.services.uncertainty_payload", fake_uncertainty)
 
     ok = export_static.export_parliament_static("dawum:parliament:17", out_dir=out)
     assert all(ok.values())
@@ -133,10 +149,15 @@ def test_export_parliament_static_sanitizes_colon_ids(
         "coalitions",
         "last-election",
         "party-forecast",
+        "uncertainty",
     ):
         path = out / "dawum_parliament_17" / f"{name}.json"
         assert path.is_file()
         assert ":" not in str(path.relative_to(out))
+    unc = json.loads(
+        (out / "dawum_parliament_17" / "uncertainty.json").read_text(encoding="utf-8")
+    )
+    assert "_seat_distributions" not in unc
 
 
 def test_export_all_static_purges_leftover_colon_dirs(
@@ -180,3 +201,26 @@ def test_export_skips_last_election_when_none(export_warehouse, tmp_path, monkey
     assert ok["last-election"] is False
     assert not (out / "de_bundestag" / "last-election.json").exists()
     assert (out / "de_bundestag" / "averages.json").is_file()
+
+
+def test_export_uncertainty_matches_live_public_payload(export_warehouse, tmp_path):
+    """uncertainty.json entspricht dem Live-Payload ohne interne ``_``-Felder."""
+    from backend import services
+    from data_pipeline.export_static import export_parliament_static
+
+    services.clear_payload_caches()
+    out = tmp_path / "static"
+    ok = export_parliament_static("de_bundestag", out_dir=out)
+    assert ok["uncertainty"] is True
+
+    path = out / "de_bundestag" / "uncertainty.json"
+    assert path.is_file()
+    exported = json.loads(path.read_text(encoding="utf-8"))
+    assert not any(str(k).startswith("_") for k in exported)
+
+    live = services.uncertainty_payload("de_bundestag", n_simulations=200)
+    live_public = {k: v for k, v in live.items() if not str(k).startswith("_")}
+    assert exported == live_public
+    assert exported.get("n_simulations") == 200
+    assert "current_government_majority_probability" in exported
+    assert "coalition_probabilities" in exported

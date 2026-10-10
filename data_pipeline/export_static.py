@@ -3,7 +3,7 @@
 Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
-- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast}.json``
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty}.json``
 
 Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
 Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
@@ -71,6 +71,14 @@ def _write_json(path: Path, payload: Any) -> None:
     )
 
 
+def _public_uncertainty_payload(parliament_id: str) -> dict[str, Any]:
+    """Uncertainty ohne interne ``_``-Felder (keine Sitz-Ziehungen im Static-JSON)."""
+    from backend import services
+
+    raw = services.uncertainty_payload(parliament_id, n_simulations=200)
+    return {k: v for k, v in raw.items() if not str(k).startswith("_")}
+
+
 def export_parliament_static(
     parliament_id: str,
     *,
@@ -98,6 +106,11 @@ def export_parliament_static(
         (
             "party-forecast",
             lambda: services.party_forecast_payload(parliament_id),
+            False,
+        ),
+        (
+            "uncertainty",
+            lambda: _public_uncertainty_payload(parliament_id),
             False,
         ),
     ]
@@ -135,6 +148,7 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
     written = 0
     last_election_written = 0
     forecast_written = 0
+    uncertainty_written = 0
 
     index_path = target / "parliaments.json"
     try:
@@ -162,6 +176,8 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
             last_election_written += 1
         if ok.get("party-forecast"):
             forecast_written += 1
+        if ok.get("uncertainty"):
+            uncertainty_written += 1
         log.info(
             "Static-Export %s: %s",
             pid,
@@ -169,11 +185,12 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
         )
     log.info(
         "Static-Export fertig: %d Dateien unter %s (%d Parlamente); "
-        "+%d last-election.json, +%d party-forecast.json",
+        "+%d last-election.json, +%d party-forecast.json, +%d uncertainty.json",
         written,
         target,
         len(parliaments),
         last_election_written,
         forecast_written,
+        uncertainty_written,
     )
     return written

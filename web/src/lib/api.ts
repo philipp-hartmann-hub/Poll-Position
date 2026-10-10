@@ -552,13 +552,21 @@ export function fetchUncertainty(
   for (const id of disabled) {
     q.append("disabled_rule_ids", id);
   }
+  const apiPath = `/api/uncertainty?${q}`;
+  const signalInit = opts?.signal ? { signal: opts.signal } : {};
+  // Static-JSON nur für den Default-Export (kein opts). Jede UI-Interaktion
+  // (Ausschluss an/aus, einzelne Regeln) muss die API treffen — sonst bleibt
+  // die Übersicht auf dem gecachten Snapshot mit Default-Exclusions.
   const interactive =
     opts !== undefined &&
     (opts.applyExclusions !== undefined || disabled.length > 0);
-  const signalInit = opts?.signal ? { signal: opts.signal } : {};
-  return apiFetch(
-    `/api/uncertainty?${q}`,
-    interactive ? { noStore: true, ...signalInit } : signalInit,
+  if (interactive) {
+    return apiFetch(apiPath, { noStore: true, ...signalInit });
+  }
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/uncertainty.json`,
+    apiPath,
+    signalInit,
   );
 }
 
