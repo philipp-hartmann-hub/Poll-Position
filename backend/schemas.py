@@ -448,6 +448,24 @@ class CoalitionCheckResponse(BaseModel):
     seats_by_name: dict[str, int] = Field(default_factory=dict)
 
 
+class CoalitionCheckAllEntry(BaseModel):
+    parties: list[str]
+    majority_probability: float
+    n_majority: int
+    point_seats: int
+    point_has_majority: bool
+
+
+class CoalitionCheckAllResponse(BaseModel):
+    parliament_id: str
+    n_simulations: int
+    total_seats: int
+    majority_threshold: int
+    capped: bool = False
+    eligible_parties: list[str] = Field(default_factory=list)
+    combinations: dict[str, CoalitionCheckAllEntry] = Field(default_factory=dict)
+
+
 class ElectionNightRequest(BaseModel):
     party_shares: dict[str, float] = Field(
         min_length=1,

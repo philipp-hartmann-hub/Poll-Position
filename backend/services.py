@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import copy
+import itertools
+import logging
 import time
 from datetime import date, datetime, timedelta
 from typing import Any, Mapping, Sequence
+
+log = logging.getLogger(__name__)
 
 from analysis.averages import (
     PollObservationPoint,
@@ -1418,6 +1422,138 @@ def coalition_check_payload(
         "n_simulations": n_sim,
         "seats_by_party": seats_by_party,
         "seats_by_name": by_name,
+    }
+
+
+_COALITION_CHECK_ALL_CAP = 12
+
+
+def _point_seats_for_canon(
+    canon: str,
+    *,
+    canon_to_id: Mapping[str, str],
+    point_seats_map: Mapping[str, int],
+    by_name: Mapping[str, int],
+    names: Mapping[str, str],
+) -> int:
+    """Punktschätzer-Sitze einer kanonischen Partei (wie coalition_check_payload)."""
+    wid = canon_to_id.get(canon)
+    if wid is not None and wid in point_seats_map:
+        return int(point_seats_map[wid])
+    if canon in point_seats_map:
+        return int(point_seats_map[canon])
+    label = resolve_party_display_name(wid or canon, dict(names))
+    if label in by_name:
+        return int(by_name[label])
+    for short, c in SHORT_TO_CANONICAL.items():
+        if c == canon and short in by_name:
+            return int(by_name[short])
+    return 0
+
+
+def coalition_check_all_payload(
+    parliament_id: str,
+    *,
+    n_simulations: int = 400,
+    max_eligible_parties: int = _COALITION_CHECK_ALL_CAP,
+) -> dict[str, Any]:
+    """
+    Vorberechnete Mehrheitswahrscheinlichkeiten für alle Parteikombinationen.
+
+    Nutzt dieselben gecachten Sitz-Ziehungen wie ``coalition_check_payload``
+    (Default-Ausschlüsse). Key je Kombi: ``"|".join(sorted(canon_ids))``.
+    """
+    unc = uncertainty_payload(parliament_id, n_simulations=n_simulations)
+    seat_runs: list[Mapping[str, int]] = list(unc.get("_seat_distributions") or [])
+    canon_to_id: dict[str, str] = dict(unc.get("_canon_to_id") or {})
+    names: dict[str, str] = dict(unc.get("_names") or {})
+    sim_total = int(unc.get("_total_seats") or 0)
+
+    seats_data = seats_payload(parliament_id)
+    point_seats_map = dict(seats_data.get("seats") or {})
+    by_name = dict(seats_data.get("seats_by_name") or {})
+    chamber = int(seats_data.get("total_seats") or sim_total or 0)
+    if chamber <= 0:
+        chamber = sim_total
+    thr = majority_threshold(chamber) if chamber > 0 else 0
+
+    empty = {
+        "parliament_id": parliament_id,
+        "n_simulations": len(seat_runs),
+        "total_seats": chamber,
+        "majority_threshold": thr,
+        "capped": False,
+        "eligible_parties": [],
+        "combinations": {},
+    }
+    if not seat_runs or chamber <= 0 or not canon_to_id:
+        return empty
+
+    eligible: list[str] = []
+    seats_by_canon: dict[str, int] = {}
+    for canon in canon_to_id:
+        if is_residual_party_id(canon):
+            continue
+        label = resolve_party_display_name(canon_to_id.get(canon, canon), names)
+        if _is_residual_party(canon, label) or "sonstige" in label.lower():
+            continue
+        n = _point_seats_for_canon(
+            canon,
+            canon_to_id=canon_to_id,
+            point_seats_map=point_seats_map,
+            by_name=by_name,
+            names=names,
+        )
+        if n <= 0:
+            continue
+        seats_by_canon[canon] = n
+        eligible.append(canon)
+
+    eligible.sort(key=lambda c: (-seats_by_canon[c], c))
+    capped = False
+    if len(eligible) > max_eligible_parties:
+        capped = True
+        log.warning(
+            "coalition_check_all %s: %d eligible Parteien > Cap %d — "
+            "exportiere nur die %d stärksten (Frontend fällt sonst auf Live-POST zurück)",
+            parliament_id,
+            len(eligible),
+            max_eligible_parties,
+            max_eligible_parties,
+        )
+        eligible = eligible[:max_eligible_parties]
+
+    n_sim = len(seat_runs)
+    combinations: dict[str, dict[str, Any]] = {}
+    for r in range(1, len(eligible) + 1):
+        for subset in itertools.combinations(eligible, r):
+            ordered = sorted(subset)
+            key = "|".join(ordered)
+            wh_ids = [canon_to_id[c] for c in ordered if c in canon_to_id]
+            point_sum = sum(seats_by_canon[c] for c in ordered)
+            point_lookup = {c: seats_by_canon[c] for c in ordered}
+            point_has = has_majority(point_lookup, ordered, total_seats=chamber)
+            hits = 0
+            for run in seat_runs:
+                run_lookup = {wid: int(run.get(wid, 0) or 0) for wid in wh_ids}
+                if has_majority(run_lookup, wh_ids, total_seats=chamber):
+                    hits += 1
+            combinations[key] = {
+                "parties": ordered,
+                "majority_probability": hits / n_sim if n_sim else 0.0,
+                "n_majority": hits,
+                "point_seats": point_sum,
+                "point_has_majority": bool(point_has),
+            }
+
+    return {
+        "parliament_id": parliament_id,
+        "n_simulations": n_sim,
+        "total_seats": chamber,
+        "majority_threshold": thr,
+        "capped": capped,
+        "eligible_parties": eligible,
+        "combinations": combinations,
     }
 
 

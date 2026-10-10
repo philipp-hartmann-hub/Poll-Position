@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  coalitionCheckCombinationKey,
+  fetchCoalitionCheckAll,
   fetchSeats,
   postCoalitionCheck,
+  type CoalitionCheckAllEntry,
   type CoalitionCheckResponse,
   type SeatsResponse,
 } from "@/lib/api";
@@ -46,12 +49,53 @@ type PartyOption = {
   seats: number;
 };
 
+function resultFromStaticEntry(
+  parliamentId: string,
+  entry: CoalitionCheckAllEntry,
+  meta: {
+    totalSeats: number;
+    majorityThreshold: number;
+    nSimulations: number;
+    seatsByName: Record<string, number>;
+    options: PartyOption[];
+  },
+): CoalitionCheckResponse {
+  const selected = new Set(entry.parties);
+  return {
+    parliament_id: parliamentId,
+    parties: entry.parties,
+    total_seats: meta.totalSeats,
+    majority_threshold: meta.majorityThreshold,
+    point_seats: entry.point_seats,
+    point_has_majority: entry.point_has_majority,
+    majority_probability: entry.majority_probability,
+    n_majority: entry.n_majority,
+    n_simulations: meta.nSimulations,
+    seats_by_party: meta.options
+      .filter((o) => selected.has(o.canonicalId))
+      .map((o) => ({
+        party_id: o.canonicalId,
+        party_name: o.name,
+        seats: o.seats,
+      })),
+    seats_by_name: meta.seatsByName,
+  };
+}
+
 export function CoalitionCheckerSection({
   parliamentId,
 }: {
   parliamentId: string;
 }) {
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
+  const [comboMap, setComboMap] = useState<Map<string, CoalitionCheckAllEntry>>(
+    () => new Map(),
+  );
+  const [comboMeta, setComboMeta] = useState<{
+    nSimulations: number;
+    totalSeats: number;
+    majorityThreshold: number;
+  } | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [result, setResult] = useState<CoalitionCheckResponse | null>(null);
   const [loadingSeats, setLoadingSeats] = useState(true);
@@ -66,11 +110,26 @@ export function CoalitionCheckerSection({
     setError(null);
     setSelected(new Set());
     setResult(null);
+    setComboMap(new Map());
+    setComboMeta(null);
     (async () => {
       try {
-        const data = await fetchSeats(parliamentId, { signal: ac.signal });
+        const [data, all] = await Promise.all([
+          fetchSeats(parliamentId, { signal: ac.signal }),
+          fetchCoalitionCheckAll(parliamentId, { signal: ac.signal }).catch(
+            () => null,
+          ),
+        ]);
         if (cancelled || ac.signal.aborted) return;
         setSeats(data);
+        if (all?.combinations) {
+          setComboMap(new Map(Object.entries(all.combinations)));
+          setComboMeta({
+            nSimulations: all.n_simulations,
+            totalSeats: all.total_seats,
+            majorityThreshold: all.majority_threshold,
+          });
+        }
       } catch (e) {
         if (cancelled || isAbortError(e)) return;
         setError(e instanceof Error ? e.message : "Sitze laden fehlgeschlagen");
@@ -129,7 +188,7 @@ export function CoalitionCheckerSection({
     };
   }, [seats, selected, selectedList.length, options]);
 
-  const selectedKey = selectedList.join("|");
+  const selectedKey = coalitionCheckCombinationKey(selectedList);
 
   useEffect(() => {
     if (selectedList.length === 0) {
@@ -137,6 +196,26 @@ export function CoalitionCheckerSection({
       setChecking(false);
       return;
     }
+
+    const cached = comboMap.get(selectedKey);
+    if (cached && comboMeta && seats) {
+      abortRef.current?.abort();
+      setResult(
+        resultFromStaticEntry(parliamentId, cached, {
+          totalSeats: comboMeta.totalSeats || seats.total_seats,
+          majorityThreshold:
+            comboMeta.majorityThreshold ||
+            Math.floor(seats.total_seats / 2) + 1,
+          nSimulations: comboMeta.nSimulations,
+          seatsByName: seats.seats_by_name,
+          options,
+        }),
+      );
+      setChecking(false);
+      setError(null);
+      return;
+    }
+
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
@@ -166,7 +245,7 @@ export function CoalitionCheckerSection({
     };
     // selectedKey spiegelt selectedList; bewusst nicht selectedList als Array-Dep.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- selectedKey
-  }, [parliamentId, selectedKey]);
+  }, [parliamentId, selectedKey, comboMap, comboMeta, seats, options]);
 
   function toggle(id: string) {
     setSelected((prev) => {

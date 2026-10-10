@@ -4,7 +4,7 @@ Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
 - ``government.json``, ``bundesrat-status.json`` (global, nicht pro Parlament)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
-- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys}.json``
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys,coalition-check-all}.json``
 
 Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
 Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
@@ -119,6 +119,11 @@ def export_parliament_static(
             lambda: services.raw_surveys_payload(
                 parliament_id, limit=20, offset=0
             ),
+            False,
+        ),
+        (
+            "coalition-check-all",
+            lambda: services.coalition_check_all_payload(parliament_id),
             False,
         ),
     ]

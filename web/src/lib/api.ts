@@ -878,6 +878,41 @@ export function postCoalitionCheck(
   );
 }
 
+export type CoalitionCheckAllEntry = {
+  parties: string[];
+  majority_probability: number;
+  n_majority: number;
+  point_seats: number;
+  point_has_majority: boolean;
+};
+
+export type CoalitionCheckAllResponse = {
+  parliament_id: string;
+  n_simulations: number;
+  total_seats: number;
+  majority_threshold: number;
+  capped?: boolean;
+  eligible_parties?: string[];
+  combinations: Record<string, CoalitionCheckAllEntry>;
+};
+
+/** Sortierter Lookup-Key (kanonische IDs), kompatibel zum Static-Export. */
+export function coalitionCheckCombinationKey(parties: string[]): string {
+  return [...parties].map((p) => p.trim()).filter(Boolean).sort().join("|");
+}
+
+export function fetchCoalitionCheckAll(
+  parliamentId: string,
+  opts?: { signal?: AbortSignal },
+): Promise<CoalitionCheckAllResponse> {
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/coalition-check-all.json`,
+    `/api/parliaments/${encodeURIComponent(parliamentId)}/coalition-check-all`,
+    init,
+  );
+}
+
 export type ElectionNightResponse = {
   parliament_id: string;
   model_sd_pp: number;

@@ -436,6 +436,16 @@ def post_coalition_check(
     return schemas.CoalitionCheckResponse.model_validate(data)
 
 
+@app.get(
+    "/api/parliaments/{parliament_id}/coalition-check-all",
+    response_model=schemas.CoalitionCheckAllResponse,
+)
+def get_coalition_check_all(parliament_id: str) -> schemas.CoalitionCheckAllResponse:
+    """Alle Parteikombinationen vorberechnet (Static-Export-Fallback)."""
+    data = services.coalition_check_all_payload(parliament_id)
+    return schemas.CoalitionCheckAllResponse.model_validate(data)
+
+
 @app.post(
     "/api/parliaments/{parliament_id}/election-night",
     response_model=schemas.ElectionNightResponse,

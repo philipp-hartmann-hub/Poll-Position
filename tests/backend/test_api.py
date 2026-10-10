@@ -829,6 +829,67 @@ def test_coalition_check_api_endpoint(client, monkeypatch, api_warehouse):
     assert body["parties"] == ["de:cdu"]
 
 
+def test_coalition_check_all_matches_single_checks(monkeypatch, api_warehouse):
+    """Alle-Kombi-Export deckt dieselben Wahrscheinlichkeiten wie Einzel-Checks ab."""
+    from backend import services
+
+    runs = [{"a": 55, "b": 30, "c": 15}] * 50 + [{"a": 40, "b": 35, "c": 25}] * 50
+    monkeypatch.setattr(
+        services,
+        "uncertainty_payload",
+        lambda parliament_id, n_simulations=400, **_k: {
+            "parliament_id": parliament_id,
+            "n_simulations": n_simulations,
+            "_seat_distributions": runs,
+            "_canon_to_id": {
+                "de:cdu": "a",
+                "de:spd": "b",
+                "de:gruene": "c",
+            },
+            "_id_to_canon": {"a": "de:cdu", "b": "de:spd", "c": "de:gruene"},
+            "_names": {"a": "CDU", "b": "SPD", "c": "Grüne"},
+            "_total_seats": 100,
+        },
+    )
+    monkeypatch.setattr(
+        services,
+        "seats_payload",
+        lambda _pid: {
+            "parliament_id": "toy",
+            "total_seats": 100,
+            "seats": {"a": 50, "b": 30, "c": 20},
+            "seats_by_name": {"CDU": 50, "SPD": 30, "Grüne": 20},
+            "reason": None,
+        },
+    )
+    services.clear_payload_caches()
+
+    all_payload = services.coalition_check_all_payload("toy", n_simulations=100)
+    assert all_payload["capped"] is False
+    assert set(all_payload["eligible_parties"]) == {
+        "de:cdu",
+        "de:spd",
+        "de:gruene",
+    }
+    # 2^3 - 1 = 7 Kombinationen
+    assert len(all_payload["combinations"]) == 7
+
+    alone = services.coalition_check_payload("toy", ["de:cdu"], n_simulations=100)
+    key = "de:cdu"
+    assert all_payload["combinations"][key]["majority_probability"] == pytest.approx(
+        alone["majority_probability"]
+    )
+    assert all_payload["combinations"][key]["point_seats"] == alone["point_seats"]
+
+    pair = services.coalition_check_payload(
+        "toy", ["de:spd", "de:cdu"], n_simulations=100
+    )
+    pair_key = "de:cdu|de:spd"
+    assert all_payload["combinations"][pair_key]["majority_probability"] == (
+        pytest.approx(pair["majority_probability"])
+    )
+
+
 def test_election_night_near_threshold_stays_uncertain(monkeypatch, api_warehouse):
     """Partei knapp an der 5-%-Hürde bleibt trotz enger Wahlabend-SD unsicher."""
     from analysis.uncertainty import WAHLABEND_SD_PP
