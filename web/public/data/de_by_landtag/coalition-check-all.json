@@ -1,0 +1,344 @@
+{
+  "parliament_id": "de_by_landtag",
+  "n_simulations": 400,
+  "total_seats": 180,
+  "majority_threshold": 91,
+  "capped": false,
+  "eligible_parties": [
+    "de:csu",
+    "de:afd",
+    "de:gruene",
+    "de:fw",
+    "de:spd"
+  ],
+  "combinations": {
+    "de:csu": {
+      "parties": [
+        "de:csu"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 77,
+      "point_has_majority": false
+    },
+    "de:afd": {
+      "parties": [
+        "de:afd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 40,
+      "point_has_majority": false
+    },
+    "de:gruene": {
+      "parties": [
+        "de:gruene"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 27,
+      "point_has_majority": false
+    },
+    "de:fw": {
+      "parties": [
+        "de:fw"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 24,
+      "point_has_majority": false
+    },
+    "de:spd": {
+      "parties": [
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 12,
+      "point_has_majority": false
+    },
+    "de:afd|de:csu": {
+      "parties": [
+        "de:afd",
+        "de:csu"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 117,
+      "point_has_majority": true
+    },
+    "de:csu|de:gruene": {
+      "parties": [
+        "de:csu",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 104,
+      "point_has_majority": true
+    },
+    "de:csu|de:fw": {
+      "parties": [
+        "de:csu",
+        "de:fw"
+      ],
+      "majority_probability": 0.9975,
+      "n_majority": 399,
+      "point_seats": 101,
+      "point_has_majority": true
+    },
+    "de:csu|de:spd": {
+      "parties": [
+        "de:csu",
+        "de:spd"
+      ],
+      "majority_probability": 0.3125,
+      "n_majority": 125,
+      "point_seats": 89,
+      "point_has_majority": false
+    },
+    "de:afd|de:gruene": {
+      "parties": [
+        "de:afd",
+        "de:gruene"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 67,
+      "point_has_majority": false
+    },
+    "de:afd|de:fw": {
+      "parties": [
+        "de:afd",
+        "de:fw"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 64,
+      "point_has_majority": false
+    },
+    "de:afd|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 52,
+      "point_has_majority": false
+    },
+    "de:fw|de:gruene": {
+      "parties": [
+        "de:fw",
+        "de:gruene"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 51,
+      "point_has_majority": false
+    },
+    "de:gruene|de:spd": {
+      "parties": [
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 39,
+      "point_has_majority": false
+    },
+    "de:fw|de:spd": {
+      "parties": [
+        "de:fw",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 36,
+      "point_has_majority": false
+    },
+    "de:afd|de:csu|de:gruene": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 144,
+      "point_has_majority": true
+    },
+    "de:afd|de:csu|de:fw": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:fw"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 141,
+      "point_has_majority": true
+    },
+    "de:afd|de:csu|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 129,
+      "point_has_majority": true
+    },
+    "de:csu|de:fw|de:gruene": {
+      "parties": [
+        "de:csu",
+        "de:fw",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 128,
+      "point_has_majority": true
+    },
+    "de:csu|de:gruene|de:spd": {
+      "parties": [
+        "de:csu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 116,
+      "point_has_majority": true
+    },
+    "de:csu|de:fw|de:spd": {
+      "parties": [
+        "de:csu",
+        "de:fw",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 113,
+      "point_has_majority": true
+    },
+    "de:afd|de:fw|de:gruene": {
+      "parties": [
+        "de:afd",
+        "de:fw",
+        "de:gruene"
+      ],
+      "majority_probability": 0.55,
+      "n_majority": 220,
+      "point_seats": 91,
+      "point_has_majority": true
+    },
+    "de:afd|de:gruene|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 79,
+      "point_has_majority": false
+    },
+    "de:afd|de:fw|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:fw",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 76,
+      "point_has_majority": false
+    },
+    "de:fw|de:gruene|de:spd": {
+      "parties": [
+        "de:fw",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 63,
+      "point_has_majority": false
+    },
+    "de:afd|de:csu|de:fw|de:gruene": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:fw",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 168,
+      "point_has_majority": true
+    },
+    "de:afd|de:csu|de:gruene|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 156,
+      "point_has_majority": true
+    },
+    "de:afd|de:csu|de:fw|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:fw",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 153,
+      "point_has_majority": true
+    },
+    "de:csu|de:fw|de:gruene|de:spd": {
+      "parties": [
+        "de:csu",
+        "de:fw",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 140,
+      "point_has_majority": true
+    },
+    "de:afd|de:fw|de:gruene|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:fw",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 0.9975,
+      "n_majority": 399,
+      "point_seats": 103,
+      "point_has_majority": true
+    },
+    "de:afd|de:csu|de:fw|de:gruene|de:spd": {
+      "parties": [
+        "de:afd",
+        "de:csu",
+        "de:fw",
+        "de:gruene",
+        "de:spd"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 180,
+      "point_has_majority": true
+    }
+  }
+}
