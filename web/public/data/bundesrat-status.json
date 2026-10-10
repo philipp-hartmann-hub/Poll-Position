@@ -1,0 +1,627 @@
+{
+  "as_of": "2026-08-25",
+  "disclaimer": "Basierend auf den aktuell amtierenden Landesregierungen (Stand siehe Datum), nicht auf Umfragen-Projektionen der Landtage — die kannst du über die Dropdowns selbst durchspielen.",
+  "sources": [
+    "https://www.bundesrat.de/DE/bundesrat/verteilung/verteilung.html",
+    "Handbuch des Bundesrates, Band 1 (2025), Art. 51 Abs. 2 GG — Stimmenverteilung",
+    "https://de.wikipedia.org/wiki/Liste_der_Ministerpräsidenten_der_deutschen_Länder (Stand 28.07.2026)"
+  ],
+  "total_votes": 69,
+  "majority_threshold": 35,
+  "two_thirds_threshold": 46,
+  "laender": [
+    {
+      "parliament_id": "de_bw_landtag",
+      "name": "Baden-Württemberg",
+      "votes": 6,
+      "default_government": [
+        "de:gruene",
+        "de:cdu"
+      ],
+      "default_government_label": "Grüne + CDU",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:gruene",
+          "parties": [
+            "de:cdu",
+            "de:gruene"
+          ],
+          "seats": 76,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_by_landtag",
+      "name": "Bayern",
+      "votes": 6,
+      "default_government": [
+        "de:csu",
+        "de:fw"
+      ],
+      "default_government_label": "CSU + Freie Wähler",
+      "coalition_options": [
+        {
+          "key": "de:csu+de:gruene",
+          "parties": [
+            "de:csu",
+            "de:gruene"
+          ],
+          "seats": 104,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:csu+de:fw",
+          "parties": [
+            "de:csu",
+            "de:fw"
+          ],
+          "seats": 101,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_be_abgeordnetenhaus",
+      "name": "Berlin",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "default_government_label": "CDU + SPD",
+      "coalition_options": [
+        {
+          "key": "de:gruene+de:linke+de:spd",
+          "parties": [
+            "de:gruene",
+            "de:linke",
+            "de:spd"
+          ],
+          "seats": 74,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:gruene+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:gruene",
+            "de:spd"
+          ],
+          "seats": 70,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_bb_landtag",
+      "name": "Brandenburg",
+      "votes": 4,
+      "default_government": [
+        "de:spd",
+        "de:cdu"
+      ],
+      "default_government_label": "SPD + CDU",
+      "coalition_options": []
+    },
+    {
+      "parliament_id": "de_hb_buergerschaft",
+      "name": "Bremen",
+      "votes": 3,
+      "default_government": [
+        "de:spd",
+        "de:gruene",
+        "de:linke"
+      ],
+      "default_government_label": "SPD + Grüne + Linke",
+      "coalition_options": [
+        {
+          "key": "de:gruene+de:linke+de:spd",
+          "parties": [
+            "de:gruene",
+            "de:linke",
+            "de:spd"
+          ],
+          "seats": 49,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:gruene+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:gruene",
+            "de:spd"
+          ],
+          "seats": 56,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_hh_buergerschaft",
+      "name": "Hamburg",
+      "votes": 3,
+      "default_government": [
+        "de:spd",
+        "de:gruene"
+      ],
+      "default_government_label": "SPD + Grüne",
+      "coalition_options": [
+        {
+          "key": "de:gruene+de:spd",
+          "parties": [
+            "de:gruene",
+            "de:spd"
+          ],
+          "seats": 65,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:linke+de:spd",
+          "parties": [
+            "de:linke",
+            "de:spd"
+          ],
+          "seats": 61,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_he_landtag",
+      "name": "Hessen",
+      "votes": 5,
+      "default_government": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "default_government_label": "CDU + SPD",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:spd"
+          ],
+          "seats": 57,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_mv_landtag",
+      "name": "Mecklenburg-Vorpommern",
+      "votes": 3,
+      "default_government": [
+        "de:spd",
+        "de:linke"
+      ],
+      "default_government_label": "SPD + Linke",
+      "coalition_options": [
+        {
+          "key": "de:gruene+de:linke+de:spd",
+          "parties": [
+            "de:gruene",
+            "de:linke",
+            "de:spd"
+          ],
+          "seats": 38,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_ni_landtag",
+      "name": "Niedersachsen",
+      "votes": 6,
+      "default_government": [
+        "de:spd",
+        "de:gruene"
+      ],
+      "default_government_label": "SPD + Grüne",
+      "coalition_options": [
+        {
+          "key": "de:gruene+de:linke+de:spd",
+          "parties": [
+            "de:gruene",
+            "de:linke",
+            "de:spd"
+          ],
+          "seats": 70,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:spd"
+          ],
+          "seats": 72,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_nw_landtag",
+      "name": "Nordrhein-Westfalen",
+      "votes": 6,
+      "default_government": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "default_government_label": "CDU + Grüne",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:gruene",
+          "parties": [
+            "de:cdu",
+            "de:gruene"
+          ],
+          "seats": 94,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_rp_landtag",
+      "name": "Rheinland-Pfalz",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "default_government_label": "CDU + SPD",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:spd"
+          ],
+          "seats": 57,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_sl_landtag",
+      "name": "Saarland",
+      "votes": 3,
+      "default_government": [
+        "de:spd"
+      ],
+      "default_government_label": "SPD",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:spd"
+          ],
+          "seats": 30,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_sn_landtag",
+      "name": "Sachsen",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "default_government_label": "CDU + SPD",
+      "coalition_options": [
+        {
+          "key": "de:afd+de:bsw",
+          "parties": [
+            "de:afd",
+            "de:bsw"
+          ],
+          "seats": 64,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_st_landtag",
+      "name": "Sachsen-Anhalt",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:spd",
+        "de:fdp"
+      ],
+      "default_government_label": "CDU + SPD + FDP",
+      "coalition_options": []
+    },
+    {
+      "parliament_id": "de_sh_landtag",
+      "name": "Schleswig-Holstein",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "default_government_label": "CDU + Grüne",
+      "coalition_options": [
+        {
+          "key": "de:cdu+de:fdp+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:fdp",
+            "de:spd"
+          ],
+          "seats": 35,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:spd+de:ssw",
+          "parties": [
+            "de:cdu",
+            "de:spd",
+            "de:ssw"
+          ],
+          "seats": 35,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:gruene+de:spd",
+          "parties": [
+            "de:cdu",
+            "de:gruene",
+            "de:spd"
+          ],
+          "seats": 43,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:fdp+de:gruene",
+          "parties": [
+            "de:cdu",
+            "de:fdp",
+            "de:gruene"
+          ],
+          "seats": 36,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:gruene+de:ssw",
+          "parties": [
+            "de:cdu",
+            "de:gruene",
+            "de:ssw"
+          ],
+          "seats": 36,
+          "is_minimal_winning": true
+        }
+      ]
+    },
+    {
+      "parliament_id": "de_th_landtag",
+      "name": "Thüringen",
+      "votes": 4,
+      "default_government": [
+        "de:cdu",
+        "de:bsw",
+        "de:spd"
+      ],
+      "default_government_label": "CDU + BSW + SPD",
+      "coalition_options": [
+        {
+          "key": "de:afd+de:bsw",
+          "parties": [
+            "de:afd",
+            "de:bsw"
+          ],
+          "seats": 46,
+          "is_minimal_winning": true
+        }
+      ]
+    }
+  ],
+  "simulation": {
+    "yes_votes": 69,
+    "no_votes": 0,
+    "abstain_votes": 0,
+    "has_majority": true,
+    "has_two_thirds": true,
+    "by_land": [
+      {
+        "parliament_id": "de_bw_landtag",
+        "name": "Baden-Württemberg",
+        "votes": 6,
+        "stance": "yes",
+        "government": [
+          "de:gruene",
+          "de:cdu"
+        ],
+        "government_label": "Grüne + CDU",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_by_landtag",
+        "name": "Bayern",
+        "votes": 6,
+        "stance": "yes",
+        "government": [
+          "de:csu",
+          "de:fw"
+        ],
+        "government_label": "CSU + Freie Wähler",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_be_abgeordnetenhaus",
+        "name": "Berlin",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:spd"
+        ],
+        "government_label": "CDU + SPD",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_bb_landtag",
+        "name": "Brandenburg",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:spd",
+          "de:cdu"
+        ],
+        "government_label": "SPD + CDU",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_hb_buergerschaft",
+        "name": "Bremen",
+        "votes": 3,
+        "stance": "yes",
+        "government": [
+          "de:spd",
+          "de:gruene",
+          "de:linke"
+        ],
+        "government_label": "SPD + Grüne + Linke",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_hh_buergerschaft",
+        "name": "Hamburg",
+        "votes": 3,
+        "stance": "yes",
+        "government": [
+          "de:spd",
+          "de:gruene"
+        ],
+        "government_label": "SPD + Grüne",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_he_landtag",
+        "name": "Hessen",
+        "votes": 5,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:spd"
+        ],
+        "government_label": "CDU + SPD",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_mv_landtag",
+        "name": "Mecklenburg-Vorpommern",
+        "votes": 3,
+        "stance": "yes",
+        "government": [
+          "de:spd",
+          "de:linke"
+        ],
+        "government_label": "SPD + Linke",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_ni_landtag",
+        "name": "Niedersachsen",
+        "votes": 6,
+        "stance": "yes",
+        "government": [
+          "de:spd",
+          "de:gruene"
+        ],
+        "government_label": "SPD + Grüne",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_nw_landtag",
+        "name": "Nordrhein-Westfalen",
+        "votes": 6,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:gruene"
+        ],
+        "government_label": "CDU + Grüne",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_rp_landtag",
+        "name": "Rheinland-Pfalz",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:spd"
+        ],
+        "government_label": "CDU + SPD",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_sl_landtag",
+        "name": "Saarland",
+        "votes": 3,
+        "stance": "yes",
+        "government": [
+          "de:spd"
+        ],
+        "government_label": "SPD",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_sn_landtag",
+        "name": "Sachsen",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:spd"
+        ],
+        "government_label": "CDU + SPD",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_st_landtag",
+        "name": "Sachsen-Anhalt",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:spd",
+          "de:fdp"
+        ],
+        "government_label": "CDU + SPD + FDP",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_sh_landtag",
+        "name": "Schleswig-Holstein",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:gruene"
+        ],
+        "government_label": "CDU + Grüne",
+        "source": "default"
+      },
+      {
+        "parliament_id": "de_th_landtag",
+        "name": "Thüringen",
+        "votes": 4,
+        "stance": "yes",
+        "government": [
+          "de:cdu",
+          "de:bsw",
+          "de:spd"
+        ],
+        "government_label": "CDU + BSW + SPD",
+        "source": "default"
+      }
+    ]
+  }
+}

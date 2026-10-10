@@ -58,5 +58,7 @@
       "probability_above_threshold": 0.185,
       "probability_indispensable": 0.0
     }
-  ]
+  ],
+  "current_government_majority_probability": 0.0,
+  "current_government_missing_parties": []
 }

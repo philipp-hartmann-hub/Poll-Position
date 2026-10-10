@@ -3,5 +3,7 @@
   "threshold_percent": 5.0,
   "n_simulations": 0,
   "n_deadlock": 0,
-  "parties": []
+  "parties": [],
+  "current_government_majority_probability": null,
+  "current_government_missing_parties": []
 }

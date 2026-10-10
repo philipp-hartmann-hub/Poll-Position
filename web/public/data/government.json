@@ -1,0 +1,85 @@
+{
+  "bundesregierung": {
+    "stand": "2026-08-25",
+    "parties": [
+      "de:cdu_csu",
+      "de:spd"
+    ],
+    "label": "CDU/CSU + SPD"
+  },
+  "known_parties": [
+    {
+      "id": "de:bsw",
+      "label": "BSW"
+    },
+    {
+      "id": "de:cdu",
+      "label": "CDU"
+    },
+    {
+      "id": "de:cdu_csu",
+      "label": "CDU/CSU"
+    },
+    {
+      "id": "de:csu",
+      "label": "CSU"
+    },
+    {
+      "id": "de:fdp",
+      "label": "FDP"
+    },
+    {
+      "id": "de:fw",
+      "label": "Freie Wähler"
+    },
+    {
+      "id": "de:gruene",
+      "label": "Grüne"
+    },
+    {
+      "id": "de:linke",
+      "label": "Linke"
+    },
+    {
+      "id": "de:spd",
+      "label": "SPD"
+    }
+  ],
+  "poll_presets": [
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:spd",
+        "de:gruene"
+      ],
+      "label": "Kenia",
+      "majority_probability": 0.96,
+      "n_majority": 384,
+      "n_simulations": 400
+    },
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:spd",
+        "de:fdp",
+        "de:gruene"
+      ],
+      "label": "CDU/CSU + SPD + Grüne + FDP",
+      "majority_probability": 0.0325,
+      "n_majority": 13,
+      "n_simulations": 400
+    },
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:spd",
+        "de:bsw",
+        "de:gruene"
+      ],
+      "label": "CDU/CSU + BSW + SPD + Grüne",
+      "majority_probability": 0.0075,
+      "n_majority": 3,
+      "n_simulations": 400
+    }
+  ]
+}

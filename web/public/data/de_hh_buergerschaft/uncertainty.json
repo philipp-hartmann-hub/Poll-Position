@@ -1,0 +1,146 @@
+{
+  "parliament_id": "de_hh_buergerschaft",
+  "n_simulations": 200,
+  "n_deadlock": 0,
+  "mean_seats": {
+    "dawum:party:101": 16.59,
+    "dawum:party:18": 0.065,
+    "dawum:party:2": 39.81,
+    "dawum:party:23": 0.175,
+    "dawum:party:3": 0.035,
+    "dawum:party:4": 24.6,
+    "dawum:party:5": 20.45,
+    "dawum:party:7": 19.275,
+    "de:sonstige": 0.0
+  },
+  "coalition_probabilities": [
+    {
+      "parties": [
+        "de:spd",
+        "de:gruene"
+      ],
+      "majority_probability": 0.94,
+      "n_majority": 188,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:spd",
+        "de:linke"
+      ],
+      "majority_probability": 0.47,
+      "n_majority": 94,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd",
+        "de:gruene"
+      ],
+      "majority_probability": 0.06,
+      "n_majority": 12,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:spd",
+        "de:gruene",
+        "de:linke"
+      ],
+      "majority_probability": 0.055,
+      "n_majority": 11,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:spd",
+        "de:bsw",
+        "de:gruene"
+      ],
+      "majority_probability": 0.005,
+      "n_majority": 1,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:spd",
+        "de:fdp",
+        "de:gruene"
+      ],
+      "majority_probability": 0.005,
+      "n_majority": 1,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:volt",
+        "de:spd",
+        "de:gruene"
+      ],
+      "majority_probability": 0.005,
+      "n_majority": 1,
+      "n_simulations": 200
+    }
+  ],
+  "party_indispensability": [
+    {
+      "party_id": "de:spd",
+      "probability": 1.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:gruene",
+      "probability": 0.48,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:afd",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:bsw",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:cdu",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:fdp",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:linke",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:volt",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    }
+  ],
+  "party_id_to_canonical": {
+    "dawum:party:2": "de:spd",
+    "dawum:party:4": "de:gruene",
+    "dawum:party:5": "de:linke",
+    "dawum:party:7": "de:afd",
+    "dawum:party:101": "de:cdu",
+    "dawum:party:23": "de:bsw",
+    "dawum:party:3": "de:fdp",
+    "dawum:party:18": "de:volt",
+    "de:sonstige": "de:sonstige"
+  },
+  "current_government_parties": [
+    "de:spd",
+    "de:gruene"
+  ],
+  "current_government_label": "SPD + Grüne",
+  "current_government_majority_probability": 0.94,
+  "current_government_missing_parties": []
+}

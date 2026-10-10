@@ -1,0 +1,80 @@
+{
+  "parliament_id": "de_bw_landtag",
+  "n_simulations": 200,
+  "n_deadlock": 0,
+  "mean_seats": {
+    "dawum:party:101": 36.785,
+    "dawum:party:2": 6.835,
+    "dawum:party:23": 0.34,
+    "dawum:party:3": 2.825,
+    "dawum:party:4": 39.93,
+    "dawum:party:5": 5.07,
+    "dawum:party:7": 28.215,
+    "de:sonstige": 0.0
+  },
+  "coalition_probabilities": [
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 200,
+      "n_simulations": 200
+    }
+  ],
+  "party_indispensability": [
+    {
+      "party_id": "de:gruene",
+      "probability": 0.99,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:cdu",
+      "probability": 0.895,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:afd",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:bsw",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:fdp",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:linke",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:spd",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    }
+  ],
+  "party_id_to_canonical": {
+    "dawum:party:4": "de:gruene",
+    "dawum:party:101": "de:cdu",
+    "dawum:party:7": "de:afd",
+    "dawum:party:2": "de:spd",
+    "dawum:party:5": "de:linke",
+    "dawum:party:3": "de:fdp",
+    "dawum:party:23": "de:bsw",
+    "de:sonstige": "de:sonstige"
+  },
+  "current_government_parties": [
+    "de:gruene",
+    "de:cdu"
+  ],
+  "current_government_label": "Grüne + CDU",
+  "current_government_majority_probability": 1.0,
+  "current_government_missing_parties": []
+}

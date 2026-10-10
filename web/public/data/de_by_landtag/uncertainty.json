@@ -1,0 +1,97 @@
+{
+  "parliament_id": "de_by_landtag",
+  "n_simulations": 200,
+  "n_deadlock": 0,
+  "mean_seats": {
+    "dawum:party:102": 77.605,
+    "dawum:party:11": 0.0,
+    "dawum:party:2": 10.745,
+    "dawum:party:23": 0.32,
+    "dawum:party:3": 0.05,
+    "dawum:party:4": 26.37,
+    "dawum:party:5": 0.315,
+    "dawum:party:7": 40.455,
+    "dawum:party:8": 24.14,
+    "de:sonstige": 0.0
+  },
+  "coalition_probabilities": [
+    {
+      "parties": [
+        "de:csu",
+        "de:gruene"
+      ],
+      "majority_probability": 1.0,
+      "n_majority": 200,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:csu",
+        "de:fw"
+      ],
+      "majority_probability": 0.995,
+      "n_majority": 199,
+      "n_simulations": 200
+    }
+  ],
+  "party_indispensability": [
+    {
+      "party_id": "de:csu",
+      "probability": 1.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:afd",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:bsw",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:fdp",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:fw",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:gruene",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:linke",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:spd",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    }
+  ],
+  "party_id_to_canonical": {
+    "dawum:party:102": "de:csu",
+    "dawum:party:7": "de:afd",
+    "dawum:party:4": "de:gruene",
+    "dawum:party:8": "de:fw",
+    "dawum:party:2": "de:spd",
+    "dawum:party:5": "de:linke",
+    "dawum:party:23": "de:bsw",
+    "dawum:party:3": "de:fdp",
+    "de:sonstige": "de:sonstige"
+  },
+  "current_government_parties": [
+    "de:csu",
+    "de:fw"
+  ],
+  "current_government_label": "CSU + Freie Wähler",
+  "current_government_majority_probability": 0.995,
+  "current_government_missing_parties": []
+}

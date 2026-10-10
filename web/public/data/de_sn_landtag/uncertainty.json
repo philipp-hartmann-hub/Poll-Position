@@ -1,0 +1,94 @@
+{
+  "parliament_id": "de_sn_landtag",
+  "n_simulations": 200,
+  "n_deadlock": 9,
+  "mean_seats": {
+    "dawum:party:101": 28.42,
+    "dawum:party:2": 6.74,
+    "dawum:party:23": 9.155,
+    "dawum:party:3": 0.0,
+    "dawum:party:4": 6.595,
+    "dawum:party:5": 12.045,
+    "dawum:party:7": 57.045,
+    "dawum:party:8": 0.0,
+    "de:sonstige": 0.0
+  },
+  "coalition_probabilities": [
+    {
+      "parties": [
+        "de:bsw",
+        "de:afd"
+      ],
+      "majority_probability": 0.76,
+      "n_majority": 152,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:afd"
+      ],
+      "majority_probability": 0.195,
+      "n_majority": 39,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "n_simulations": 200
+    }
+  ],
+  "party_indispensability": [
+    {
+      "party_id": "de:afd",
+      "probability": 1.0,
+      "n_simulations_considered": 191
+    },
+    {
+      "party_id": "de:bsw",
+      "probability": 0.7958115183246073,
+      "n_simulations_considered": 191
+    },
+    {
+      "party_id": "de:cdu",
+      "probability": 0.0,
+      "n_simulations_considered": 191
+    },
+    {
+      "party_id": "de:gruene",
+      "probability": 0.0,
+      "n_simulations_considered": 191
+    },
+    {
+      "party_id": "de:linke",
+      "probability": 0.0,
+      "n_simulations_considered": 191
+    },
+    {
+      "party_id": "de:spd",
+      "probability": 0.0,
+      "n_simulations_considered": 191
+    }
+  ],
+  "party_id_to_canonical": {
+    "dawum:party:7": "de:afd",
+    "dawum:party:101": "de:cdu",
+    "dawum:party:5": "de:linke",
+    "dawum:party:23": "de:bsw",
+    "dawum:party:2": "de:spd",
+    "dawum:party:4": "de:gruene",
+    "dawum:party:8": "de:fw",
+    "dawum:party:3": "de:fdp",
+    "de:sonstige": "de:sonstige"
+  },
+  "current_government_parties": [
+    "de:cdu",
+    "de:spd"
+  ],
+  "current_government_label": "CDU + SPD",
+  "current_government_majority_probability": 0.0,
+  "current_government_missing_parties": []
+}

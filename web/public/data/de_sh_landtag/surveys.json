@@ -1,0 +1,1018 @@
+{
+  "parliament_id": "de_sh_landtag",
+  "total": 43,
+  "limit": 20,
+  "offset": 0,
+  "surveys": [
+    {
+      "id": "dawum:survey:4237",
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "field_date_from": "2026-07-07",
+      "field_date_to": "2026-07-14",
+      "publication_date": "2026-07-14",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 27.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 18.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 4.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:4155",
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "field_date_from": "2026-04-08",
+      "field_date_to": "2026-04-13",
+      "publication_date": "2026-04-16",
+      "sample_size": 1155,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 33.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 19.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 12.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 4.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:3717",
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "field_date_from": "2025-01-13",
+      "field_date_to": "2025-01-20",
+      "publication_date": "2025-01-22",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 39.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 14.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 13.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 4.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 3.0
+        },
+        {
+          "party_id": "dawum:party:23",
+          "party_name": "BSW",
+          "share": 3.0
+        },
+        {
+          "party_id": "dawum:party:8",
+          "party_name": "Freie Wähler",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:3262",
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "field_date_from": "2023-11-06",
+      "field_date_to": "2023-11-13",
+      "publication_date": "2023-11-15",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 40.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 12.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:3204",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2023-09-24",
+      "field_date_to": "2023-10-02",
+      "publication_date": "2023-10-02",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 32.5
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 18.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 14.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 9.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 1.5
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2981",
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "field_date_from": "2023-04-20",
+      "field_date_to": "2023-04-25",
+      "publication_date": "2023-04-27",
+      "sample_size": 1160,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 38.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 8.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 8.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 7.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2980",
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "field_date_from": "2023-04-17",
+      "field_date_to": "2023-04-24",
+      "publication_date": "2023-04-25",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 39.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 8.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 7.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 4.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2759",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-10-24",
+      "field_date_to": "2022-11-02",
+      "publication_date": "2022-11-02",
+      "sample_size": 942,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 36.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 23.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 8.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 5.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2527",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-05-19",
+      "field_date_to": "2022-05-23",
+      "publication_date": "2022-05-23",
+      "sample_size": 940,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 42.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 23.5
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 14.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 4.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 3.5
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2495",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-05-04",
+      "field_date_to": "2022-05-06",
+      "publication_date": "2022-05-06",
+      "sample_size": 918,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 39.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 17.5
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.5
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 7.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 5.5
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.5
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2493",
+      "institute_id": "dawum:institute:6",
+      "institute_name": "Forschungsgruppe Wahlen",
+      "field_date_from": "2022-05-02",
+      "field_date_to": "2022-05-05",
+      "publication_date": "2022-05-05",
+      "sample_size": 1704,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 38.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 18.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 18.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 8.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 6.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2491",
+      "institute_id": "dawum:institute:16",
+      "institute_name": "Civey",
+      "field_date_from": "2022-04-28",
+      "field_date_to": "2022-05-05",
+      "publication_date": "2022-05-05",
+      "sample_size": 1837,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 40.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 20.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 15.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2486",
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "field_date_from": "2022-04-25",
+      "field_date_to": "2022-05-02",
+      "publication_date": "2022-05-03",
+      "sample_size": 1000,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 36.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 20.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 9.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2479",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-04-25",
+      "field_date_to": "2022-04-29",
+      "publication_date": "2022-04-29",
+      "sample_size": 913,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 39.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 18.5
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.5
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 7.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2477",
+      "institute_id": "dawum:institute:6",
+      "institute_name": "Forschungsgruppe Wahlen",
+      "field_date_from": "2022-04-25",
+      "field_date_to": "2022-04-28",
+      "publication_date": "2022-04-29",
+      "sample_size": 1011,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 38.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 19.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 3.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2474",
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "field_date_from": "2022-04-25",
+      "field_date_to": "2022-04-27",
+      "publication_date": "2022-04-28",
+      "sample_size": 1530,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 38.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 19.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 9.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 8.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 5.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2463",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-04-16",
+      "field_date_to": "2022-04-23",
+      "publication_date": "2022-04-23",
+      "sample_size": 920,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 39.5
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 21.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 7.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 4.5
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 4.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2459",
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "field_date_from": "2022-04-13",
+      "field_date_to": "2022-04-19",
+      "publication_date": "2022-04-21",
+      "sample_size": 1172,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 38.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 20.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 9.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 4.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2432",
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "field_date_from": "2022-03-23",
+      "field_date_to": "2022-04-02",
+      "publication_date": "2022-04-03",
+      "sample_size": 950,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 37.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 22.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 17.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 7.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 6.5
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 4.5
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 4.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 2.0
+        }
+      ]
+    },
+    {
+      "id": "dawum:survey:2427",
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "field_date_from": "2022-03-24",
+      "field_date_to": "2022-03-29",
+      "publication_date": "2022-03-31",
+      "sample_size": 1158,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:101",
+          "party_name": "CDU",
+          "share": 36.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 20.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 18.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 8.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 8.0
+        },
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 6.0
+        },
+        {
+          "party_id": "dawum:party:10",
+          "party_name": "SSW",
+          "share": 4.0
+        }
+      ]
+    }
+  ]
+}

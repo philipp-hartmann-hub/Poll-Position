@@ -1,0 +1,13 @@
+{
+  "parliament_id": "dawum:parliament:17",
+  "n_simulations": 0,
+  "n_deadlock": 0,
+  "mean_seats": {},
+  "coalition_probabilities": [],
+  "party_indispensability": [],
+  "party_id_to_canonical": {},
+  "current_government_parties": null,
+  "current_government_label": null,
+  "current_government_majority_probability": null,
+  "current_government_missing_parties": []
+}
