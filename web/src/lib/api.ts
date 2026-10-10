@@ -167,6 +167,9 @@ export type PartyForecastResponse = {
   n_simulations: number;
   n_deadlock?: number;
   parties: PartyForecastParty[];
+  /** Wiederwahl-P aus Uncertainty-Pipeline (Static-Export, optional bei Alt-Snapshots). */
+  current_government_majority_probability?: number | null;
+  current_government_missing_parties?: string[];
 };
 
 export type HouseEffectsResponse = {
@@ -572,12 +575,58 @@ export function fetchThresholdWatch(
 
 export function fetchPartyForecast(
   parliamentId: string,
+  opts?: { signal?: AbortSignal },
 ): Promise<PartyForecastResponse> {
   const q = new URLSearchParams({ parliament_id: parliamentId });
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
   return fetchStaticOrApi(
     `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/party-forecast.json`,
     `/api/party-forecast?${q}`,
+    init,
   );
+}
+
+/**
+ * Wiederwahl-Kennzahl: bevorzugt party-forecast (Static/API, bereits MC),
+ * Fallback auf uncertainty bei Alt-Snapshots ohne die Felder.
+ */
+export async function fetchReelectionProbability(
+  parliamentId: string,
+  opts?: { signal?: AbortSignal },
+): Promise<{
+  probability: number | null;
+  missingParties: string[];
+}> {
+  const signal = opts?.signal;
+  try {
+    const forecast = await fetchPartyForecast(parliamentId, { signal });
+    if (
+      forecast &&
+      Object.prototype.hasOwnProperty.call(
+        forecast,
+        "current_government_majority_probability",
+      )
+    ) {
+      const p = forecast.current_government_majority_probability;
+      return {
+        probability: typeof p === "number" ? p : null,
+        missingParties: Array.isArray(forecast.current_government_missing_parties)
+          ? forecast.current_government_missing_parties
+          : [],
+      };
+    }
+  } catch (e) {
+    if (signal?.aborted || isDomAbort(e)) throw e;
+    // Forecast fehlgeschlagen → Uncertainty-Fallback
+  }
+  const unc = await fetchUncertainty(parliamentId, 200, { signal });
+  const p = unc?.current_government_majority_probability;
+  return {
+    probability: typeof p === "number" ? p : null,
+    missingParties: Array.isArray(unc?.current_government_missing_parties)
+      ? unc.current_government_missing_parties
+      : [],
+  };
 }
 
 export function fetchThresholdWatchOverview(

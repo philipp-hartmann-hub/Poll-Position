@@ -1064,6 +1064,38 @@ def test_party_forecast_api_exposes_indispensable(client):
     )
 
 
+def test_party_forecast_exposes_reelection_fields(monkeypatch, api_warehouse):
+    """Wiederwahl-Kennzahl liegt im Static-fähigen party-forecast (kein Extra-MC)."""
+    from backend import services
+
+    monkeypatch.setattr(
+        services,
+        "uncertainty_payload",
+        lambda parliament_id, n_simulations=400, **_kw: {
+            "n_deadlock": 0,
+            "party_indispensability": [],
+            "party_id_to_canonical": {},
+            "current_government_majority_probability": 0.37,
+            "current_government_missing_parties": [],
+        },
+    )
+    monkeypatch.setattr(
+        services,
+        "_votes_from_averages",
+        lambda _pid: (
+            {"cdu": 30.0, "spd": 25.0, "afd": 20.0},
+            {"cdu": "CDU/CSU", "spd": "SPD", "afd": "AfD"},
+        ),
+    )
+    monkeypatch.setattr(services, "_party_house_variance", lambda _pid: {})
+    monkeypatch.setattr(services, "_election_system_for", lambda _pid: (None, None))
+    services.clear_payload_caches()
+
+    out = services.party_forecast_payload("de_bundestag", n_simulations=40)
+    assert out["current_government_majority_probability"] == pytest.approx(0.37)
+    assert out["current_government_missing_parties"] == []
+
+
 def test_expanded_coalition_candidates_near_majority_singleton(monkeypatch):
     """~46 % der Sitze (mit Hürde) → 1-Parteien-Kandidat; ~25 % → nicht."""
     from backend import services

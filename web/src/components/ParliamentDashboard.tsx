@@ -6,8 +6,8 @@ import {
   fetchBundesratStatus,
   fetchGovernment,
   fetchLastElection,
+  fetchReelectionProbability,
   fetchSeats,
-  fetchUncertainty,
   type AveragesResponse,
   type LastElectionResponse,
   type SeatsResponse,
@@ -66,6 +66,7 @@ function SeatCompareBlock({
   gov,
   reelectionProbability,
   missingGovernmentParties,
+  reelectionLoading,
 }: {
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
@@ -73,6 +74,7 @@ function SeatCompareBlock({
   gov: IncumbentGov | null;
   reelectionProbability: number | null;
   missingGovernmentParties: string[];
+  reelectionLoading: boolean;
 }) {
   const pollParties =
     averages?.parties.map((p) => ({
@@ -154,6 +156,7 @@ function SeatCompareBlock({
           gov={gov}
           reelectionProbability={reelectionProbability}
           missingGovernmentParties={missingGovernmentParties}
+          reelectionLoading={reelectionLoading}
         />
       </div>
     </div>
@@ -172,10 +175,12 @@ function IncumbentCoalitionCard({
   gov,
   reelectionProbability,
   missingGovernmentParties,
+  reelectionLoading,
 }: {
   gov: IncumbentGov | null;
   reelectionProbability: number | null;
   missingGovernmentParties: string[];
+  reelectionLoading: boolean;
 }) {
   if (!gov) {
     return (
@@ -207,7 +212,16 @@ function IncumbentCoalitionCard({
           );
         })}
       </div>
-      {reelectionProbability != null ? (
+      {reelectionLoading ? (
+        <div
+          className="mt-4 border-t border-ink/10 pt-3"
+          aria-busy="true"
+          aria-label="Lade Wiederwahl-Schätzung"
+        >
+          <div className="h-9 w-16 animate-pulse rounded bg-ink/10" />
+          <div className="mt-2 h-4 w-44 max-w-full animate-pulse rounded bg-ink/10" />
+        </div>
+      ) : reelectionProbability != null ? (
         <div className="mt-4 border-t border-ink/10 pt-3">
           <p className="font-display text-3xl tabular-nums text-accent">
             {Math.round(reelectionProbability * 100)} %
@@ -245,6 +259,7 @@ export function ParliamentDashboard({
   const [missingGovernmentParties, setMissingGovernmentParties] = useState<
     string[]
   >([]);
+  const [reelectionLoading, setReelectionLoading] = useState(true);
   const [headerError, setHeaderError] = useState<string | null>(null);
   const [headerLoading, setHeaderLoading] = useState(true);
   const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
@@ -254,8 +269,14 @@ export function ParliamentDashboard({
   const baseId = useId();
   const tabRefs = useRef<Partial<Record<TagKey, HTMLButtonElement | null>>>({});
   const abortRef = useRef<AbortController | null>(null);
+  const reelectionAbortRef = useRef<AbortController | null>(null);
   const overviewSigRef = useRef<string>("");
+  const reelectionRef = useRef<{
+    probability: number | null;
+    missing: string[];
+  }>({ probability: null, missing: [] });
 
+  // Schnelle Static-Exports: steuern headerLoading unabhängig von Wiederwahl-MC.
   useEffect(() => {
     abortRef.current?.abort();
     const ac = new AbortController();
@@ -274,8 +295,17 @@ export function ParliamentDashboard({
       setIncumbent(d.incumbent);
       setReelectionProbability(d.reelectionProbability);
       setMissingGovernmentParties(d.missingGovernmentParties ?? []);
+      reelectionRef.current = {
+        probability: d.reelectionProbability,
+        missing: d.missingGovernmentParties ?? [],
+      };
       setCacheUpdatedAt(cached.updatedAt);
-      overviewSigRef.current = contentSignature(d);
+      overviewSigRef.current = contentSignature({
+        lastElection: d.lastElection,
+        pollSeats: d.pollSeats,
+        averages: d.averages,
+        incumbent: d.incumbent,
+      });
       setHeaderLoading(false);
       setRefreshing(true);
     } else {
@@ -288,12 +318,13 @@ export function ParliamentDashboard({
       setIncumbent(null);
       setReelectionProbability(null);
       setMissingGovernmentParties([]);
+      reelectionRef.current = { probability: null, missing: [] };
       overviewSigRef.current = "";
     }
 
     (async () => {
       try {
-        const [election, seats, avg, gov, br, unc] = await Promise.all([
+        const [election, seats, avg, gov, br] = await Promise.all([
           fetchLastElection(parliamentId, { signal }).catch((e) => {
             if (isAbortError(e)) throw e;
             return null;
@@ -311,10 +342,6 @@ export function ParliamentDashboard({
             return null;
           }),
           fetchBundesratStatus({ signal }).catch((e) => {
-            if (isAbortError(e)) throw e;
-            return null;
-          }),
-          fetchUncertainty(parliamentId, 200, { signal }).catch((e) => {
             if (isAbortError(e)) throw e;
             return null;
           }),
@@ -337,30 +364,28 @@ export function ParliamentDashboard({
           }
         }
 
-        const p = unc?.current_government_majority_probability;
-        const nextReelect = typeof p === "number" ? p : null;
-        const nextMissing = Array.isArray(unc?.current_government_missing_parties)
-          ? unc.current_government_missing_parties
-          : [];
+        const baseSig = contentSignature({
+          lastElection: election,
+          pollSeats: seats,
+          averages: avg,
+          incumbent: nextIncumbent,
+        });
+        if (baseSig !== overviewSigRef.current) {
+          overviewSigRef.current = baseSig;
+          setLastElection(election);
+          setPollSeats(seats);
+          setAverages(avg);
+          setIncumbent(nextIncumbent);
+        }
+        const now = Date.now();
         const nextData: OverviewCacheData = {
           lastElection: election,
           pollSeats: seats,
           averages: avg,
           incumbent: nextIncumbent,
-          reelectionProbability: nextReelect,
-          missingGovernmentParties: nextMissing,
+          reelectionProbability: reelectionRef.current.probability,
+          missingGovernmentParties: reelectionRef.current.missing,
         };
-        const sig = contentSignature(nextData);
-        if (sig !== overviewSigRef.current) {
-          overviewSigRef.current = sig;
-          setLastElection(election);
-          setPollSeats(seats);
-          setAverages(avg);
-          setIncumbent(nextIncumbent);
-          setReelectionProbability(nextReelect);
-          setMissingGovernmentParties(nextMissing);
-        }
-        const now = Date.now();
         writeOverviewCache(parliamentId, nextData, now);
         setCacheUpdatedAt(now);
       } catch (e) {
@@ -373,6 +398,77 @@ export function ParliamentDashboard({
           setHeaderLoading(false);
           setRefreshing(false);
         }
+      }
+    })();
+
+    return () => {
+      ac.abort();
+    };
+  }, [parliamentId]);
+
+  // Wiederwahl-Badge: eigener Abort/Load — blockiert headerLoading nicht.
+  // Bevorzugt Static party-forecast; Fallback live-Uncertainty bei Alt-Snapshots.
+  useEffect(() => {
+    reelectionAbortRef.current?.abort();
+    const ac = new AbortController();
+    reelectionAbortRef.current = ac;
+    const { signal } = ac;
+
+    const cached = readOverviewCache(parliamentId);
+    const cachedProb = cached?.data.reelectionProbability ?? null;
+    const cachedMissing = cached?.data.missingGovernmentParties ?? [];
+    const hasCachedReelect =
+      cached != null &&
+      (cachedProb != null || (cachedMissing?.length ?? 0) > 0);
+    if (hasCachedReelect) {
+      setReelectionProbability(cachedProb);
+      setMissingGovernmentParties(cachedMissing ?? []);
+      reelectionRef.current = {
+        probability: cachedProb,
+        missing: cachedMissing ?? [],
+      };
+      setReelectionLoading(false);
+    } else {
+      // Kein Cache für dieses Parlament → alten Wert nicht hängen lassen
+      setReelectionProbability(null);
+      setMissingGovernmentParties([]);
+      reelectionRef.current = { probability: null, missing: [] };
+      setReelectionLoading(true);
+    }
+
+    (async () => {
+      try {
+        const result = await fetchReelectionProbability(parliamentId, {
+          signal,
+        });
+        if (signal.aborted) return;
+        reelectionRef.current = {
+          probability: result.probability,
+          missing: result.missingParties,
+        };
+        setReelectionProbability(result.probability);
+        setMissingGovernmentParties(result.missingParties);
+        const existing = readOverviewCache(parliamentId);
+        if (existing) {
+          writeOverviewCache(
+            parliamentId,
+            {
+              ...existing.data,
+              reelectionProbability: result.probability,
+              missingGovernmentParties: result.missingParties,
+            },
+            existing.updatedAt,
+          );
+        }
+      } catch (e) {
+        if (isAbortError(e) || signal.aborted) return;
+        if (!hasCachedReelect) {
+          setReelectionProbability(null);
+          setMissingGovernmentParties([]);
+          reelectionRef.current = { probability: null, missing: [] };
+        }
+      } finally {
+        if (!signal.aborted) setReelectionLoading(false);
       }
     })();
 
@@ -469,6 +565,7 @@ export function ParliamentDashboard({
             gov={incumbent}
             reelectionProbability={reelectionProbability}
             missingGovernmentParties={missingGovernmentParties}
+            reelectionLoading={reelectionLoading}
           />
         )}
       </section>

@@ -5,6 +5,7 @@
     "vercel:dev": "vercel dev -L",
     "dev:web": "npm --prefix web run dev",
     "dev:api": "uv run uvicorn backend.main:app --reload --port 8000",
-    "build": "npm --prefix web run build"
+    "build": "npm --prefix web run build",
+    "test:web": "npm --prefix web run test"
   }
 }

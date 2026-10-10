@@ -1573,6 +1573,8 @@ def party_forecast_payload(
         "n_simulations": 0,
         "n_deadlock": 0,
         "parties": [],
+        "current_government_majority_probability": None,
+        "current_government_missing_parties": [],
     }
     if not votes:
         return _ttl_set(_forecast_cache, cache_key, empty)
@@ -1599,7 +1601,8 @@ def party_forecast_payload(
         residual_party_ids=residual_ids,
         config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
     )
-    # Unverzichtbarkeit aus derselben Unsicherheits-Pipeline (Default-Ausschlüsse).
+    # Unverzichtbarkeit + Wiederwahl aus derselben Unsicherheits-Pipeline
+    # (Default-Ausschlüsse) — ohne Extra-MC; Static-Export kann die Kennzahl mitliefern.
     unc = uncertainty_payload(parliament_id, n_simulations=n_simulations)
     indis_by_canon = {
         e["party_id"]: float(e["probability"])
@@ -1608,6 +1611,8 @@ def party_forecast_payload(
     id_to_canon = {
         str(k): str(v) for k, v in (unc.get("party_id_to_canonical") or {}).items()
     }
+    gov_prob = unc.get("current_government_majority_probability")
+    gov_missing = list(unc.get("current_government_missing_parties") or [])
 
     return _ttl_set(
         _forecast_cache,
@@ -1634,6 +1639,10 @@ def party_forecast_payload(
                 }
                 for r in rows
             ],
+            "current_government_majority_probability": (
+                float(gov_prob) if isinstance(gov_prob, (int, float)) else None
+            ),
+            "current_government_missing_parties": gov_missing,
         },
     )
 

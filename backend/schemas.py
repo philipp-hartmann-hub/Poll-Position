@@ -201,6 +201,9 @@ class PartyForecastResponse(BaseModel):
     n_simulations: int
     n_deadlock: int = 0
     parties: list[PartyForecastPartyOut]
+    # Wiederwahl-Kennzahl aus derselben Unsicherheits-Pipeline (Static-Export-fähig)
+    current_government_majority_probability: float | None = None
+    current_government_missing_parties: list[str] = Field(default_factory=list)
 
 
 class HouseEffectOut(BaseModel):
