@@ -803,10 +803,8 @@ export type GovernmentResponse = {
 export function fetchGovernment(opts?: {
   signal?: AbortSignal;
 }): Promise<GovernmentResponse> {
-  return apiFetch(
-    "/api/government",
-    opts?.signal ? { signal: opts.signal } : undefined,
-  );
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi("/data/government.json", "/api/government", init);
 }
 
 export type StagingElectionDraft = {
@@ -830,9 +828,11 @@ export function fetchDataFreshness(): Promise<DataFreshnessResponse> {
 export function fetchBundesratStatus(opts?: {
   signal?: AbortSignal;
 }): Promise<BundesratStatusResponse> {
-  return apiFetch(
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi(
+    "/data/bundesrat-status.json",
     "/api/bundesrat/status",
-    opts?.signal ? { signal: opts.signal } : undefined,
+    init,
   );
 }
 

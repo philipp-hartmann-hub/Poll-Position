@@ -205,6 +205,37 @@ def test_export_all_static_writes_parliaments_index(export_warehouse, tmp_path):
             assert ":" not in child.name
 
 
+def test_export_all_static_writes_government_and_bundesrat(
+    export_warehouse, tmp_path
+):
+    """Top-Level government.json / bundesrat-status.json entsprechen den Live-Payloads."""
+    from backend import services
+    from data_pipeline.export_static import _json_default, export_all_static
+
+    services.clear_payload_caches()
+    out = tmp_path / "static"
+    export_all_static(out_dir=out)
+
+    gov_path = out / "government.json"
+    br_path = out / "bundesrat-status.json"
+    assert gov_path.is_file()
+    assert br_path.is_file()
+
+    exported_gov = json.loads(gov_path.read_text(encoding="utf-8"))
+    live_gov = json.loads(
+        json.dumps(services.government_payload(), default=_json_default)
+    )
+    assert exported_gov == live_gov
+
+    exported_br = json.loads(br_path.read_text(encoding="utf-8"))
+    live_br = json.loads(
+        json.dumps(services.bundesrat_status_payload(), default=_json_default)
+    )
+    assert exported_br == live_br
+    assert "laender" in exported_br
+    assert isinstance(exported_br["laender"], list)
+
+
 def test_export_skips_last_election_when_none(export_warehouse, tmp_path, monkeypatch):
     from data_pipeline.export_static import export_parliament_static
 

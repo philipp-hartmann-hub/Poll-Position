@@ -2,6 +2,7 @@
 
 Schreibt unter ``web/public/data/``:
 - ``parliaments.json`` (Index)
+- ``government.json``, ``bundesrat-status.json`` (global, nicht pro Parlament)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
 - ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys}.json``
 
@@ -165,6 +166,22 @@ def export_all_static(*, out_dir: Path | None = None) -> int:
         log.info("Static-Export parliaments.json: ok (%d Einträge)", len(parliaments))
     except Exception:
         log.exception("Export parliaments.json fehlgeschlagen")
+
+    try:
+        _write_json(target / "government.json", services.government_payload())
+        written += 1
+        log.info("Static-Export government.json: ok")
+    except Exception:
+        log.exception("Export government.json fehlgeschlagen")
+
+    try:
+        _write_json(
+            target / "bundesrat-status.json", services.bundesrat_status_payload()
+        )
+        written += 1
+        log.info("Static-Export bundesrat-status.json: ok")
+    except Exception:
+        log.exception("Export bundesrat-status.json fehlgeschlagen")
 
     map_fn = getattr(services, "germany_map_leaders_payload", None)
     if callable(map_fn):
