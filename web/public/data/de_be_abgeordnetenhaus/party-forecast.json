@@ -16,7 +16,7 @@
     {
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 19.49884765066716,
+      "average_share": 19.49884765066715,
       "threshold_percent": 5.0,
       "probability_strongest": 0.205,
       "probability_above_threshold": 1.0,
@@ -25,7 +25,7 @@
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 17.685333798064285,
+      "average_share": 17.68533379806428,
       "threshold_percent": 5.0,
       "probability_strongest": 0.025,
       "probability_above_threshold": 1.0,
@@ -43,7 +43,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 12.152209900777015,
+      "average_share": 12.152209900777013,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -52,7 +52,7 @@
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 4.245277728384685,
+      "average_share": 4.245277728384684,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.23,
