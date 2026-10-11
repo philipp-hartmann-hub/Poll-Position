@@ -58,6 +58,65 @@ function StanceBadge({ stance }: { stance: string }) {
   );
 }
 
+function VoteBar({
+  yes,
+  no,
+  abstain,
+  total,
+  majoritySimple,
+  majorityTwoThirds,
+  barClassName = "h-7",
+}: {
+  yes: number;
+  no: number;
+  abstain: number;
+  total: number;
+  majoritySimple: number;
+  majorityTwoThirds: number;
+  barClassName?: string;
+}) {
+  const t = Math.max(total, 1);
+  const yesPct = (yes / t) * 100;
+  const noPct = (no / t) * 100;
+  const absPct = (abstain / t) * 100;
+  const markSimple = (majoritySimple / t) * 100;
+  const markTwoThirds = (majorityTwoThirds / t) * 100;
+
+  return (
+    <div
+      className={`relative w-full overflow-hidden rounded-md border border-ink/10 bg-mist/70 ${barClassName}`}
+      role="img"
+      aria-label={`Ja ${yes}, Nein ${no}, Enthaltung ${abstain} von ${total}`}
+    >
+      <div className="absolute inset-0 flex">
+        <div style={{ width: `${yesPct}%`, background: YES_COLOR }} />
+        <div style={{ width: `${noPct}%`, background: NO_COLOR }} />
+        <div style={{ width: `${absPct}%`, background: ABSTAIN_COLOR }} />
+      </div>
+      <div
+        className="pointer-events-none absolute inset-y-0 w-px bg-ink/80"
+        style={{ left: `${markSimple}%` }}
+        title={`Mehrheit ${majoritySimple}`}
+      />
+      <div
+        className="pointer-events-none absolute inset-y-0 w-px bg-ink/50"
+        style={{ left: `${markTwoThirds}%` }}
+        title={`Zwei Drittel ${majorityTwoThirds}`}
+      />
+    </div>
+  );
+}
+
+function BusySpinner({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-block h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-ink/25 border-t-ink/70 ${className}`}
+      role="status"
+      aria-label="Berechne Stimmen …"
+    />
+  );
+}
+
 function VoteCounter({
   yes,
   no,
@@ -68,6 +127,7 @@ function VoteCounter({
   hasMajority,
   hasTwoThirds,
   busy,
+  variant = "full",
 }: {
   yes: number;
   no: number;
@@ -78,13 +138,50 @@ function VoteCounter({
   hasMajority: boolean;
   hasTwoThirds: boolean;
   busy: boolean;
+  variant?: "full" | "compact";
 }) {
-  const t = Math.max(total, 1);
-  const yesPct = (yes / t) * 100;
-  const noPct = (no / t) * 100;
-  const absPct = (abstain / t) * 100;
-  const markSimple = (majoritySimple / t) * 100;
-  const markTwoThirds = (majorityTwoThirds / t) * 100;
+  if (variant === "compact") {
+    return (
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+          <span className="font-display text-base tabular-nums text-ink">
+            Ja {yes}
+            <span className="text-ink/40">
+              {" "}
+              / Nein {no} / Enthaltung {abstain} von {total}
+            </span>
+          </span>
+          <InfoTooltip text={TIP_BUNDESRAT_MAJORITY} />
+          <span
+            className={
+              hasMajority
+                ? "inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30"
+                : "inline-flex rounded-full bg-stone-500/15 px-2 py-0.5 text-xs font-medium text-ink/55 ring-1 ring-inset ring-ink/10"
+            }
+          >
+            {hasMajority ? "Mehrheit" : "Keine Mehrheit"}
+          </span>
+          {hasTwoThirds ? (
+            <span className="inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
+              ⅔
+            </span>
+          ) : null}
+          {busy ? <BusySpinner /> : null}
+        </div>
+        <div className="min-w-0 flex-1">
+          <VoteBar
+            yes={yes}
+            no={no}
+            abstain={abstain}
+            total={total}
+            majoritySimple={majoritySimple}
+            majorityTwoThirds={majorityTwoThirds}
+            barClassName="h-4"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full flex-col justify-center space-y-4">
@@ -97,44 +194,33 @@ function VoteCounter({
           {yes}
           <span className="text-lg text-ink/40"> / {total}</span>
         </p>
-        <p className="mt-1 text-sm text-ink/55">
+        <p className="mt-1 flex items-center gap-2 text-sm text-ink/55">
           Ja · Nein {no} · Enthaltung {abstain}
-          {busy ? " · …" : ""}
+          {busy ? <BusySpinner /> : null}
         </p>
       </div>
 
-      <div
-        className="relative h-7 w-full overflow-hidden rounded-md border border-ink/10 bg-mist/70"
-        role="img"
-        aria-label={`Ja ${yes}, Nein ${no}, Enthaltung ${abstain} von ${total}`}
-      >
-        <div className="absolute inset-0 flex">
-          <div style={{ width: `${yesPct}%`, background: YES_COLOR }} />
-          <div style={{ width: `${noPct}%`, background: NO_COLOR }} />
-          <div style={{ width: `${absPct}%`, background: ABSTAIN_COLOR }} />
-        </div>
-        <div
-          className="pointer-events-none absolute inset-y-0 w-px bg-ink/80"
-          style={{ left: `${markSimple}%` }}
-          title={`Mehrheit ${majoritySimple}`}
-        />
-        <div
-          className="pointer-events-none absolute inset-y-0 w-px bg-ink/50"
-          style={{ left: `${markTwoThirds}%` }}
-          title={`Zwei Drittel ${majorityTwoThirds}`}
-        />
-      </div>
+      <VoteBar
+        yes={yes}
+        no={no}
+        abstain={abstain}
+        total={total}
+        majoritySimple={majoritySimple}
+        majorityTwoThirds={majorityTwoThirds}
+      />
 
       <div className="relative h-4 text-[10px] text-ink/50">
         <span
           className="absolute -translate-x-1/2"
-          style={{ left: `${markSimple}%` }}
+          style={{ left: `${(majoritySimple / Math.max(total, 1)) * 100}%` }}
         >
           {majoritySimple}
         </span>
         <span
           className="absolute -translate-x-1/2"
-          style={{ left: `${markTwoThirds}%` }}
+          style={{
+            left: `${(majorityTwoThirds / Math.max(total, 1)) * 100}%`,
+          }}
         >
           {majorityTwoThirds}
         </span>
@@ -397,6 +483,21 @@ export function BundesratSandbox() {
         die Landesstimme Enthaltung.
       </p>
 
+      <div className="sticky top-16 z-30 -mx-4 border-b border-ink/10 bg-paper/95 px-4 py-3 backdrop-blur">
+        <VoteCounter
+          variant="compact"
+          yes={yes}
+          no={no}
+          abstain={abstain}
+          total={status.total_votes}
+          majoritySimple={status.majority_threshold}
+          majorityTwoThirds={status.two_thirds_threshold}
+          hasMajority={hasMajority}
+          hasTwoThirds={hasTwoThirds}
+          busy={busy}
+        />
+      </div>
+
       <section className="space-y-3">
         <h2 className="font-display text-xl text-ink">
           Partei-Stimmverhalten
@@ -461,31 +562,6 @@ export function BundesratSandbox() {
 
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
 
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(16rem,0.85fr)] lg:items-stretch">
-        <BundesratMap
-          laender={status.laender}
-          votes={votes ?? []}
-          onLandClick={(id) =>
-            document
-              .getElementById(`land-row-${id}`)
-              ?.scrollIntoView({ behavior: "smooth", block: "center" })
-          }
-        />
-        <div className="rounded-xl border border-ink/10 bg-gradient-to-b from-mist/20 to-mist/60 p-4">
-          <VoteCounter
-            yes={yes}
-            no={no}
-            abstain={abstain}
-            total={status.total_votes}
-            majoritySimple={status.majority_threshold}
-            majorityTwoThirds={status.two_thirds_threshold}
-            hasMajority={hasMajority}
-            hasTwoThirds={hasTwoThirds}
-            busy={busy}
-          />
-        </div>
-      </section>
-
       <section className="space-y-3">
         <h2 className="font-display text-xl text-ink">Länder</h2>
         <div className="overflow-x-auto">
@@ -548,6 +624,21 @@ export function BundesratSandbox() {
               })}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl text-ink">Karte</h2>
+        <div className="mx-auto max-w-3xl">
+          <BundesratMap
+            laender={status.laender}
+            votes={votes ?? []}
+            onLandClick={(id) =>
+              document
+                .getElementById(`land-row-${id}`)
+                ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
+          />
         </div>
       </section>
     </div>
