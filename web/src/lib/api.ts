@@ -674,8 +674,15 @@ export function fetchHouseEffects(
   return apiFetch(`/api/institutes/house-effects?${q}`);
 }
 
-export function fetchInstituteLeaderboard(): Promise<InstituteLeaderboardResponse> {
-  return apiFetch("/api/institutes/leaderboard");
+export function fetchInstituteLeaderboard(opts?: {
+  signal?: AbortSignal;
+}): Promise<InstituteLeaderboardResponse> {
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi(
+    "/data/institute-leaderboard.json",
+    "/api/institutes/leaderboard",
+    init,
+  );
 }
 
 export function fetchEuropeOverview(): Promise<EuropeOverviewResponse> {
@@ -838,9 +845,15 @@ export function fetchBundesratStatus(opts?: {
 
 export function fetchBundesratMajorityCheck(
   limit = 8,
+  opts?: { signal?: AbortSignal },
 ): Promise<BundesratMajorityCheckResponse> {
   const q = new URLSearchParams({ limit: String(limit) });
-  return apiFetch(`/api/bundesrat/majority-check?${q}`);
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi(
+    "/data/bundesrat-majority-check.json",
+    `/api/bundesrat/majority-check?${q}`,
+    init,
+  );
 }
 
 export function postBundesratSimulate(

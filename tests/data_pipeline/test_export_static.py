@@ -225,7 +225,7 @@ def test_export_all_static_writes_parliaments_index(export_warehouse, tmp_path):
 def test_export_all_static_writes_government_and_bundesrat(
     export_warehouse, tmp_path
 ):
-    """Top-Level government.json / bundesrat-status.json entsprechen den Live-Payloads."""
+    """Top-Level government/bundesrat/institute-leaderboard entsprechen Live-Payloads."""
     from backend import services
     from data_pipeline.export_static import _json_default, export_all_static
 
@@ -235,8 +235,12 @@ def test_export_all_static_writes_government_and_bundesrat(
 
     gov_path = out / "government.json"
     br_path = out / "bundesrat-status.json"
+    mc_path = out / "bundesrat-majority-check.json"
+    lb_path = out / "institute-leaderboard.json"
     assert gov_path.is_file()
     assert br_path.is_file()
+    assert mc_path.is_file()
+    assert lb_path.is_file()
 
     exported_gov = json.loads(gov_path.read_text(encoding="utf-8"))
     live_gov = json.loads(
@@ -251,6 +255,22 @@ def test_export_all_static_writes_government_and_bundesrat(
     assert exported_br == live_br
     assert "laender" in exported_br
     assert isinstance(exported_br["laender"], list)
+
+    exported_mc = json.loads(mc_path.read_text(encoding="utf-8"))
+    live_mc = json.loads(
+        json.dumps(
+            services.bundesrat_majority_check_payload(), default=_json_default
+        )
+    )
+    assert exported_mc == live_mc
+    assert "coalitions" in exported_mc
+    assert "coalition_balance" in exported_mc
+
+    exported_lb = json.loads(lb_path.read_text(encoding="utf-8"))
+    live_lb = json.loads(
+        json.dumps(services.institute_leaderboard_payload(), default=_json_default)
+    )
+    assert exported_lb == live_lb
 
 
 def test_export_skips_last_election_when_none(export_warehouse, tmp_path, monkeypatch):

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchBundesratStatus,
   fetchGovernment,
@@ -262,6 +262,7 @@ export function BundesratSandbox() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pollPresetKey, setPollPresetKey] = useState("");
+  const hasUserInteracted = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -278,6 +279,17 @@ export function BundesratSandbox() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!status || !government || hasUserInteracted.current) return;
+    const parties = government.bundesregierung?.parties ?? [];
+    if (parties.length === 0) return;
+    const next: PartyStance = {};
+    for (const p of parties) next[p] = "yes";
+    setPartyStance(next);
+    setLandOverrides({});
+    setPollPresetKey("");
+  }, [status, government]);
 
   const autoChoices = useMemo(() => {
     if (!status) return {};
@@ -315,7 +327,12 @@ export function BundesratSandbox() {
     return () => clearTimeout(t);
   }, [choiceKey, status]);
 
+  function markUserInteracted() {
+    hasUserInteracted.current = true;
+  }
+
   function setPartyValue(partyId: string, next: "yes" | "no" | null) {
+    markUserInteracted();
     setPollPresetKey("");
     setPartyStance((prev) => {
       const out = { ...prev };
@@ -326,6 +343,7 @@ export function BundesratSandbox() {
   }
 
   function applyFederalGovernment() {
+    markUserInteracted();
     const parties = government?.bundesregierung?.parties ?? [];
     const next: PartyStance = {};
     for (const p of parties) next[p] = "yes";
@@ -335,6 +353,7 @@ export function BundesratSandbox() {
   }
 
   function applyPollPreset(preset: GovernmentPollPreset) {
+    markUserInteracted();
     const next: PartyStance = {};
     for (const p of preset.parties) next[p] = "yes";
     setPartyStance(next);
@@ -343,6 +362,7 @@ export function BundesratSandbox() {
   }
 
   function setLandOverride(land: BundesratLand, value: string) {
+    markUserInteracted();
     setLandOverrides((prev) => {
       const out = { ...prev };
       if (!value || value === "auto") delete out[land.parliament_id];
@@ -373,8 +393,8 @@ export function BundesratSandbox() {
     <div className="space-y-8">
       <p className="rounded-md border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-sm text-ink/80">
         {status.disclaimer} Stand der Landesregierungen: {status.as_of}.
-        Ausgangspunkt ist Enthaltung, bis Parteien auf Ja oder Nein gesetzt
-        werden.
+        Startet mit der amtierenden Bundesregierung; ohne Partei-Ja/Nein wäre
+        die Landesstimme Enthaltung.
       </p>
 
       <section className="space-y-3">
