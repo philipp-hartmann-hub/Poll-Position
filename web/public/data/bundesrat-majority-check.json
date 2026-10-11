@@ -1,0 +1,211 @@
+{
+  "as_of": "2026-08-25",
+  "total_votes": 69,
+  "majority_threshold": 35,
+  "two_thirds_threshold": 46,
+  "federal_government": {
+    "stand": "2026-08-25",
+    "parties": [
+      "de:cdu_csu",
+      "de:spd"
+    ],
+    "label": "CDU/CSU + SPD"
+  },
+  "coalition_balance": [
+    {
+      "key": "de:spd+union",
+      "label": "Schwarz-Rot",
+      "parties_normalized": [
+        "de:spd",
+        "union"
+      ],
+      "votes": 21,
+      "parliament_ids": [
+        "de_be_abgeordnetenhaus",
+        "de_bb_landtag",
+        "de_he_landtag",
+        "de_rp_landtag",
+        "de_sn_landtag"
+      ],
+      "matches_federal": true
+    },
+    {
+      "key": "de:gruene+union",
+      "label": "Schwarz-Grün",
+      "parties_normalized": [
+        "de:gruene",
+        "union"
+      ],
+      "votes": 16,
+      "parliament_ids": [
+        "de_bw_landtag",
+        "de_nw_landtag",
+        "de_sh_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:gruene+de:spd",
+      "label": "Rot-Grün",
+      "parties_normalized": [
+        "de:gruene",
+        "de:spd"
+      ],
+      "votes": 9,
+      "parliament_ids": [
+        "de_hh_buergerschaft",
+        "de_ni_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:fw+union",
+      "label": "CSU + Freie Wähler",
+      "parties_normalized": [
+        "de:fw",
+        "union"
+      ],
+      "votes": 6,
+      "parliament_ids": [
+        "de_by_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:bsw+de:spd+union",
+      "label": "CDU + BSW + SPD",
+      "parties_normalized": [
+        "de:bsw",
+        "de:spd",
+        "union"
+      ],
+      "votes": 4,
+      "parliament_ids": [
+        "de_th_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:fdp+de:spd+union",
+      "label": "Deutschland-Koalition",
+      "parties_normalized": [
+        "de:fdp",
+        "de:spd",
+        "union"
+      ],
+      "votes": 4,
+      "parliament_ids": [
+        "de_st_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:spd",
+      "label": "Alleinregierung (SPD)",
+      "parties_normalized": [
+        "de:spd"
+      ],
+      "votes": 3,
+      "parliament_ids": [
+        "de_sl_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:linke+de:spd",
+      "label": "Rot-Rot",
+      "parties_normalized": [
+        "de:linke",
+        "de:spd"
+      ],
+      "votes": 3,
+      "parliament_ids": [
+        "de_mv_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
+      "key": "de:gruene+de:linke+de:spd",
+      "label": "Rot-Rot-Grün",
+      "parties_normalized": [
+        "de:gruene",
+        "de:linke",
+        "de:spd"
+      ],
+      "votes": 3,
+      "parliament_ids": [
+        "de_hb_buergerschaft"
+      ],
+      "matches_federal": false
+    }
+  ],
+  "coalitions": [
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:spd"
+      ],
+      "label": "CDU/CSU + SPD",
+      "bundestag_seats": 0,
+      "is_minimal_winning": false,
+      "is_incumbent": true,
+      "choices": {
+        "de_bw_landtag": "abstain",
+        "de_by_landtag": "abstain",
+        "de_be_abgeordnetenhaus": "default",
+        "de_bb_landtag": "default",
+        "de_hb_buergerschaft": "abstain",
+        "de_hh_buergerschaft": "abstain",
+        "de_he_landtag": "default",
+        "de_mv_landtag": "abstain",
+        "de_ni_landtag": "abstain",
+        "de_nw_landtag": "abstain",
+        "de_rp_landtag": "default",
+        "de_sl_landtag": "default",
+        "de_sn_landtag": "default",
+        "de_st_landtag": "abstain",
+        "de_sh_landtag": "abstain",
+        "de_th_landtag": "abstain"
+      },
+      "yes_votes": 24,
+      "no_votes": 0,
+      "abstain_votes": 45,
+      "has_majority": false,
+      "has_two_thirds": false
+    },
+    {
+      "parties": [
+        "de:cdu_csu",
+        "de:gruene",
+        "de:spd"
+      ],
+      "label": null,
+      "bundestag_seats": 346,
+      "is_minimal_winning": true,
+      "is_incumbent": false,
+      "choices": {
+        "de_bw_landtag": "default",
+        "de_by_landtag": "abstain",
+        "de_be_abgeordnetenhaus": "default",
+        "de_bb_landtag": "default",
+        "de_hb_buergerschaft": "abstain",
+        "de_hh_buergerschaft": "default",
+        "de_he_landtag": "default",
+        "de_mv_landtag": "abstain",
+        "de_ni_landtag": "default",
+        "de_nw_landtag": "default",
+        "de_rp_landtag": "default",
+        "de_sl_landtag": "default",
+        "de_sn_landtag": "default",
+        "de_st_landtag": "abstain",
+        "de_sh_landtag": "default",
+        "de_th_landtag": "abstain"
+      },
+      "yes_votes": 49,
+      "no_votes": 0,
+      "abstain_votes": 20,
+      "has_majority": true,
+      "has_two_thirds": true
+    }
+  ]
+}

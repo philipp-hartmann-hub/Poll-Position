@@ -1,0 +1,955 @@
+{
+  "institutes": [
+    {
+      "rank": 1,
+      "institute_id": "dawum:institute:24",
+      "institute_name": "Institut Wahlkreisprognose",
+      "n_comparisons": 100,
+      "mae": 1.23121,
+      "rmse": 1.8080756648990106,
+      "score": 0.46368693406246597,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_bb_landtag",
+          "n_comparisons": 8,
+          "mae": 1.495,
+          "rmse": 1.7245289211839856,
+          "score": 0.4008016032064128
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 7,
+          "mae": 0.9428571428571433,
+          "rmse": 1.3669569958749355,
+          "score": 0.514705882352941
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.782625,
+          "rmse": 3.3610221845444577,
+          "score": 0.35937289429944747
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.1333333333333329,
+          "rmse": 1.6031219541881396,
+          "score": 0.4687500000000001
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_hb_buergerschaft",
+          "n_comparisons": 7,
+          "mae": 0.6285714285714284,
+          "rmse": 0.6928203230275508,
+          "score": 0.6140350877192983
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_he_landtag",
+          "n_comparisons": 6,
+          "mae": 1.8666666666666665,
+          "rmse": 2.8130647581122856,
+          "score": 0.34883720930232565
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_hh_buergerschaft",
+          "n_comparisons": 8,
+          "mae": 1.35,
+          "rmse": 1.6240381768911716,
+          "score": 0.425531914893617
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 7,
+          "mae": 0.5142857142857137,
+          "rmse": 0.6141195788629904,
+          "score": 0.6603773584905662
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 0.9142857142857147,
+          "rmse": 1.0141851056742206,
+          "score": 0.5223880597014925
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.2571428571428576,
+          "rmse": 1.4976171549689008,
+          "score": 0.4430379746835442
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_sh_landtag",
+          "n_comparisons": 8,
+          "mae": 1.3499999999999999,
+          "rmse": 1.8560711193270583,
+          "score": 0.4255319148936171
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_sl_landtag",
+          "n_comparisons": 7,
+          "mae": 0.8571428571428571,
+          "rmse": 1.1710800875382399,
+          "score": 0.5384615384615384
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_sn_landtag",
+          "n_comparisons": 7,
+          "mae": 1.5714285714285714,
+          "rmse": 2.053568322979018,
+          "score": 0.38888888888888895
+        },
+        {
+          "institute_id": "dawum:institute:24",
+          "institute_name": "Institut Wahlkreisprognose",
+          "parliament_id": "de_th_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4999999999999998,
+          "rmse": 1.6941074346097413,
+          "score": 0.4
+        }
+      ]
+    },
+    {
+      "rank": 2,
+      "institute_id": "dawum:institute:6",
+      "institute_name": "Forschungsgruppe Wahlen",
+      "n_comparisons": 134,
+      "mae": 1.465679104477612,
+      "rmse": 2.0715805505970413,
+      "score": 0.4199139416852855,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_bb_landtag",
+          "n_comparisons": 8,
+          "mae": 1.4000000000000004,
+          "rmse": 1.7475697410976194,
+          "score": 0.41666666666666663
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 14,
+          "mae": 1.65,
+          "rmse": 1.9739373271278324,
+          "score": 0.37735849056603776
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.8376249999999996,
+          "rmse": 3.5572419266898336,
+          "score": 0.35240738293467255
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_bw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.8142857142857143,
+          "rmse": 1.9974984355438177,
+          "score": 0.3553299492385787
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.2333333333333336,
+          "rmse": 1.6792855623746665,
+          "score": 0.44776119402985076
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_hb_buergerschaft",
+          "n_comparisons": 7,
+          "mae": 0.7714285714285714,
+          "rmse": 0.9227288721117225,
+          "score": 0.5645161290322581
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_he_landtag",
+          "n_comparisons": 6,
+          "mae": 2.533333333333333,
+          "rmse": 3.1139471200819493,
+          "score": 0.2830188679245283
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_hh_buergerschaft",
+          "n_comparisons": 7,
+          "mae": 1.7285714285714289,
+          "rmse": 2.458512907081375,
+          "score": 0.36649214659685864
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 14,
+          "mae": 0.9999999999999998,
+          "rmse": 1.1976166808648387,
+          "score": 0.5000000000000001
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 0.7428571428571429,
+          "rmse": 0.8783100656536799,
+          "score": 0.5737704918032787
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4000000000000004,
+          "rmse": 1.8439088914585784,
+          "score": 0.41666666666666663
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_rp_landtag",
+          "n_comparisons": 7,
+          "mae": 1.2857142857142858,
+          "rmse": 1.633576269591178,
+          "score": 0.4375
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_sh_landtag",
+          "n_comparisons": 7,
+          "mae": 1.8714285714285712,
+          "rmse": 2.4515301344262523,
+          "score": 0.3482587064676617
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_sl_landtag",
+          "n_comparisons": 7,
+          "mae": 0.8571428571428571,
+          "rmse": 1.1588171308956141,
+          "score": 0.5384615384615384
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_sn_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4571428571428575,
+          "rmse": 2.258950451616224,
+          "score": 0.4069767441860465
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_st_landtag",
+          "n_comparisons": 8,
+          "mae": 2.125,
+          "rmse": 2.756809750418044,
+          "score": 0.32
+        },
+        {
+          "institute_id": "dawum:institute:6",
+          "institute_name": "Forschungsgruppe Wahlen",
+          "parliament_id": "de_th_landtag",
+          "n_comparisons": 7,
+          "mae": 1.471428571428571,
+          "rmse": 1.985303143459096,
+          "score": 0.4046242774566475
+        }
+      ]
+    },
+    {
+      "rank": 3,
+      "institute_id": "dawum:institute:5",
+      "institute_name": "INSA",
+      "n_comparisons": 138,
+      "mae": 1.6575289855072461,
+      "rmse": 2.2760453260176865,
+      "score": 0.3913961988773314,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_bb_landtag",
+          "n_comparisons": 8,
+          "mae": 1.7175000000000002,
+          "rmse": 2.601249699663606,
+          "score": 0.36798528058877644
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 14,
+          "mae": 1.4071428571428568,
+          "rmse": 1.9447732148358214,
+          "score": 0.4154302670623146
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.7123749999999998,
+          "rmse": 3.185725211784594,
+          "score": 0.36868058435872625
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_bw_landtag",
+          "n_comparisons": 7,
+          "mae": 3.014285714285714,
+          "rmse": 3.4440424752648697,
+          "score": 0.2491103202846975
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.4000000000000004,
+          "rmse": 2.0132891827388666,
+          "score": 0.41666666666666663
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_hb_buergerschaft",
+          "n_comparisons": 7,
+          "mae": 0.942857142857143,
+          "rmse": 1.180798761129819,
+          "score": 0.5147058823529411
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_he_landtag",
+          "n_comparisons": 6,
+          "mae": 2.1999999999999997,
+          "rmse": 2.7982137159266443,
+          "score": 0.3125
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_hh_buergerschaft",
+          "n_comparisons": 8,
+          "mae": 2.1,
+          "rmse": 2.280350850198276,
+          "score": 0.3225806451612903
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 14,
+          "mae": 1.0714285714285712,
+          "rmse": 1.3882157098746781,
+          "score": 0.48275862068965525
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 0.9142857142857143,
+          "rmse": 1.2130245551630727,
+          "score": 0.5223880597014926
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.6857142857142862,
+          "rmse": 2.0000000000000004,
+          "score": 0.3723404255319149
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_rp_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4285714285714286,
+          "rmse": 1.735346815892596,
+          "score": 0.4117647058823529
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_sh_landtag",
+          "n_comparisons": 8,
+          "mae": 2.6,
+          "rmse": 3.323401871576773,
+          "score": 0.2777777777777778
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_sl_landtag",
+          "n_comparisons": 7,
+          "mae": 1.2857142857142858,
+          "rmse": 2.0213149892370277,
+          "score": 0.4375
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_sn_landtag",
+          "n_comparisons": 8,
+          "mae": 1.3374999999999995,
+          "rmse": 1.6128391116289307,
+          "score": 0.42780748663101614
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_st_landtag",
+          "n_comparisons": 8,
+          "mae": 2.2249999999999996,
+          "rmse": 2.7018512172212596,
+          "score": 0.310077519379845
+        },
+        {
+          "institute_id": "dawum:institute:5",
+          "institute_name": "INSA",
+          "parliament_id": "de_th_landtag",
+          "n_comparisons": 8,
+          "mae": 1.7499999999999998,
+          "rmse": 2.190890230020664,
+          "score": 0.36363636363636365
+        }
+      ]
+    },
+    {
+      "rank": 4,
+      "institute_id": "dawum:institute:1",
+      "institute_name": "Infratest dimap",
+      "n_comparisons": 136,
+      "mae": 1.666625,
+      "rmse": 2.24699760628423,
+      "score": 0.3907126702356294,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_bb_landtag",
+          "n_comparisons": 8,
+          "mae": 1.9000000000000004,
+          "rmse": 2.484250389956697,
+          "score": 0.3448275862068965
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 14,
+          "mae": 1.507142857142857,
+          "rmse": 1.9955307206712845,
+          "score": 0.39886039886039887
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.657625,
+          "rmse": 3.815621852988055,
+          "score": 0.2734014558627525
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_bw_landtag",
+          "n_comparisons": 7,
+          "mae": 2.1,
+          "rmse": 2.4735746256321898,
+          "score": 0.3225806451612903
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.1333333333333335,
+          "rmse": 1.608311744241976,
+          "score": 0.4687499999999999
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_hb_buergerschaft",
+          "n_comparisons": 7,
+          "mae": 0.8571428571428573,
+          "rmse": 0.9680613912055668,
+          "score": 0.5384615384615384
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_he_landtag",
+          "n_comparisons": 6,
+          "mae": 2.6999999999999997,
+          "rmse": 3.087069808086626,
+          "score": 0.2702702702702703
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_hh_buergerschaft",
+          "n_comparisons": 9,
+          "mae": 1.3777777777777778,
+          "rmse": 1.6069294390925268,
+          "score": 0.4205607476635514
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 14,
+          "mae": 1.1142857142857137,
+          "rmse": 1.3726928696127598,
+          "score": 0.4729729729729731
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 1.1428571428571426,
+          "rmse": 1.3147514702678327,
+          "score": 0.4666666666666668
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 2.2571428571428576,
+          "rmse": 2.7255405754769884,
+          "score": 0.3070175438596491
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_rp_landtag",
+          "n_comparisons": 7,
+          "mae": 1.2857142857142858,
+          "rmse": 1.7188035705937181,
+          "score": 0.4375
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_sh_landtag",
+          "n_comparisons": 7,
+          "mae": 2.642857142857143,
+          "rmse": 3.0768722523274925,
+          "score": 0.27450980392156865
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_sl_landtag",
+          "n_comparisons": 7,
+          "mae": 1.6857142857142857,
+          "rmse": 2.7097706808616007,
+          "score": 0.3723404255319149
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_sn_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4285714285714286,
+          "rmse": 2.0113961036340617,
+          "score": 0.4117647058823529
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_st_landtag",
+          "n_comparisons": 8,
+          "mae": 1.9749999999999999,
+          "rmse": 2.3664319132398464,
+          "score": 0.33613445378151263
+        },
+        {
+          "institute_id": "dawum:institute:1",
+          "institute_name": "Infratest dimap",
+          "parliament_id": "de_th_landtag",
+          "n_comparisons": 7,
+          "mae": 1.214285714285714,
+          "rmse": 1.5941858647687757,
+          "score": 0.4516129032258065
+        }
+      ]
+    },
+    {
+      "rank": 5,
+      "institute_id": "dawum:institute:2",
+      "institute_name": "Forsa",
+      "n_comparisons": 50,
+      "mae": 1.69122,
+      "rmse": 2.4027682410086912,
+      "score": 0.3865418552863744,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 7,
+          "mae": 1.1999999999999995,
+          "rmse": 1.5297058540778352,
+          "score": 0.4545454545454547
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.8326249999999997,
+          "rmse": 2.926917341675367,
+          "score": 0.35302943382904556
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 7,
+          "mae": 3.1428571428571423,
+          "rmse": 3.95943718944282,
+          "score": 0.24137931034482762
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 1.542857142857143,
+          "rmse": 2.10780861153406,
+          "score": 0.39325842696629215
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4000000000000004,
+          "rmse": 1.6987390281365435,
+          "score": 0.41666666666666663
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_sn_landtag",
+          "n_comparisons": 7,
+          "mae": 1.2857142857142858,
+          "rmse": 1.9168426420250866,
+          "score": 0.4375
+        },
+        {
+          "institute_id": "dawum:institute:2",
+          "institute_name": "Forsa",
+          "parliament_id": "de_th_landtag",
+          "n_comparisons": 7,
+          "mae": 1.4142857142857141,
+          "rmse": 1.557929028275311,
+          "score": 0.41420118343195267
+        }
+      ]
+    },
+    {
+      "rank": 6,
+      "institute_id": "dawum:institute:16",
+      "institute_name": "Civey",
+      "n_comparisons": 72,
+      "mae": 1.7675138888888888,
+      "rmse": 2.4373618507859405,
+      "score": 0.36996107294995384,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_be_abgeordnetenhaus",
+          "n_comparisons": 15,
+          "mae": 1.653333333333333,
+          "rmse": 2.178684618449092,
+          "score": 0.3768844221105528
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.4576249999999997,
+          "rmse": 4.017660404389599,
+          "score": 0.28921586349011247
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.2333333333333336,
+          "rmse": 1.9544820285692064,
+          "score": 0.44776119402985076
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_he_landtag",
+          "n_comparisons": 6,
+          "mae": 2.3666666666666667,
+          "rmse": 2.613426869074396,
+          "score": 0.297029702970297
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 7,
+          "mae": 1.3142857142857147,
+          "rmse": 1.494752726803238,
+          "score": 0.43209876543209863
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_ni_landtag",
+          "n_comparisons": 7,
+          "mae": 1.1714285714285713,
+          "rmse": 1.3680016708427558,
+          "score": 0.46052631578947373
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 1.6857142857142862,
+          "rmse": 2.0142350550873798,
+          "score": 0.3723404255319149
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_sh_landtag",
+          "n_comparisons": 8,
+          "mae": 1.8499999999999999,
+          "rmse": 2.311925604339378,
+          "score": 0.3508771929824562
+        },
+        {
+          "institute_id": "dawum:institute:16",
+          "institute_name": "Civey",
+          "parliament_id": "de_st_landtag",
+          "n_comparisons": 8,
+          "mae": 2.15,
+          "rmse": 2.819574435974337,
+          "score": 0.31746031746031744
+        }
+      ]
+    },
+    {
+      "rank": 7,
+      "institute_id": "dawum:institute:17",
+      "institute_name": "Ipsos",
+      "n_comparisons": 8,
+      "mae": 1.7076249999999997,
+      "rmse": 3.1967123932252646,
+      "score": 0.3693273625409723,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:17",
+          "institute_name": "Ipsos",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.7076249999999997,
+          "rmse": 3.1967123932252646,
+          "score": 0.3693273625409723
+        }
+      ]
+    },
+    {
+      "rank": 8,
+      "institute_id": "dawum:institute:4",
+      "institute_name": "GMS",
+      "n_comparisons": 14,
+      "mae": 1.9615000000000002,
+      "rmse": 2.9302944878824526,
+      "score": 0.34631356863569074,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:4",
+          "institute_name": "GMS",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.357625,
+          "rmse": 3.4513178823458146,
+          "score": 0.2978295670302669
+        },
+        {
+          "institute_id": "dawum:institute:4",
+          "institute_name": "GMS",
+          "parliament_id": "de_by_landtag",
+          "n_comparisons": 6,
+          "mae": 1.4333333333333336,
+          "rmse": 2.037972849017703,
+          "score": 0.410958904109589
+        }
+      ]
+    },
+    {
+      "rank": 9,
+      "institute_id": "dawum:institute:13",
+      "institute_name": "YouGov",
+      "n_comparisons": 15,
+      "mae": 2.0466,
+      "rmse": 3.0266677055798508,
+      "score": 0.33587692882357384,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:13",
+          "institute_name": "YouGov",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 1.6123750000000001,
+          "rmse": 3.150610278184212,
+          "score": 0.3827934350925881
+        },
+        {
+          "institute_id": "dawum:institute:13",
+          "institute_name": "YouGov",
+          "parliament_id": "de_nw_landtag",
+          "n_comparisons": 7,
+          "mae": 2.542857142857143,
+          "rmse": 2.8784916685156983,
+          "score": 0.282258064516129
+        }
+      ]
+    },
+    {
+      "rank": 10,
+      "institute_id": "dawum:institute:3",
+      "institute_name": "Verian (Emnid)",
+      "n_comparisons": 8,
+      "mae": 2.112375,
+      "rmse": 2.875994632296799,
+      "score": 0.32129804409815654,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:3",
+          "institute_name": "Verian (Emnid)",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.112375,
+          "rmse": 2.875994632296799,
+          "score": 0.32129804409815654
+        }
+      ]
+    },
+    {
+      "rank": 11,
+      "institute_id": "dawum:institute:22",
+      "institute_name": "pollytix",
+      "n_comparisons": 24,
+      "mae": 2.1374583333333335,
+      "rmse": 3.035558439837169,
+      "score": 0.31980498743337327,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:22",
+          "institute_name": "pollytix",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.0123750000000005,
+          "rmse": 3.098603737976187,
+          "score": 0.33196398190796295
+        },
+        {
+          "institute_id": "dawum:institute:22",
+          "institute_name": "pollytix",
+          "parliament_id": "de_mv_landtag",
+          "n_comparisons": 8,
+          "mae": 1.9999999999999996,
+          "rmse": 2.918475629502497,
+          "score": 0.33333333333333337
+        },
+        {
+          "institute_id": "dawum:institute:22",
+          "institute_name": "pollytix",
+          "parliament_id": "de_st_landtag",
+          "n_comparisons": 8,
+          "mae": 2.4,
+          "rmse": 3.0862598724021932,
+          "score": 0.29411764705882354
+        }
+      ]
+    },
+    {
+      "rank": 12,
+      "institute_id": "dawum:institute:9",
+      "institute_name": "Allensbach",
+      "n_comparisons": 8,
+      "mae": 2.157625,
+      "rmse": 3.4309576104930235,
+      "score": 0.31669371758837733,
+      "by_parliament": [
+        {
+          "institute_id": "dawum:institute:9",
+          "institute_name": "Allensbach",
+          "parliament_id": "de_bundestag",
+          "n_comparisons": 8,
+          "mae": 2.157625,
+          "rmse": 3.4309576104930235,
+          "score": 0.31669371758837733
+        }
+      ]
+    }
+  ]
+}

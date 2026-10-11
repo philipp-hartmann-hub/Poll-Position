@@ -102,7 +102,17 @@
         "de:cdu"
       ],
       "default_government_label": "SPD + CDU",
-      "coalition_options": []
+      "coalition_options": [
+        {
+          "key": "de:afd+de:bsw",
+          "parties": [
+            "de:afd",
+            "de:bsw"
+          ],
+          "seats": 45,
+          "is_minimal_winning": true
+        }
+      ]
     },
     {
       "parliament_id": "de_hb_buergerschaft",

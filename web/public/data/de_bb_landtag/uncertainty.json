@@ -1,17 +1,34 @@
 {
   "parliament_id": "de_bb_landtag",
   "n_simulations": 200,
-  "n_deadlock": 194,
+  "n_deadlock": 76,
   "mean_seats": {
-    "dawum:party:101": 11.79,
-    "dawum:party:2": 21.7,
-    "dawum:party:23": 1.05,
-    "dawum:party:4": 4.985,
-    "dawum:party:5": 11.845,
-    "dawum:party:7": 36.63,
+    "dawum:party:101": 8.59,
+    "dawum:party:2": 19.28,
+    "dawum:party:23": 6.29,
+    "dawum:party:4": 6.455,
+    "dawum:party:5": 8.74,
+    "dawum:party:7": 38.645,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
+    {
+      "parties": [
+        "de:bsw",
+        "de:afd"
+      ],
+      "majority_probability": 0.595,
+      "n_majority": 119,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:afd"
+      ],
+      "majority_probability": 0.005,
+      "n_majority": 1,
+      "n_simulations": 200
+    },
     {
       "parties": [
         "de:cdu",
@@ -25,33 +42,33 @@
   "party_indispensability": [
     {
       "party_id": "de:bsw",
-      "probability": 1.0,
-      "n_simulations_considered": 6
-    },
-    {
-      "party_id": "de:gruene",
-      "probability": 0.8333333333333334,
-      "n_simulations_considered": 6
-    },
-    {
-      "party_id": "de:spd",
-      "probability": 0.8333333333333334,
-      "n_simulations_considered": 6
-    },
-    {
-      "party_id": "de:linke",
-      "probability": 0.5,
-      "n_simulations_considered": 6
-    },
-    {
-      "party_id": "de:cdu",
-      "probability": 0.3333333333333333,
-      "n_simulations_considered": 6
+      "probability": 0.9919354838709677,
+      "n_simulations_considered": 124
     },
     {
       "party_id": "de:afd",
-      "probability": 0.16666666666666666,
-      "n_simulations_considered": 6
+      "probability": 0.967741935483871,
+      "n_simulations_considered": 124
+    },
+    {
+      "party_id": "de:gruene",
+      "probability": 0.03225806451612903,
+      "n_simulations_considered": 124
+    },
+    {
+      "party_id": "de:linke",
+      "probability": 0.03225806451612903,
+      "n_simulations_considered": 124
+    },
+    {
+      "party_id": "de:spd",
+      "probability": 0.03225806451612903,
+      "n_simulations_considered": 124
+    },
+    {
+      "party_id": "de:cdu",
+      "probability": 0.0,
+      "n_simulations_considered": 124
     }
   ],
   "party_id_to_canonical": {
