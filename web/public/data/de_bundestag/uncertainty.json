@@ -3,13 +3,13 @@
   "n_simulations": 200,
   "n_deadlock": 1,
   "mean_seats": {
-    "dawum:party:1": 140.255,
-    "dawum:party:2": 94.655,
-    "dawum:party:23": 0.885,
-    "dawum:party:3": 7.49,
-    "dawum:party:4": 105.91,
-    "dawum:party:5": 80.16,
-    "dawum:party:7": 200.645,
+    "dawum:party:1": 140.185,
+    "dawum:party:2": 94.72,
+    "dawum:party:23": 0.535,
+    "dawum:party:3": 7.305,
+    "dawum:party:4": 105.69,
+    "dawum:party:5": 79.84,
+    "dawum:party:7": 201.725,
     "dawum:party:8": 0.0,
     "de:sonstige": 0.0
   },
@@ -69,7 +69,7 @@
     },
     {
       "party_id": "de:cdu_csu",
-      "probability": 0.949748743718593,
+      "probability": 0.9547738693467337,
       "n_simulations_considered": 199
     },
     {
