@@ -1,12 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
+  fetchAverages,
   fetchCoalitions,
   fetchSeats,
+  fetchThresholdWatch,
   fetchUncertainty,
+  postScenario,
   type CoalitionsResponse,
+  type PartyAverage,
+  type ScenarioResponse,
   type SeatsResponse,
   type UncertaintyResponse,
 } from "@/lib/api";
@@ -15,6 +20,10 @@ import {
   type ExclusionUiState,
 } from "@/components/CoalitionPanel";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import {
+  ThresholdScenarioChips,
+  type ThresholdScenarioCandidate,
+} from "@/components/ThresholdScenarioChips";
 import { labelPartyId } from "@/lib/colors";
 import {
   DEFAULT_EXCLUSION_UI,
@@ -29,7 +38,19 @@ import {
   readCoalitionsCache,
   writeCoalitionsCache,
 } from "@/lib/parliamentCache";
+import {
+  buildThresholdScenarioShares,
+  seatsByNameFromPartyIds,
+} from "@/lib/scenarioShares";
 import { TIP_COALITION_UNCERTAINTY } from "@/lib/tooltipCopy";
+
+type ActiveScenario = {
+  partyId: string;
+  partyName: string;
+  targetShare: number;
+  shares: Record<string, number>;
+  result: ScenarioResponse;
+};
 
 export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const router = useRouter();
@@ -38,12 +59,20 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const prevParliamentId = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const dataSigRef = useRef<string>("");
+  const scenarioSharesRef = useRef<Record<string, number> | null>(null);
 
   const [coalitions, setCoalitions] = useState<CoalitionsResponse | null>(null);
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
   const [uncertainty, setUncertainty] = useState<UncertaintyResponse | null>(
     null,
   );
+  const [averages, setAverages] = useState<PartyAverage[] | null>(null);
+  const [thresholdCandidates, setThresholdCandidates] = useState<
+    ThresholdScenarioCandidate[]
+  >([]);
+  const [scenario, setScenario] = useState<ActiveScenario | null>(null);
+  const [scenarioBusy, setScenarioBusy] = useState(false);
+  const [scenarioError, setScenarioError] = useState<string | null>(null);
   const [exclusionState, setExclusionState] = useState<ExclusionUiState>(() =>
     exclusionFromSearchParams(searchParams),
   );
@@ -52,6 +81,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const [loading, setLoading] = useState(true);
   const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  scenarioSharesRef.current = scenario?.shares ?? null;
 
   const syncExclusionToUrl = useCallback(
     (state: ExclusionUiState) => {
@@ -81,6 +112,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
     const { signal } = ac;
 
     setError(null);
+    setScenario(null);
+    setScenarioError(null);
 
     const switchedParliament =
       prevParliamentId.current != null &&
@@ -123,7 +156,7 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
 
     (async () => {
       try {
-        const [c, s] = await Promise.all([
+        const [c, s, avg, watch] = await Promise.all([
           fetchCoalitions(parliamentId, {
             apply_exclusions: nextExclusion.applyExclusions,
             disabled_rule_ids: nextExclusion.applyExclusions
@@ -132,6 +165,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
             signal,
           }),
           fetchSeats(parliamentId, { signal }),
+          fetchAverages(parliamentId, 365, { signal }).catch(() => null),
+          fetchThresholdWatch(parliamentId).catch(() => null),
         ]);
         if (signal.aborted) return;
         const next = { coalitions: c, seats: s };
@@ -146,6 +181,13 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
           writeCoalitionsCache(parliamentId, next, now);
           setCacheUpdatedAt(now);
         }
+        setAverages(avg?.parties ?? null);
+        const thr = watch?.threshold_percent ?? 5;
+        setThresholdCandidates(
+          (watch?.parties ?? [])
+            .filter((p) => p.average_share < p.threshold_percent)
+            .map((p) => ({ ...p, targetShare: thr })),
+        );
       } catch (e) {
         if (isAbortError(e) || signal.aborted) return;
         if (!cached) {
@@ -168,10 +210,10 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
   const disabledKey = exclusionState.disabledRuleIds.join("\0");
 
   useEffect(() => {
+    if (scenario) return;
     const ac = new AbortController();
     const { signal } = ac;
     let cancelled = false;
-    // Default-Ausschlüsse → Static uncertainty.json; Abweichungen → live API.
     const isDefaultExclusion =
       exclusionState.applyExclusions &&
       exclusionState.disabledRuleIds.length === 0;
@@ -206,7 +248,107 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
       clearTimeout(t);
       ac.abort();
     };
-  }, [parliamentId, exclusionState.applyExclusions, disabledKey]);
+  }, [parliamentId, exclusionState.applyExclusions, disabledKey, scenario]);
+
+  const runScenario = useCallback(
+    async (candidate: ThresholdScenarioCandidate) => {
+      if (!averages || averages.length === 0) {
+        setScenarioError("Keine Umfrageanteile für das Szenario verfügbar.");
+        return;
+      }
+      setScenarioBusy(true);
+      setScenarioError(null);
+      try {
+        const shares = buildThresholdScenarioShares(
+          averages,
+          candidate.party_id,
+          candidate.targetShare,
+        );
+        const result = await postScenario({
+          parliament_id: parliamentId,
+          party_shares: shares,
+          apply_exclusions: exclusionState.applyExclusions,
+          disabled_rule_ids: exclusionState.applyExclusions
+            ? exclusionState.disabledRuleIds
+            : [],
+        });
+        setScenario({
+          partyId: candidate.party_id,
+          partyName: candidate.party_name,
+          targetShare: candidate.targetShare,
+          shares,
+          result,
+        });
+      } catch (e) {
+        setScenarioError(
+          e instanceof Error ? e.message : "Szenario fehlgeschlagen",
+        );
+        setScenario(null);
+      } finally {
+        setScenarioBusy(false);
+      }
+    },
+    [averages, parliamentId, exclusionState],
+  );
+
+  const scenarioFetchCoalitions = useCallback(
+    async (
+      pid: string,
+      opts?: {
+        apply_exclusions?: boolean;
+        disabled_rule_ids?: string[];
+        signal?: AbortSignal;
+      },
+    ) => {
+      const shares = scenarioSharesRef.current;
+      if (!shares) {
+        return fetchCoalitions(pid, opts);
+      }
+      const res = await postScenario({
+        parliament_id: pid,
+        party_shares: shares,
+        apply_exclusions: opts?.apply_exclusions,
+        disabled_rule_ids: opts?.disabled_rule_ids,
+      });
+      if (opts?.signal?.aborted) {
+        const err = new Error("Aborted");
+        err.name = "AbortError";
+        throw err;
+      }
+      setScenario((prev) =>
+        prev && prev.shares === shares ? { ...prev, result: res } : prev,
+      );
+      return {
+        parliament_id: pid,
+        total_seats: res.total_seats,
+        majority_threshold: res.majority_threshold,
+        excluded_by_rules: 0,
+        coalitions: res.coalitions,
+      };
+    },
+    [],
+  );
+
+  const panelSeatsByName = useMemo(() => {
+    if (scenario) return seatsByNameFromPartyIds(scenario.result.seats);
+    return seats?.seats_by_name ?? {};
+  }, [scenario, seats]);
+
+  const panelInitial = useMemo(() => {
+    if (scenario) {
+      return {
+        majority_threshold: scenario.result.majority_threshold,
+        excluded_by_rules: 0,
+        coalitions: scenario.result.coalitions,
+      };
+    }
+    if (!coalitions) return null;
+    return {
+      majority_threshold: coalitions.majority_threshold,
+      excluded_by_rules: coalitions.excluded_by_rules,
+      coalitions: coalitions.coalitions,
+    };
+  }, [scenario, coalitions]);
 
   if (loading) {
     return <p className="text-sm text-ink/50">Lade Analyse…</p>;
@@ -222,31 +364,67 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
       </p>
     );
   }
-  if (!coalitions || !seats) return null;
+  if (!coalitions || !seats || !panelInitial) return null;
 
   return (
     <div className="space-y-10">
-      {cacheUpdatedAt != null ? (
+      {cacheUpdatedAt != null && !scenario ? (
         <p className="text-xs text-ink/45">
           Stand: {formatCacheAge(cacheUpdatedAt)}
           {refreshing ? " · aktualisiert…" : ""}
         </p>
       ) : null}
+
+      <ThresholdScenarioChips
+        candidates={thresholdCandidates}
+        activePartyId={scenario?.partyId}
+        busy={scenarioBusy}
+        onSelect={(p) => void runScenario(p)}
+      />
+      {scenarioError ? (
+        <p className="text-sm text-accent">{scenarioError}</p>
+      ) : null}
+      {scenario ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-sea/30 bg-sea/10 px-3 py-2 text-sm text-ink">
+          <span>
+            Szenario aktiv: {scenario.partyName} auf{" "}
+            {scenario.targetShare.toLocaleString("de-DE", {
+              maximumFractionDigits: 1,
+            })}
+            &nbsp;% gesetzt (Punktwert, keine Unsicherheits-%).
+          </span>
+          <button
+            type="button"
+            className="rounded-md border border-ink/15 bg-mist px-2.5 py-1 text-xs font-medium text-ink hover:border-sea/40"
+            onClick={() => {
+              setScenario(null);
+              setScenarioError(null);
+            }}
+          >
+            Zurücksetzen
+          </button>
+        </div>
+      ) : null}
+
       <CoalitionPanel
-        key={parliamentId}
+        key={
+          scenario
+            ? `${parliamentId}-scenario-${scenario.partyId}`
+            : parliamentId
+        }
         parliamentId={parliamentId}
-        seatsByName={seats.seats_by_name}
+        seatsByName={panelSeatsByName}
         initialExclusion={exclusionState}
-        initial={{
-          majority_threshold: coalitions.majority_threshold,
-          excluded_by_rules: coalitions.excluded_by_rules,
-          coalitions: coalitions.coalitions,
-        }}
+        initial={panelInitial}
         onExclusionStateChange={onExclusionStateChange}
+        fetchCoalitionsFn={
+          scenario ? scenarioFetchCoalitions : fetchCoalitions
+        }
       />
 
-      {(uncertainty && uncertainty.coalition_probabilities.length > 0) ||
-      uncertaintyBusy ? (
+      {!scenario &&
+      ((uncertainty && uncertainty.coalition_probabilities.length > 0) ||
+        uncertaintyBusy) ? (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
             Wie sicher ist die Mehrheit?

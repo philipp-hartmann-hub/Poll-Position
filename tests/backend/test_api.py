@@ -1430,8 +1430,8 @@ def test_threshold_watch_endpoint(client):
 def test_rank_overtake_payload_neighbor_order(monkeypatch):
     from backend import services
 
-    votes = {"a": 34.0, "b": 31.0, "c": 20.0}
-    names = {"a": "A", "b": "B", "c": "C"}
+    votes = {"a": 34.0, "b": 31.0, "c": 20.0, "de:sonstige": 8.0}
+    names = {"a": "A", "b": "B", "c": "C", "de:sonstige": "Sonstige"}
     monkeypatch.setattr(services, "_votes_from_averages", lambda _pid: (votes, names))
     monkeypatch.setattr(services, "_party_house_variance", lambda _pid: 0.5)
     payload = services.rank_overtake_payload("de_bundestag", n_simulations=100)
@@ -1444,6 +1444,10 @@ def test_rank_overtake_payload_neighbor_order(monkeypatch):
     assert first["higher_party_name"] == "A"
     assert first["gap_points"] == pytest.approx(3.0)
     assert 0.0 <= first["overtake_probability"] <= 1.0
+    ids = {
+        (p["higher_party_id"], p["lower_party_id"]) for p in payload["pairs"]
+    }
+    assert all("sonstige" not in hi and "sonstige" not in lo for hi, lo in ids)
 
 
 def test_rank_overtake_endpoint(client):

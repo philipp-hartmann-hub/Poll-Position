@@ -1674,8 +1674,19 @@ def rank_overtake_payload(
     if not votes:
         return empty
 
+    # Sonstige/Others sind Reststimmen, keine Partei in der Rangfolge.
+    filtered = {
+        pid: share
+        for pid, share in votes.items()
+        if not (
+            is_residual_party_id(pid) or _is_residual_party(pid, names.get(pid))
+        )
+    }
+    if len(filtered) < 2:
+        return empty
+
     parties = party_uncertainties_from_means(
-        votes,
+        filtered,
         sample_size=1000,
         house_variance=_party_house_variance(parliament_id),
     )

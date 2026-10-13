@@ -67,7 +67,13 @@ export function RankOvertakeSection({
   }, [parliamentId]);
 
   const { notable, rest } = useMemo(() => {
-    const list = pairs ?? [];
+    const list = (pairs ?? []).filter(
+      (p) =>
+        !/sonstige/i.test(p.higher_party_name) &&
+        !/sonstige/i.test(p.lower_party_name) &&
+        !/sonstige/i.test(p.higher_party_id) &&
+        !/sonstige/i.test(p.lower_party_id),
+    );
     const notablePairs = list.filter(
       (p) => p.overtake_probability >= VISIBLE_MIN_PROB,
     );
