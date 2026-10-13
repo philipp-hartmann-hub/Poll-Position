@@ -1685,6 +1685,61 @@ def test_scenario(client):
     assert isinstance(body["coalitions"], list)
 
 
+def test_scenario_adjusted_votes_sums_to_100():
+    from backend.services import _scenario_adjusted_votes
+
+    votes = {"a": 40.0, "b": 35.0, "c": 21.0, "d": 4.0}
+    adj = _scenario_adjusted_votes(votes, "d", 5.0)
+    assert adj["d"] == pytest.approx(5.0)
+    assert sum(adj.values()) == pytest.approx(100.0)
+    assert adj["a"] < votes["a"]
+
+
+def test_threshold_scenario_endpoint(client):
+    watch = client.get(
+        "/api/threshold-watch",
+        params={"parliament_id": "de_bundestag", "band": 3},
+    )
+    assert watch.status_code == 200
+    below = [
+        p
+        for p in watch.json()["parties"]
+        if p["average_share"] < p["threshold_percent"]
+    ]
+    if not below:
+        pytest.skip("Keine Partei unter der Hürde im Fixture")
+    target = below[0]
+    r = client.get(
+        "/api/scenario/uncertainty",
+        params={
+            "parliament_id": "de_bundestag",
+            "target_party_id": target["party_id"],
+            "n_simulations": 80,
+        },
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["target_party_id"] == target["party_id"]
+    assert body["target_share"] == pytest.approx(target["threshold_percent"])
+    assert body["n_simulations"] == 80
+    assert sum(body["seats"].values()) == body["total_seats"]
+    assert isinstance(body["coalition_probabilities"], list)
+    assert "_seat_distributions" not in body
+
+    r2 = client.get(
+        "/api/scenario/coalition-check-all",
+        params={
+            "parliament_id": "de_bundestag",
+            "target_party_id": target["party_id"],
+            "n_simulations": 80,
+        },
+    )
+    assert r2.status_code == 200
+    check = r2.json()
+    assert isinstance(check["combinations"], dict)
+    assert check["n_simulations"] == 80
+
+
 def test_scenario_validation_error(client):
     r = client.post(
         "/api/scenario",

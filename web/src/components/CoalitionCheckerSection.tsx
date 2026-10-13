@@ -3,15 +3,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   coalitionCheckCombinationKey,
-  fetchAverages,
   fetchCoalitionCheckAll,
   fetchSeats,
+  fetchThresholdScenario,
+  fetchThresholdScenarioCoalitionCheckAll,
   fetchThresholdWatch,
   postCoalitionCheck,
-  postScenario,
   type CoalitionCheckAllEntry,
   type CoalitionCheckResponse,
-  type PartyAverage,
   type SeatsResponse,
 } from "@/lib/api";
 import { Hemicycle } from "@/components/charts";
@@ -22,10 +21,7 @@ import {
 } from "@/components/ThresholdScenarioChips";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { leftRightPosition } from "@/lib/partyPositions";
-import {
-  buildThresholdScenarioShares,
-  seatsByNameFromPartyIds,
-} from "@/lib/scenarioShares";
+import { seatsByNameFromPartyIds } from "@/lib/scenarioShares";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { TIP_COALITION_CHECKER } from "@/lib/tooltipCopy";
 import { isAbortError } from "@/lib/parliamentCache";
@@ -109,7 +105,7 @@ export function CoalitionCheckerSection({
   parliamentId: string;
 }) {
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
-  const [averages, setAverages] = useState<PartyAverage[] | null>(null);
+  const [baseSeats, setBaseSeats] = useState<SeatsResponse | null>(null);
   const [thresholdCandidates, setThresholdCandidates] = useState<
     ThresholdScenarioCandidate[]
   >([]);
@@ -118,7 +114,15 @@ export function CoalitionCheckerSection({
   const [comboMap, setComboMap] = useState<Map<string, CoalitionCheckAllEntry>>(
     () => new Map(),
   );
+  const [baseComboMap, setBaseComboMap] = useState<
+    Map<string, CoalitionCheckAllEntry>
+  >(() => new Map());
   const [comboMeta, setComboMeta] = useState<{
+    nSimulations: number;
+    totalSeats: number;
+    majorityThreshold: number;
+  } | null>(null);
+  const [baseComboMeta, setBaseComboMeta] = useState<{
     nSimulations: number;
     totalSeats: number;
     majorityThreshold: number;
@@ -139,22 +143,21 @@ export function CoalitionCheckerSection({
     setResult(null);
     setScenario(null);
     setComboMap(new Map());
+    setBaseComboMap(new Map());
     setComboMeta(null);
+    setBaseComboMeta(null);
     (async () => {
       try {
-        const [data, all, avg, watch] = await Promise.all([
+        const [data, all, watch] = await Promise.all([
           fetchSeats(parliamentId, { signal: ac.signal }),
           fetchCoalitionCheckAll(parliamentId, { signal: ac.signal }).catch(
-            () => null,
-          ),
-          fetchAverages(parliamentId, 365, { signal: ac.signal }).catch(
             () => null,
           ),
           fetchThresholdWatch(parliamentId).catch(() => null),
         ]);
         if (cancelled || ac.signal.aborted) return;
         setSeats(data);
-        setAverages(avg?.parties ?? null);
+        setBaseSeats(data);
         const thr = watch?.threshold_percent ?? 5;
         setThresholdCandidates(
           (watch?.parties ?? [])
@@ -162,17 +165,22 @@ export function CoalitionCheckerSection({
             .map((p) => ({ ...p, targetShare: thr })),
         );
         if (all?.combinations) {
-          setComboMap(new Map(Object.entries(all.combinations)));
-          setComboMeta({
+          const map = new Map(Object.entries(all.combinations));
+          const meta = {
             nSimulations: all.n_simulations,
             totalSeats: all.total_seats,
             majorityThreshold: all.majority_threshold,
-          });
+          };
+          setComboMap(map);
+          setBaseComboMap(map);
+          setComboMeta(meta);
+          setBaseComboMeta(meta);
         }
       } catch (e) {
         if (cancelled || isAbortError(e)) return;
         setError(e instanceof Error ? e.message : "Sitze laden fehlgeschlagen");
         setSeats(null);
+        setBaseSeats(null);
       } finally {
         if (!cancelled && !ac.signal.aborted) setLoadingSeats(false);
       }
@@ -238,17 +246,15 @@ export function CoalitionCheckerSection({
     [options, selected],
   );
 
-  const scenarioInSelection = Boolean(
-    scenario && selected.has(scenario.partyId),
-  );
-
   const localPoint = useMemo(() => {
     if (!seats || selectedList.length === 0) return null;
     const total = scenario
       ? Object.values(displaySeatsByName).reduce((s, n) => s + n, 0) ||
         seats.total_seats
       : seats.total_seats;
-    const thr = total > 0 ? Math.floor(total / 2) + 1 : 0;
+    const thr =
+      comboMeta?.majorityThreshold ||
+      (total > 0 ? Math.floor(total / 2) + 1 : 0);
     const sum = options
       .filter((o) => selected.has(o.canonicalId))
       .reduce((s, o) => s + o.seats, 0);
@@ -258,7 +264,15 @@ export function CoalitionCheckerSection({
       total,
       hasMajority: thr > 0 && sum >= thr,
     };
-  }, [seats, selected, selectedList.length, options, scenario, displaySeatsByName]);
+  }, [
+    seats,
+    selected,
+    selectedList.length,
+    options,
+    scenario,
+    displaySeatsByName,
+    comboMeta,
+  ]);
 
   const selectedKey = coalitionCheckCombinationKey(selectedList);
 
@@ -266,15 +280,6 @@ export function CoalitionCheckerSection({
     if (selectedList.length === 0) {
       setResult(null);
       setChecking(false);
-      return;
-    }
-
-    // Szenario-Partei ist nicht in den MC-Ziehungen — nur Punktschätzer.
-    if (scenarioInSelection) {
-      abortRef.current?.abort();
-      setResult(null);
-      setChecking(false);
-      setError(null);
       return;
     }
 
@@ -288,12 +293,19 @@ export function CoalitionCheckerSection({
             comboMeta.majorityThreshold ||
             Math.floor(seats.total_seats / 2) + 1,
           nSimulations: comboMeta.nSimulations,
-          seatsByName: seats.seats_by_name,
+          seatsByName: displaySeatsByName,
           options,
         }),
       );
       setChecking(false);
       setError(null);
+      return;
+    }
+
+    // Im Szenario: nur vorberechnete Kombis — kein Live-POST ohne Szenario-MC.
+    if (scenario) {
+      setResult(null);
+      setChecking(false);
       return;
     }
 
@@ -332,7 +344,8 @@ export function CoalitionCheckerSection({
     comboMeta,
     seats,
     options,
-    scenarioInSelection,
+    scenario,
+    displaySeatsByName,
   ]);
 
   function toggle(id: string) {
@@ -346,22 +359,19 @@ export function CoalitionCheckerSection({
 
   const runScenario = useCallback(
     async (candidate: ThresholdScenarioCandidate) => {
-      if (!averages || averages.length === 0) {
-        setError("Keine Umfrageanteile für das Szenario verfügbar.");
-        return;
-      }
       setScenarioBusy(true);
       setError(null);
       try {
-        const shares = buildThresholdScenarioShares(
-          averages,
-          candidate.party_id,
-          candidate.targetShare,
-        );
-        const res = await postScenario({
-          parliament_id: parliamentId,
-          party_shares: shares,
-        });
+        const [res, all] = await Promise.all([
+          fetchThresholdScenario(parliamentId, candidate.party_id, {
+            targetShare: candidate.targetShare,
+          }),
+          fetchThresholdScenarioCoalitionCheckAll(
+            parliamentId,
+            candidate.party_id,
+            { targetShare: candidate.targetShare },
+          ),
+        ]);
         const byName = seatsByNameFromPartyIds(res.seats);
         const seatsByCanonical: Record<string, number> = {};
         for (const [pid, n] of Object.entries(res.seats)) {
@@ -370,9 +380,21 @@ export function CoalitionCheckerSection({
         setScenario({
           partyId: candidate.party_id,
           partyName: candidate.party_name,
-          targetShare: candidate.targetShare,
+          targetShare: res.target_share,
           seatsByCanonical,
           seatsByName: byName,
+        });
+        setSeats({
+          parliament_id: parliamentId,
+          seats: res.seats,
+          seats_by_name: byName,
+          total_seats: res.total_seats,
+        });
+        setComboMap(new Map(Object.entries(all.combinations ?? {})));
+        setComboMeta({
+          nSimulations: all.n_simulations,
+          totalSeats: all.total_seats,
+          majorityThreshold: all.majority_threshold,
         });
         setSelected((prev) => new Set(prev).add(candidate.party_id));
       } catch (e) {
@@ -382,8 +404,22 @@ export function CoalitionCheckerSection({
         setScenarioBusy(false);
       }
     },
-    [averages, parliamentId],
+    [parliamentId],
   );
+
+  function resetScenario() {
+    if (!scenario) return;
+    const partyId = scenario.partyId;
+    setScenario(null);
+    if (baseSeats) setSeats(baseSeats);
+    setComboMap(baseComboMap);
+    setComboMeta(baseComboMeta);
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.delete(partyId);
+      return next;
+    });
+  }
 
   if (loadingSeats) {
     return <p className="text-sm text-ink/50">Lade Parteien…</p>;
@@ -398,9 +434,7 @@ export function CoalitionCheckerSection({
   }
 
   const probability =
-    result && selectedList.length > 0 && !scenarioInSelection
-      ? result.majority_probability
-      : null;
+    result && selectedList.length > 0 ? result.majority_probability : null;
 
   return (
     <div className="space-y-6">
@@ -433,19 +467,12 @@ export function CoalitionCheckerSection({
             {scenario.targetShare.toLocaleString("de-DE", {
               maximumFractionDigits: 1,
             })}
-            &nbsp;% — nur Punktwert, keine Monte-Carlo-%.
+            &nbsp;% (inkl. Unsicherheit).
           </span>
           <button
             type="button"
             className="rounded-md border border-ink/15 bg-mist px-2.5 py-1 text-xs font-medium text-ink hover:border-sea/40"
-            onClick={() => {
-              setScenario(null);
-              setSelected((prev) => {
-                const next = new Set(prev);
-                next.delete(scenario.partyId);
-                return next;
-              });
-            }}
+            onClick={resetScenario}
           >
             Zurücksetzen
           </button>
@@ -498,9 +525,7 @@ export function CoalitionCheckerSection({
             <>
               <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
                 <p className="text-xs uppercase tracking-wide text-ink/45">
-                  {scenarioInSelection
-                    ? "Szenario-Punktwert"
-                    : "Aktueller Umfrage-Stand"}
+                  {scenario ? "Szenario-Punktwert" : "Aktueller Umfrage-Stand"}
                 </p>
                 <p className="mt-1 font-display text-2xl text-ink">
                   {localPoint?.hasMajority ? "Mehrheit" : "Keine Mehrheit"}
@@ -521,13 +546,7 @@ export function CoalitionCheckerSection({
                 <p className="text-xs uppercase tracking-wide text-ink/45">
                   Monte-Carlo-Wahrscheinlichkeit
                 </p>
-                {scenarioInSelection ? (
-                  <p className="mt-2 text-sm text-ink/55">
-                    Im Szenario-Modus nicht verfügbar — die Partei steckt nicht
-                    in den gespeicherten Unsicherheits-Ziehungen. Nur der
-                    Sitz-Punktwert oben zählt.
-                  </p>
-                ) : checking && probability == null ? (
+                {checking && probability == null ? (
                   <p className="mt-2 text-sm text-ink/50">Berechne…</p>
                 ) : (
                   <>
@@ -542,6 +561,7 @@ export function CoalitionCheckerSection({
                         ? ` · ${result.n_majority} / ${result.n_simulations} Ziehungen`
                         : ""}
                       {checking ? " · aktualisiert…" : ""}
+                      {scenario ? " · Szenario-Ziehungen" : ""}
                     </p>
                   </>
                 )}

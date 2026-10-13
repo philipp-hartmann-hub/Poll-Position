@@ -55,8 +55,8 @@ export function ThresholdScenarioChips({
         })}
       </div>
       <p className="text-xs text-ink/50">
-        Deterministischer Punktwert (Sitze &amp; Koalitionen) für genau diese
-        hypothetische Verteilung — keine Monte-Carlo-Wahrscheinlichkeit.
+        Hypothetische Verteilung inkl. neuer Monte-Carlo-Ziehungen — nur in
+        diesem Tab, nicht in Umfragen/Prognose.
       </p>
     </div>
   );

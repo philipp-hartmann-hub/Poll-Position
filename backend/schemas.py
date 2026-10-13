@@ -298,6 +298,20 @@ class ScenarioResponse(BaseModel):
     coalitions: list[CoalitionOut]
 
 
+class ThresholdScenarioResponse(BaseModel):
+    parliament_id: str
+    target_party_id: str
+    target_share: float
+    adjusted_shares: dict[str, float]
+    seats: dict[str, int]
+    total_seats: int
+    majority_threshold: int
+    coalitions: list[CoalitionOut]
+    coalition_probabilities: list[CoalitionProbabilityOut]
+    mean_seats: dict[str, float]
+    n_simulations: int
+
+
 class BundesratCoalitionOption(BaseModel):
     key: str
     parties: list[str]
