@@ -2608,21 +2608,26 @@ def scenario_payload(
         disabled_rule_ids=disabled_rule_ids,
         max_coalition_parties=max_coalition_parties,
     )
+    # Namen für Kanonisierung (wie coalitions_payload / seats_payload).
+    _votes, names = _votes_from_averages(parliament_id)
+    # Koalitionssuche über denselben kanonisierten Pfad wie coalitions_payload —
+    # nicht result.majorities (rohe Warehouse-IDs, z. B. CDU/CSU getrennt).
+    coal = _coalitions_from_seats(
+        parliament_id,
+        dict(result.seats),
+        names,
+        total_seats=result.total_seats,
+        apply_exclusions=apply_exclusions,
+        max_parties=max_coalition_parties,
+        disabled_rule_ids=disabled_rule_ids,
+    )
     return {
         "parliament_id": parliament_id,
         "party_shares": result.party_shares,
-        "seats": result.seats,
+        "seats": _seats_to_canonical(dict(result.seats), dict(names)),
         "total_seats": result.total_seats,
-        "majority_threshold": result.majorities.majority_threshold,
-        "coalitions": [
-            {
-                "parties": list(c.parties),
-                "seats": c.seats,
-                "is_minimal_winning": c.is_minimal_winning,
-                "compatibility_span": c.compatibility_span,
-            }
-            for c in result.majorities.coalitions
-        ],
+        "majority_threshold": coal["majority_threshold"],
+        "coalitions": coal["coalitions"],
     }
 
 

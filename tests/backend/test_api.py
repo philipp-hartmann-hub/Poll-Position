@@ -1681,8 +1681,45 @@ def test_scenario(client):
     assert r.status_code == 200
     body = r.json()
     assert body["total_seats"] == 630
-    assert sum(body["seats"].values()) == 630
+    # Sonstige wird bei Kanonisierung ausgefiltert — Summe der Partei-Sitze ≤ Kammer.
+    assert sum(body["seats"].values()) <= 630
+    assert sum(body["seats"].values()) > 0
     assert isinstance(body["coalitions"], list)
+
+
+def test_scenario_returns_canonical_ids_for_union(client):
+    """Warehouse-IDs (dawum:party:1 = CDU/CSU) → kanonische de:xxx in seats/coalitions."""
+    r = client.post(
+        "/api/scenario",
+        json={
+            "parliament_id": "de_bundestag",
+            "party_shares": {
+                "dawum:party:1": 32.0,  # CDU/CSU
+                "dawum:party:2": 20.0,  # SPD
+                "dawum:party:7": 18.0,  # AfD
+                "dawum:party:4": 12.0,  # Grüne
+                "dawum:party:5": 8.0,  # Linke
+                "de:sonstige": 10.0,
+            },
+            "apply_exclusions": True,
+        },
+    )
+    assert r.status_code == 200
+    body = r.json()
+    seats = body["seats"]
+    assert "de:cdu_csu" in seats
+    assert seats["de:cdu_csu"] > 0
+    assert "dawum:party:1" not in seats
+    assert all(
+        isinstance(pid, str) and pid.startswith("de:") and not pid.startswith("dawum:")
+        for pid in seats
+    )
+    for c in body["coalitions"]:
+        assert all(
+            p.startswith("de:") and not p.startswith("dawum:") for p in c["parties"]
+        )
+        assert "dawum:party:1" not in c["parties"]
+    assert any("de:cdu_csu" in c["parties"] for c in body["coalitions"])
 
 
 def test_scenario_adjusted_votes_sums_to_100():
