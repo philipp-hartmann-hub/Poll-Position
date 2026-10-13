@@ -304,6 +304,59 @@ def simulate_threshold_watch(
 
 
 @dataclass(frozen=True)
+class RankOvertakeRow:
+    higher_party_id: str
+    lower_party_id: str
+    higher_mean_share: float
+    lower_mean_share: float
+    overtake_probability: float
+    """P(gezogener Anteil lower > gezogener Anteil higher)."""
+    n_overtake: int
+    n_simulations: int
+
+
+def simulate_rank_overtake(
+    parties: Sequence[PartyUncertainty],
+    *,
+    config: UncertaintyConfig | None = None,
+) -> list[RankOvertakeRow]:
+    """
+    Für jedes Nachbarpaar in der nach mean_share sortierten Rangfolge:
+    P(gezogener Anteil der schwächeren Partei > gezogener Anteil der stärkeren).
+    """
+    cfg = config or UncertaintyConfig(n_simulations=400, seed=42)
+    ranked = sorted(parties, key=lambda p: -p.mean_share)
+    pairs = list(zip(ranked, ranked[1:]))
+    if not pairs:
+        return []
+    rng = random.Random(cfg.seed)
+    hits = {i: 0 for i in range(len(pairs))}
+    for _ in range(cfg.n_simulations):
+        shares = draw_share_vector(
+            parties,
+            rng,
+            min_share=cfg.min_share,
+            max_share=cfg.max_share,
+            renormalize=cfg.renormalize,
+        )
+        for i, (higher, lower) in enumerate(pairs):
+            if shares.get(lower.party_id, 0.0) > shares.get(higher.party_id, 0.0):
+                hits[i] += 1
+    return [
+        RankOvertakeRow(
+            higher_party_id=higher.party_id,
+            lower_party_id=lower.party_id,
+            higher_mean_share=higher.mean_share,
+            lower_mean_share=lower.mean_share,
+            overtake_probability=hits[i] / cfg.n_simulations,
+            n_overtake=hits[i],
+            n_simulations=cfg.n_simulations,
+        )
+        for i, (higher, lower) in enumerate(pairs)
+    ]
+
+
+@dataclass(frozen=True)
 class PartyForecastRow:
     party_id: str
     mean_share: float

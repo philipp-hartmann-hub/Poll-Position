@@ -9,6 +9,7 @@ from analysis.uncertainty import (
     UncertaintyConfig,
     party_uncertainties_from_means,
     simulate_party_forecast,
+    simulate_rank_overtake,
     simulate_threshold_watch,
     simulate_uncertainty,
     standard_error_pp,
@@ -71,6 +72,36 @@ def test_simulate_threshold_watch_band_and_exempt():
     over = next(r for r in rows if r.party_id == "near_over")
     assert under.probability_below_threshold > 0.5
     assert over.probability_below_threshold < 0.5
+
+
+def test_simulate_rank_overtake_neighbor_pairs_and_close_race():
+    """Nachbarpaare nach Rang; knappes Paar hat höhere Überhol-Chance als weites."""
+    means = {"A": 32.0, "B": 30.5, "C": 18.0, "D": 10.0}
+    parties = party_uncertainties_from_means(
+        means, sample_size=1500, house_variance=1.5
+    )
+    rows = simulate_rank_overtake(
+        parties,
+        config=UncertaintyConfig(n_simulations=500, seed=3, renormalize=True),
+    )
+    assert len(rows) == 3
+    assert rows[0].higher_party_id == "A"
+    assert rows[0].lower_party_id == "B"
+    assert rows[1].higher_party_id == "B"
+    assert rows[1].lower_party_id == "C"
+    close = rows[0]
+    wide = rows[1]
+    assert close.overtake_probability > wide.overtake_probability
+    assert abs(
+        close.overtake_probability * close.n_simulations - close.n_overtake
+    ) < 1e-9
+    assert all(0.0 <= r.overtake_probability <= 1.0 for r in rows)
+
+
+def test_simulate_rank_overtake_empty_or_single():
+    alone = party_uncertainties_from_means({"only": 40.0}, sample_size=1000)
+    assert simulate_rank_overtake(alone) == []
+    assert simulate_rank_overtake([]) == []
 
 
 def test_simulate_party_forecast_strongest_sums_near_one():

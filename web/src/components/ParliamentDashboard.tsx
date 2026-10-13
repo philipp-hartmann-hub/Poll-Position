@@ -30,6 +30,7 @@ import { ElectionNightSection } from "@/components/ElectionNightSection";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { LastElectionSection } from "@/components/LastElectionSection";
 import { PartyForecast } from "@/components/PartyForecast";
+import { RankOvertakeSection } from "@/components/RankOvertakeSection";
 import { SurveysSection } from "@/components/SurveysSection";
 import { labelPartyId, partyColor } from "@/lib/colors";
 import { PARTY_SWATCH_CLASS } from "@/lib/theme";
@@ -70,6 +71,7 @@ type IncumbentGov = {
 };
 
 function SeatCompareBlock({
+  parliamentId,
   lastElection,
   pollSeats,
   averages,
@@ -78,6 +80,7 @@ function SeatCompareBlock({
   missingGovernmentParties,
   reelectionLoading,
 }: {
+  parliamentId: string;
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
   averages: AveragesResponse | null;
@@ -135,6 +138,10 @@ function SeatCompareBlock({
           </p>
           <PollShareBarChart parties={pollParties} />
         </div>
+      ) : null}
+
+      {averages != null && averages.parties.length >= 2 ? (
+        <RankOvertakeSection parliamentId={parliamentId} />
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -568,6 +575,7 @@ export function ParliamentDashboard({
           </p>
         ) : (
           <SeatCompareBlock
+            parliamentId={parliamentId}
             lastElection={lastElection}
             pollSeats={pollSeats}
             averages={averages}

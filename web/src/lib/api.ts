@@ -142,6 +142,23 @@ export type ThresholdWatchResponse = {
   parties: ThresholdWatchParty[];
 };
 
+export type RankOvertakePair = {
+  higher_party_id: string;
+  higher_party_name: string;
+  higher_share: number;
+  lower_party_id: string;
+  lower_party_name: string;
+  lower_share: number;
+  gap_points: number;
+  overtake_probability: number;
+};
+
+export type RankOvertakeResponse = {
+  parliament_id: string;
+  n_simulations: number;
+  pairs: RankOvertakePair[];
+};
+
 export type ThresholdWatchOverviewResponse = {
   band_points: number;
   items: (ThresholdWatchParty & {
@@ -600,6 +617,19 @@ export function fetchThresholdWatch(
     band: String(band),
   });
   return apiFetch(`/api/threshold-watch?${q}`);
+}
+
+export function fetchRankOvertake(
+  parliamentId: string,
+  opts?: { signal?: AbortSignal },
+): Promise<RankOvertakeResponse> {
+  const q = new URLSearchParams({ parliament_id: parliamentId });
+  const init = opts?.signal ? { signal: opts.signal } : undefined;
+  return fetchStaticOrApi(
+    `/data/${encodeURIComponent(staticParliamentSegment(parliamentId))}/rank-overtake.json`,
+    `/api/rank-overtake?${q}`,
+    init,
+  );
 }
 
 export function fetchPartyForecast(

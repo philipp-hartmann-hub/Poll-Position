@@ -174,6 +174,23 @@ class ThresholdWatchResponse(BaseModel):
     parties: list[ThresholdWatchPartyOut]
 
 
+class RankOvertakePairOut(BaseModel):
+    higher_party_id: str
+    higher_party_name: str
+    higher_share: float
+    lower_party_id: str
+    lower_party_name: str
+    lower_share: float
+    gap_points: float
+    overtake_probability: float
+
+
+class RankOvertakeResponse(BaseModel):
+    parliament_id: str
+    n_simulations: int
+    pairs: list[RankOvertakePairOut]
+
+
 class ThresholdWatchOverviewItem(ThresholdWatchPartyOut):
     parliament_id: str
     parliament_name: str | None = None

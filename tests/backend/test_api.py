@@ -1427,6 +1427,42 @@ def test_threshold_watch_endpoint(client):
         assert not str(p["party_name"]).startswith("dawum:party:")
 
 
+def test_rank_overtake_payload_neighbor_order(monkeypatch):
+    from backend import services
+
+    votes = {"a": 34.0, "b": 31.0, "c": 20.0}
+    names = {"a": "A", "b": "B", "c": "C"}
+    monkeypatch.setattr(services, "_votes_from_averages", lambda _pid: (votes, names))
+    monkeypatch.setattr(services, "_party_house_variance", lambda _pid: 0.5)
+    payload = services.rank_overtake_payload("de_bundestag", n_simulations=100)
+    assert payload["parliament_id"] == "de_bundestag"
+    assert payload["n_simulations"] == 100
+    assert len(payload["pairs"]) == 2
+    first = payload["pairs"][0]
+    assert first["higher_party_id"] == "a"
+    assert first["lower_party_id"] == "b"
+    assert first["higher_party_name"] == "A"
+    assert first["gap_points"] == pytest.approx(3.0)
+    assert 0.0 <= first["overtake_probability"] <= 1.0
+
+
+def test_rank_overtake_endpoint(client):
+    r = client.get(
+        "/api/rank-overtake",
+        params={"parliament_id": "de_bundestag"},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["parliament_id"] == "de_bundestag"
+    assert isinstance(body["pairs"], list)
+    if body["pairs"]:
+        p = body["pairs"][0]
+        assert "higher_party_name" in p
+        assert "lower_party_name" in p
+        assert "overtake_probability" in p
+        assert "gap_points" in p
+
+
 def test_resolve_party_display_name_dawum_fallback():
     from backend.services import resolve_party_display_name
 

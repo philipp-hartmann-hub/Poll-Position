@@ -61,6 +61,7 @@ from analysis.uncertainty import (
     party_uncertainties_election_night,
     party_uncertainties_from_means,
     simulate_party_forecast,
+    simulate_rank_overtake,
     simulate_threshold_watch,
     simulate_uncertainty,
 )
@@ -1642,6 +1643,63 @@ def threshold_watch_payload(
                 "average_share": r.mean_share,
                 "threshold_percent": r.threshold_percent,
                 "probability_below_threshold": r.probability_below_threshold,
+            }
+            for r in rows
+        ],
+    }
+
+
+def rank_overtake_payload(
+    parliament_id: str,
+    *,
+    n_simulations: int = 400,
+) -> dict[str, Any]:
+    """Nachbarpaar-Überhol-Wahrscheinlichkeiten aus denselben MC-Ziehungen wie Threshold-Watch."""
+    votes, names = _votes_from_averages(parliament_id)
+    try:
+        ensure_warehouse()
+        con = connect_warehouse(read_only=not uses_motherduck())
+        try:
+            names = {**names, **_party_name_map(con)}
+        finally:
+            con.close()
+    except Exception:
+        pass
+
+    empty: dict[str, Any] = {
+        "parliament_id": parliament_id,
+        "n_simulations": 0,
+        "pairs": [],
+    }
+    if not votes:
+        return empty
+
+    parties = party_uncertainties_from_means(
+        votes,
+        sample_size=1000,
+        house_variance=_party_house_variance(parliament_id),
+    )
+    rows = simulate_rank_overtake(
+        parties,
+        config=UncertaintyConfig(n_simulations=n_simulations, seed=42),
+    )
+    return {
+        "parliament_id": parliament_id,
+        "n_simulations": n_simulations if rows else 0,
+        "pairs": [
+            {
+                "higher_party_id": r.higher_party_id,
+                "higher_party_name": resolve_party_display_name(
+                    r.higher_party_id, names
+                ),
+                "higher_share": r.higher_mean_share,
+                "lower_party_id": r.lower_party_id,
+                "lower_party_name": resolve_party_display_name(
+                    r.lower_party_id, names
+                ),
+                "lower_share": r.lower_mean_share,
+                "gap_points": r.higher_mean_share - r.lower_mean_share,
+                "overtake_probability": r.overtake_probability,
             }
             for r in rows
         ],

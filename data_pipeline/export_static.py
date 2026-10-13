@@ -5,7 +5,7 @@ Schreibt unter ``web/public/data/``:
 - ``government.json``, ``bundesrat-status.json``, ``bundesrat-majority-check.json``,
   ``institute-leaderboard.json`` (global, nicht pro Parlament)
 - optional ``germany-map-leaders.json`` (wenn Service vorhanden)
-- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys,coalition-check-all}.json``
+- ``<safe_parliament_id>/{averages,trend,seats,coalitions,last-election,party-forecast,uncertainty,surveys,coalition-check-all,rank-overtake}.json``
 
 Parliament-IDs mit ``:`` (z. B. ``dawum:parliament:17``) werden für den
 Pfad segmentiert (``dawum_parliament_17``), damit Artifact-Upload und NTFS
@@ -125,6 +125,11 @@ def export_parliament_static(
         (
             "coalition-check-all",
             lambda: services.coalition_check_all_payload(parliament_id),
+            False,
+        ),
+        (
+            "rank-overtake",
+            lambda: services.rank_overtake_payload(parliament_id),
             False,
         ),
     ]

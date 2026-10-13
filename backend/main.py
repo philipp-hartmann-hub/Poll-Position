@@ -317,6 +317,15 @@ def get_threshold_watch(
     )
 
 
+@app.get("/api/rank-overtake", response_model=schemas.RankOvertakeResponse)
+def get_rank_overtake(
+    parliament_id: str = Query(...),
+) -> schemas.RankOvertakeResponse:
+    return schemas.RankOvertakeResponse.model_validate(
+        services.rank_overtake_payload(parliament_id)
+    )
+
+
 @app.get("/api/party-forecast", response_model=schemas.PartyForecastResponse)
 def get_party_forecast(
     parliament_id: str = Query(..., description="z. B. de_bundestag"),

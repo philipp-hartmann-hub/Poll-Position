@@ -57,6 +57,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
     assert ok["uncertainty"] is True
     assert ok["surveys"] is True
     assert ok["coalition-check-all"] is True
+    assert ok["rank-overtake"] is True
     for name in (
         "averages",
         "trend",
@@ -67,6 +68,7 @@ def test_export_parliament_static_writes_core_files(export_warehouse, tmp_path):
         "uncertainty",
         "surveys",
         "coalition-check-all",
+        "rank-overtake",
     ):
         path = out / "de_bundestag" / f"{name}.json"
         assert path.is_file()
@@ -155,6 +157,9 @@ def test_export_parliament_static_sanitizes_colon_ids(
             "combinations": {},
         }
 
+    def fake_rank_overtake(pid, **_kwargs):
+        return {"parliament_id": pid, "n_simulations": 0, "pairs": []}
+
     monkeypatch.setattr("backend.services.party_averages_payload", fake_averages)
     monkeypatch.setattr("backend.services.party_trend_series_payload", fake_trend)
     monkeypatch.setattr("backend.services.seats_payload", fake_seats)
@@ -166,6 +171,7 @@ def test_export_parliament_static_sanitizes_colon_ids(
     monkeypatch.setattr(
         "backend.services.coalition_check_all_payload", fake_coalition_check_all
     )
+    monkeypatch.setattr("backend.services.rank_overtake_payload", fake_rank_overtake)
 
     ok = export_static.export_parliament_static("dawum:parliament:17", out_dir=out)
     assert all(ok.values())
@@ -180,6 +186,7 @@ def test_export_parliament_static_sanitizes_colon_ids(
         "uncertainty",
         "surveys",
         "coalition-check-all",
+        "rank-overtake",
     ):
         path = out / "dawum_parliament_17" / f"{name}.json"
         assert path.is_file()

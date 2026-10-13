@@ -21,6 +21,9 @@ export const TIP_SEAT_PROJECTION =
 export const TIP_AVERAGES_TREND =
   "Ø % ist der gewichtete Durchschnitt der letzten Umfragen. Trend % glättet kurzfristiges Auf und Ab zusätzlich heraus und zeigt eher die längerfristige Richtung — kann leicht vom aktuellen Durchschnitt abweichen.";
 
+export const TIP_RANK_OVERTAKE =
+  "Für benachbarte Parteien in der aktuellen Umfrage-Rangfolge: Wie oft würde die schwächere die stärkere überholen, wenn man den heutigen Umfragestand tausendfach leicht schwanken lässt — wie bei echten Umfrageabweichungen? Keine Wahlprognose, sondern wie knapper der heutige Abstand ist.";
+
 export const TIP_TREND_SERIES =
   "Die Linie zeigt die geglättete Entwicklung der Umfragewerte über die Zeit — kurzfristiges Auf und Ab wird etwas herausgerechnet, damit die Richtung besser erkennbar wird. Keine Wahlprognose, sondern der Verlauf der veröffentlichten Umfragen.";
 
