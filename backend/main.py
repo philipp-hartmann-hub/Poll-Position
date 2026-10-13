@@ -425,52 +425,6 @@ def post_scenario(body: schemas.ScenarioRequest) -> schemas.ScenarioResponse:
     return schemas.ScenarioResponse.model_validate(data)
 
 
-@app.get(
-    "/api/scenario/uncertainty",
-    response_model=schemas.ThresholdScenarioResponse,
-)
-def get_scenario_uncertainty(
-    parliament_id: str = Query(...),
-    target_party_id: str = Query(...),
-    target_share: float | None = Query(None, ge=0.0, le=100.0),
-    n_simulations: int = Query(200, ge=50, le=2000),
-    apply_exclusions: bool = Query(True),
-    disabled_rule_ids: list[str] | None = Query(None),
-) -> schemas.ThresholdScenarioResponse:
-    data = services.threshold_scenario_payload(
-        parliament_id,
-        target_party_id,
-        target_share=target_share,
-        n_simulations=n_simulations,
-        apply_exclusions=apply_exclusions,
-        disabled_rule_ids=disabled_rule_ids,
-    )
-    return schemas.ThresholdScenarioResponse.model_validate(data)
-
-
-@app.get(
-    "/api/scenario/coalition-check-all",
-    response_model=schemas.CoalitionCheckAllResponse,
-)
-def get_scenario_coalition_check_all(
-    parliament_id: str = Query(...),
-    target_party_id: str = Query(...),
-    target_share: float | None = Query(None, ge=0.0, le=100.0),
-    n_simulations: int = Query(200, ge=50, le=2000),
-    apply_exclusions: bool = Query(True),
-    disabled_rule_ids: list[str] | None = Query(None),
-) -> schemas.CoalitionCheckAllResponse:
-    data = services.threshold_scenario_coalition_check_all_payload(
-        parliament_id,
-        target_party_id,
-        target_share=target_share,
-        n_simulations=n_simulations,
-        apply_exclusions=apply_exclusions,
-        disabled_rule_ids=disabled_rule_ids,
-    )
-    return schemas.CoalitionCheckAllResponse.model_validate(data)
-
-
 @app.post(
     "/api/parliaments/{parliament_id}/coalition-check",
     response_model=schemas.CoalitionCheckResponse,

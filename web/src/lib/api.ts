@@ -261,20 +261,6 @@ export type ScenarioResponse = {
   coalitions: Coalition[];
 };
 
-export type ThresholdScenarioResponse = {
-  parliament_id: string;
-  target_party_id: string;
-  target_share: number;
-  adjusted_shares: Record<string, number>;
-  seats: Record<string, number>;
-  total_seats: number;
-  majority_threshold: number;
-  coalitions: Coalition[];
-  coalition_probabilities: UncertaintyResponse["coalition_probabilities"];
-  mean_seats: Record<string, number>;
-  n_simulations: number;
-};
-
 export type CoalitionCheckResponse = {
   parliament_id: string;
   parties: string[];
@@ -913,68 +899,6 @@ export function postScenario(body: ScenarioRequest): Promise<ScenarioResponse> {
   return apiFetch("/api/scenario", {
     method: "POST",
     body: JSON.stringify(body),
-  });
-}
-
-export function fetchThresholdScenario(
-  parliamentId: string,
-  targetPartyId: string,
-  opts?: {
-    targetShare?: number;
-    nSimulations?: number;
-    applyExclusions?: boolean;
-    disabledRuleIds?: string[];
-    signal?: AbortSignal;
-  },
-): Promise<ThresholdScenarioResponse> {
-  const q = new URLSearchParams({
-    parliament_id: parliamentId,
-    target_party_id: targetPartyId,
-  });
-  if (opts?.targetShare != null) q.set("target_share", String(opts.targetShare));
-  if (opts?.nSimulations != null) {
-    q.set("n_simulations", String(opts.nSimulations));
-  }
-  if (opts?.applyExclusions != null) {
-    q.set("apply_exclusions", String(opts.applyExclusions));
-  }
-  for (const id of opts?.disabledRuleIds ?? []) {
-    q.append("disabled_rule_ids", id);
-  }
-  return apiFetch(`/api/scenario/uncertainty?${q}`, {
-    noStore: true,
-    signal: opts?.signal,
-  });
-}
-
-export function fetchThresholdScenarioCoalitionCheckAll(
-  parliamentId: string,
-  targetPartyId: string,
-  opts?: {
-    targetShare?: number;
-    nSimulations?: number;
-    applyExclusions?: boolean;
-    disabledRuleIds?: string[];
-    signal?: AbortSignal;
-  },
-): Promise<CoalitionCheckAllResponse> {
-  const q = new URLSearchParams({
-    parliament_id: parliamentId,
-    target_party_id: targetPartyId,
-  });
-  if (opts?.targetShare != null) q.set("target_share", String(opts.targetShare));
-  if (opts?.nSimulations != null) {
-    q.set("n_simulations", String(opts.nSimulations));
-  }
-  if (opts?.applyExclusions != null) {
-    q.set("apply_exclusions", String(opts.applyExclusions));
-  }
-  for (const id of opts?.disabledRuleIds ?? []) {
-    q.append("disabled_rule_ids", id);
-  }
-  return apiFetch(`/api/scenario/coalition-check-all?${q}`, {
-    noStore: true,
-    signal: opts?.signal,
   });
 }
 
