@@ -71,7 +71,6 @@ type IncumbentGov = {
 };
 
 function SeatCompareBlock({
-  parliamentId,
   lastElection,
   pollSeats,
   averages,
@@ -80,7 +79,6 @@ function SeatCompareBlock({
   missingGovernmentParties,
   reelectionLoading,
 }: {
-  parliamentId: string;
   lastElection: LastElectionResponse | null;
   pollSeats: SeatsResponse | null;
   averages: AveragesResponse | null;
@@ -138,10 +136,6 @@ function SeatCompareBlock({
           </p>
           <PollShareBarChart parties={pollParties} />
         </div>
-      ) : null}
-
-      {averages != null && averages.parties.length >= 2 ? (
-        <RankOvertakeSection parliamentId={parliamentId} />
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -538,7 +532,12 @@ export function ParliamentDashboard({
       koalitionspruefer: (
         <CoalitionCheckerSection parliamentId={parliamentId} />
       ),
-      prognose: <PartyForecast parliamentId={parliamentId} />,
+      prognose: (
+        <div className="space-y-8">
+          <PartyForecast parliamentId={parliamentId} />
+          <RankOvertakeSection parliamentId={parliamentId} />
+        </div>
+      ),
       wahlabend: <ElectionNightSection parliamentId={parliamentId} />,
       "letzte-wahl": (
         <Suspense
@@ -575,7 +574,6 @@ export function ParliamentDashboard({
           </p>
         ) : (
           <SeatCompareBlock
-            parliamentId={parliamentId}
             lastElection={lastElection}
             pollSeats={pollSeats}
             averages={averages}
