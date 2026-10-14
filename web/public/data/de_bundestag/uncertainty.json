@@ -3,13 +3,13 @@
   "n_simulations": 200,
   "n_deadlock": 1,
   "mean_seats": {
-    "dawum:party:1": 140.185,
-    "dawum:party:2": 94.72,
-    "dawum:party:23": 0.535,
-    "dawum:party:3": 7.305,
-    "dawum:party:4": 105.69,
-    "dawum:party:5": 79.84,
-    "dawum:party:7": 201.725,
+    "dawum:party:1": 139.19,
+    "dawum:party:2": 95.275,
+    "dawum:party:23": 0.715,
+    "dawum:party:3": 7.515,
+    "dawum:party:4": 106.13,
+    "dawum:party:5": 79.64,
+    "dawum:party:7": 201.535,
     "dawum:party:8": 0.0,
     "de:sonstige": 0.0
   },
@@ -20,8 +20,8 @@
         "de:spd",
         "de:gruene"
       ],
-      "majority_probability": 0.96,
-      "n_majority": 192,
+      "majority_probability": 0.955,
+      "n_majority": 191,
       "n_simulations": 200
     },
     {
@@ -42,8 +42,8 @@
         "de:bsw",
         "de:gruene"
       ],
-      "majority_probability": 0.005,
-      "n_majority": 1,
+      "majority_probability": 0.01,
+      "n_majority": 2,
       "n_simulations": 200
     },
     {
@@ -69,7 +69,7 @@
     },
     {
       "party_id": "de:cdu_csu",
-      "probability": 0.9547738693467337,
+      "probability": 0.949748743718593,
       "n_simulations_considered": 199
     },
     {
@@ -78,12 +78,12 @@
       "n_simulations_considered": 199
     },
     {
-      "party_id": "de:afd",
-      "probability": 0.0,
+      "party_id": "de:bsw",
+      "probability": 0.005025125628140704,
       "n_simulations_considered": 199
     },
     {
-      "party_id": "de:bsw",
+      "party_id": "de:afd",
       "probability": 0.0,
       "n_simulations_considered": 199
     },

@@ -18,49 +18,39 @@
       "higher_share": 22.03212620136447,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 15.967873798635527,
-      "gap_points": 6.064252402728943,
+      "lower_share": 15.96787379863553,
+      "gap_points": 6.06425240272894,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 15.967873798635527,
+      "higher_share": 15.96787379863553,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
-      "lower_share": 7.0,
-      "gap_points": 8.967873798635527,
+      "lower_share": 7.000000000000001,
+      "gap_points": 8.96787379863553,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:23",
       "higher_party_name": "BSW",
-      "higher_share": 7.0,
+      "higher_share": 7.000000000000001,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 6.000646621514809,
-      "gap_points": 0.9993533784851909,
-      "overtake_probability": 0.29
+      "lower_share": 6.000646621514811,
+      "gap_points": 0.99935337848519,
+      "overtake_probability": 0.2875
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 6.000646621514809,
-      "lower_party_id": "de:sonstige",
-      "lower_party_name": "Sonstige",
-      "lower_share": 5.032126201364472,
-      "gap_points": 0.9685204201503375,
-      "overtake_probability": 0.2675
-    },
-    {
-      "higher_party_id": "de:sonstige",
-      "higher_party_name": "Sonstige",
-      "higher_share": 5.032126201364472,
+      "higher_share": 6.000646621514811,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 3.9839368993177637,
-      "gap_points": 1.048189302046708,
-      "overtake_probability": 0.2575
+      "lower_share": 3.983936899317764,
+      "gap_points": 2.0167097221970467,
+      "overtake_probability": 0.1575
     }
   ]
 }

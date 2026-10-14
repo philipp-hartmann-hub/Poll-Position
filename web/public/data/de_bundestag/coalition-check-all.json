@@ -27,7 +27,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 143,
+      "point_seats": 142,
       "point_has_majority": false
     },
     "de:gruene": {
@@ -45,7 +45,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 95,
+      "point_seats": 96,
       "point_has_majority": false
     },
     "de:linke": {
@@ -62,9 +62,9 @@
         "de:afd",
         "de:cdu_csu"
       ],
-      "majority_probability": 0.9425,
-      "n_majority": 377,
-      "point_seats": 347,
+      "majority_probability": 0.9325,
+      "n_majority": 373,
+      "point_seats": 346,
       "point_has_majority": true
     },
     "de:afd|de:gruene": {
@@ -72,8 +72,8 @@
         "de:afd",
         "de:gruene"
       ],
-      "majority_probability": 0.3325,
-      "n_majority": 133,
+      "majority_probability": 0.34,
+      "n_majority": 136,
       "point_seats": 312,
       "point_has_majority": false
     },
@@ -82,9 +82,9 @@
         "de:afd",
         "de:spd"
       ],
-      "majority_probability": 0.0825,
-      "n_majority": 33,
-      "point_seats": 299,
+      "majority_probability": 0.09,
+      "n_majority": 36,
+      "point_seats": 300,
       "point_has_majority": false
     },
     "de:afd|de:linke": {
@@ -104,7 +104,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 251,
+      "point_seats": 250,
       "point_has_majority": false
     },
     "de:cdu_csu|de:spd": {
@@ -124,7 +124,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 223,
+      "point_seats": 222,
       "point_has_majority": false
     },
     "de:gruene|de:spd": {
@@ -134,7 +134,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 203,
+      "point_seats": 204,
       "point_has_majority": false
     },
     "de:gruene|de:linke": {
@@ -154,7 +154,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 175,
+      "point_seats": 176,
       "point_has_majority": false
     },
     "de:afd|de:cdu_csu|de:gruene": {
@@ -165,7 +165,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 455,
+      "point_seats": 454,
       "point_has_majority": true
     },
     "de:afd|de:cdu_csu|de:spd": {
@@ -187,7 +187,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 427,
+      "point_seats": 426,
       "point_has_majority": true
     },
     "de:afd|de:gruene|de:spd": {
@@ -198,7 +198,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 407,
+      "point_seats": 408,
       "point_has_majority": true
     },
     "de:afd|de:gruene|de:linke": {
@@ -220,7 +220,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 379,
+      "point_seats": 380,
       "point_has_majority": true
     },
     "de:cdu_csu|de:gruene|de:spd": {
@@ -240,9 +240,9 @@
         "de:gruene",
         "de:linke"
       ],
-      "majority_probability": 0.7575,
-      "n_majority": 303,
-      "point_seats": 331,
+      "majority_probability": 0.735,
+      "n_majority": 294,
+      "point_seats": 330,
       "point_has_majority": true
     },
     "de:cdu_csu|de:linke|de:spd": {
@@ -251,8 +251,8 @@
         "de:linke",
         "de:spd"
       ],
-      "majority_probability": 0.4625,
-      "n_majority": 185,
+      "majority_probability": 0.4425,
+      "n_majority": 177,
       "point_seats": 318,
       "point_has_majority": true
     },
@@ -262,9 +262,9 @@
         "de:linke",
         "de:spd"
       ],
-      "majority_probability": 0.005,
-      "n_majority": 2,
-      "point_seats": 283,
+      "majority_probability": 0.01,
+      "n_majority": 4,
+      "point_seats": 284,
       "point_has_majority": false
     },
     "de:afd|de:cdu_csu|de:gruene|de:spd": {
@@ -288,7 +288,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 535,
+      "point_seats": 534,
       "point_has_majority": true
     },
     "de:afd|de:cdu_csu|de:linke|de:spd": {
@@ -312,7 +312,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 487,
+      "point_seats": 488,
       "point_has_majority": true
     },
     "de:cdu_csu|de:gruene|de:linke|de:spd": {
