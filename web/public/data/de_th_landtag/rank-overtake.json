@@ -5,31 +5,31 @@
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 39.98329027780295,
+      "higher_share": 39.98329027780296,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
-      "lower_share": 22.03212620136447,
-      "gap_points": 17.95116407643848,
+      "lower_share": 22.032126201364473,
+      "gap_points": 17.951164076438484,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 22.03212620136447,
+      "higher_share": 22.032126201364473,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 15.96787379863553,
-      "gap_points": 6.06425240272894,
+      "lower_share": 15.967873798635528,
+      "gap_points": 6.064252402728945,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 15.96787379863553,
+      "higher_share": 15.967873798635528,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 7.000000000000001,
-      "gap_points": 8.96787379863553,
+      "gap_points": 8.967873798635527,
       "overtake_probability": 0.0
     },
     {
@@ -38,18 +38,18 @@
       "higher_share": 7.000000000000001,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 6.000646621514811,
-      "gap_points": 0.99935337848519,
+      "lower_share": 6.00064662151481,
+      "gap_points": 0.9993533784851909,
       "overtake_probability": 0.2875
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 6.000646621514811,
+      "higher_share": 6.00064662151481,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 3.983936899317764,
-      "gap_points": 2.0167097221970467,
+      "lower_share": 3.9839368993177637,
+      "gap_points": 2.0167097221970463,
       "overtake_probability": 0.1575
     }
   ]

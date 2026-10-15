@@ -58,18 +58,18 @@
       "higher_share": 4.0,
       "lower_party_id": "dawum:party:16",
       "lower_party_name": "BIW",
-      "lower_share": 3.0,
-      "gap_points": 1.0,
+      "lower_share": 3.0000000000000004,
+      "gap_points": 0.9999999999999996,
       "overtake_probability": 0.28
     },
     {
       "higher_party_id": "dawum:party:16",
       "higher_party_name": "BIW",
-      "higher_share": 3.0,
+      "higher_share": 3.0000000000000004,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 3.0,
-      "gap_points": 0.0,
+      "gap_points": 4.440892098500626e-16,
       "overtake_probability": 0.555
     }
   ]
