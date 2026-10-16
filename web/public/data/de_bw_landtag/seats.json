@@ -2,18 +2,18 @@
   "parliament_id": "de_bw_landtag",
   "total_seats": 120,
   "seats": {
-    "dawum:party:4": 40,
-    "dawum:party:101": 36,
-    "dawum:party:7": 28,
+    "dawum:party:4": 41,
+    "dawum:party:101": 31,
+    "dawum:party:7": 31,
     "dawum:party:2": 9,
-    "dawum:party:5": 7
+    "dawum:party:5": 8
   },
   "seats_by_name": {
-    "Grüne": 40,
-    "CDU": 36,
-    "AfD": 28,
+    "Grüne": 41,
+    "CDU": 31,
+    "AfD": 31,
     "SPD": 9,
-    "Linke": 7
+    "Linke": 8
   },
   "reason": null
 }

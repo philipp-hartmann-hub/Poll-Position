@@ -38,18 +38,18 @@
       "higher_share": 15.0,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 13.998955212976625,
-      "gap_points": 1.0010447870233747,
+      "lower_share": 13.998955212976623,
+      "gap_points": 1.0010447870233765,
       "overtake_probability": 0.3325
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 13.998955212976625,
+      "higher_share": 13.998955212976623,
       "lower_party_id": "dawum:party:3",
       "lower_party_name": "FDP",
       "lower_share": 4.0,
-      "gap_points": 9.998955212976625,
+      "gap_points": 9.998955212976623,
       "overtake_probability": 0.0
     },
     {
@@ -58,18 +58,18 @@
       "higher_share": 4.0,
       "lower_party_id": "dawum:party:16",
       "lower_party_name": "BIW",
-      "lower_share": 3.0000000000000004,
-      "gap_points": 0.9999999999999996,
+      "lower_share": 2.9999999999999996,
+      "gap_points": 1.0000000000000004,
       "overtake_probability": 0.28
     },
     {
       "higher_party_id": "dawum:party:16",
       "higher_party_name": "BIW",
-      "higher_share": 3.0000000000000004,
+      "higher_share": 2.9999999999999996,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
-      "lower_share": 3.0,
-      "gap_points": 4.440892098500626e-16,
+      "lower_share": 2.9999999999999996,
+      "gap_points": 0.0,
       "overtake_probability": 0.555
     }
   ]

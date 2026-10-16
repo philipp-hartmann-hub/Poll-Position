@@ -9,7 +9,7 @@
         "de:cdu",
         "de:gruene"
       ],
-      "seats": 76,
+      "seats": 72,
       "is_minimal_winning": true,
       "compatibility_span": 3.5
     }

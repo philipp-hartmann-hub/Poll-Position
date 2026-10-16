@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_bundestag",
-  "as_of": "2026-10-15",
+  "as_of": "2026-10-16",
   "parties": [
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 28.24725983232708,
+      "average_share": 28.247259832327078,
       "n_surveys": 240,
       "swing": null,
       "trend_share": 28.3478693088494
@@ -15,7 +15,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
-      "average_share": 19.584524064194095,
+      "average_share": 19.584524064194092,
       "n_surveys": 240,
       "swing": null,
       "trend_share": 19.045089393347634
@@ -24,7 +24,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 14.958824425939865,
+      "average_share": 14.958824425939863,
       "n_surveys": 240,
       "swing": null,
       "trend_share": 15.191942174060767
@@ -33,7 +33,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 13.262218012705361,
+      "average_share": 13.26221801270536,
       "n_surveys": 240,
       "swing": null,
       "trend_share": 13.637000492786907
@@ -42,7 +42,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 11.077354589137967,
+      "average_share": 11.077354589137965,
       "n_surveys": 240,
       "swing": null,
       "trend_share": 10.955047307073997
@@ -51,7 +51,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 4.16470053196261,
+      "average_share": 4.164700531962609,
       "n_surveys": 227,
       "swing": null,
       "trend_share": 4.0318978064220365
@@ -60,7 +60,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.3726154520033678,
+      "average_share": 3.3726154520033687,
       "n_surveys": 192,
       "swing": null,
       "trend_share": 3.343766252560803

@@ -3,13 +3,13 @@
   "n_simulations": 200,
   "n_deadlock": 0,
   "mean_seats": {
-    "dawum:party:101": 36.785,
-    "dawum:party:2": 6.83,
-    "dawum:party:23": 0.34,
-    "dawum:party:3": 2.825,
-    "dawum:party:4": 39.935,
-    "dawum:party:5": 5.07,
-    "dawum:party:7": 28.215,
+    "dawum:party:101": 31.39,
+    "dawum:party:2": 8.9,
+    "dawum:party:23": 0.305,
+    "dawum:party:3": 0.87,
+    "dawum:party:4": 40.885,
+    "dawum:party:5": 6.48,
+    "dawum:party:7": 31.17,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
@@ -26,12 +26,12 @@
   "party_indispensability": [
     {
       "party_id": "de:gruene",
-      "probability": 0.99,
+      "probability": 1.0,
       "n_simulations_considered": 200
     },
     {
       "party_id": "de:cdu",
-      "probability": 0.895,
+      "probability": 0.815,
       "n_simulations_considered": 200
     },
     {
