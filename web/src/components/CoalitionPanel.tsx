@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Coalition, ExclusionRule, FetchCoalitionsFn } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
 import { CoalitionLabel } from "@/components/CoalitionLabel";
+import { CoalitionMajorityCards } from "@/components/CoalitionMajorityCards";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
@@ -31,6 +32,8 @@ export function CoalitionPanel({
   parliamentId,
   initial,
   seatsByName,
+  totalSeats,
+  sharesByParty,
   initialExclusion,
   onExclusionStateChange,
   fetchCoalitionsFn = fetchCoalitions,
@@ -40,6 +43,8 @@ export function CoalitionPanel({
   parliamentId: string;
   initial: CoalitionPanelData;
   seatsByName: Record<string, number>;
+  totalSeats: number;
+  sharesByParty?: Record<string, number> | null;
   /** Zustand aus URL / Parent — steuert Checkboxen nach dem Laden der Regeln. */
   initialExclusion?: ExclusionUiState;
   onExclusionStateChange?: (state: ExclusionUiState) => void;
@@ -193,7 +198,11 @@ export function CoalitionPanel({
                 onChange={(e) => togglePair(r.id, e.target.checked)}
               />
               <span className="inline-flex flex-wrap items-center gap-1">
-                <CoalitionLabel partyIds={[...pairParties(r)]} />
+                <CoalitionLabel
+                  partyIds={[...pairParties(r)]}
+                  seatsByParty={seatsByName}
+                  sharesByParty={sharesByParty}
+                />
                 <span className="text-ink/55">ausschließen</span>
               </span>
             </label>
@@ -201,55 +210,28 @@ export function CoalitionPanel({
         )}
       </div>
       <p className="text-xs text-ink/50">
-        Mehrheit ab {data.majority_threshold} · {data.excluded_by_rules} Kombinationen
-        ausgeschlossen · {activeCount}/{rules.length} Paare aktiv
+        Mehrheit ab {data.majority_threshold} · {data.excluded_by_rules}{" "}
+        Kombinationen ausgeschlossen · {activeCount}/{rules.length} Paare aktiv
         {loading ? " · lädt…" : ""}
       </p>
-      {error && <p className="text-sm text-accent">{error}</p>}
+      {error && <p className="text-sm text-ink/70">{error}</p>}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-ink/10 bg-mist/50 p-4">
           <Hemicycle
             seats={seatsByName}
-            highlightParties={highlightParties ?? undefined}
+            highlightParties={
+              highlightParties?.map((p) => labelPartyId(p)) ?? undefined
+            }
           />
         </div>
-        <div className="overflow-x-auto rounded-lg border border-ink/10">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-ink/5 text-ink/60">
-              <tr>
-                <th className="px-3 py-2 font-medium">Koalition</th>
-                <th className="px-3 py-2 font-medium">Sitze</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.coalitions
-                .filter(
-                  (c) =>
-                    !c.parties.some((p) =>
-                      /sonstige$|:others$|:other$/i.test(p),
-                    ),
-                )
-                .slice(0, 20)
-                .map((c, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-ink/5 transition hover:bg-mist/40"
-                    onMouseEnter={() =>
-                      setHighlightParties(c.parties.map(labelPartyId))
-                    }
-                    onMouseLeave={() => setHighlightParties(null)}
-                  >
-                    <td className="px-3 py-2">
-                      <CoalitionLabel partyIds={c.parties} />
-                    </td>
-                    <td className="px-3 py-2 font-display tabular-nums">
-                      {c.seats}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <CoalitionMajorityCards
+          coalitions={data.coalitions}
+          totalSeats={totalSeats}
+          majorityThreshold={data.majority_threshold}
+          seatsByParty={seatsByName}
+          sharesByParty={sharesByParty}
+          onHighlight={setHighlightParties}
+        />
       </div>
     </section>
   );

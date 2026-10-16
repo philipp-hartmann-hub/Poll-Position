@@ -14,7 +14,7 @@ import {
   CoalitionPanel,
   type ExclusionUiState,
 } from "@/components/CoalitionPanel";
-import { CoalitionLabel } from "@/components/CoalitionLabel";
+import { CoalitionUncertaintyList } from "@/components/CoalitionUncertaintyList";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import {
   DEFAULT_EXCLUSION_UI,
@@ -236,6 +236,8 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
         key={parliamentId}
         parliamentId={parliamentId}
         seatsByName={seats.seats_by_name}
+        totalSeats={seats.total_seats}
+        sharesByParty={uncertainty?.mean_seats ?? null}
         initialExclusion={exclusionState}
         initial={{
           majority_threshold: coalitions.majority_threshold,
@@ -245,7 +247,9 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
         onExclusionStateChange={onExclusionStateChange}
       />
 
-      {(uncertainty && uncertainty.coalition_probabilities.length > 0) ||
+      {(uncertainty &&
+        (uncertainty.coalition_probabilities.length > 0 ||
+          (uncertainty.current_government_parties?.length ?? 0) > 0)) ||
       uncertaintyBusy ? (
         <section>
           <h2 className="mb-3 font-display text-2xl text-ink">
@@ -263,31 +267,18 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
                 ? ` · ${exclusionState.disabledRuleIds.length} Regeln aus`
                 : ""}
           </p>
-          {uncertainty && uncertainty.coalition_probabilities.length > 0 ? (
-            <ul className="space-y-2 text-sm">
-              {uncertainty.coalition_probabilities.slice(0, 10).map((c, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
-                >
-                  <span className="flex min-w-0 flex-wrap items-center gap-2">
-                    <CoalitionLabel partyIds={c.parties} />
-                    {c.parties.length === 1 ? (
-                      <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
-                        Alleinregierung
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="font-display tabular-nums font-medium text-ink">
-                    {(c.majority_probability * 100).toFixed(0)} %
-                  </span>
-                </li>
-              ))}
-            </ul>
+          {uncertainty ? (
+            <CoalitionUncertaintyList
+              rows={uncertainty.coalition_probabilities}
+              seatsByParty={seats.seats_by_name}
+              sharesByParty={uncertainty.mean_seats}
+              governmentParties={uncertainty.current_government_parties}
+              governmentProbability={
+                uncertainty.current_government_majority_probability
+              }
+            />
           ) : (
-            <p className="text-sm text-ink/50">
-              Keine Mehrheitskoalitionen bei diesem Umfragestand.
-            </p>
+            <p className="text-sm text-ink/50">Wird gerade berechnet…</p>
           )}
         </section>
       ) : null}

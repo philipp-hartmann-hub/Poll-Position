@@ -365,7 +365,16 @@ export function CoalitionCheckerSection({
                     : ""}
                 </p>
                 <p className="mt-2 text-xs text-ink/45">
-                  <CoalitionLabel partyIds={selectedList} />
+                  <CoalitionLabel
+                    partyIds={selectedList}
+                    seatsByParty={
+                      seats
+                        ? Object.fromEntries(
+                            options.map((o) => [o.canonicalId, o.seats]),
+                          )
+                        : null
+                    }
+                  />
                 </p>
               </div>
 

@@ -221,6 +221,8 @@ export function LastElectionSection({
           key={`election-${parliamentId}`}
           parliamentId={parliamentId}
           seatsByName={election.seats_by_name}
+          totalSeats={election.total_seats}
+          sharesByParty={election.vote_share_by_name}
           fetchCoalitionsFn={fetchLastElectionCoalitions}
           title="Koalitionen nach Wahlergebnis"
           tipText={TIP_ELECTION_COALITIONS}

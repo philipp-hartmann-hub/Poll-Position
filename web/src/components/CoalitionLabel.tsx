@@ -1,27 +1,32 @@
 import { labelPartyId, partyColor } from "@/lib/colors";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
+import {
+  sortCoalitionParties,
+} from "@/lib/sortCoalitionParties";
+import { MIST } from "@/lib/theme";
 
-const DOT_SIZE = {
-  sm: "h-2.5 w-2.5",
-  md: "h-3 w-3",
+const DOT_PX = {
+  sm: 10,
+  md: 12,
 } as const;
 
 export function CoalitionLabel({
   partyIds,
   size = "sm",
-  compactOnNarrow = true,
+  seatsByParty,
+  sharesByParty,
   className = "",
 }: {
   partyIds: string[];
   size?: "sm" | "md";
-  /** Schmale Viewports: Punkte + Kurznamen ohne „ + “-Leerzeichen. */
-  compactOnNarrow?: boolean;
+  seatsByParty?: Record<string, number> | null;
+  sharesByParty?: Record<string, number> | null;
   className?: string;
 }) {
-  const names = partyIds.map(labelPartyId);
+  const ordered = sortCoalitionParties(partyIds, { seatsByParty, sharesByParty });
+  const names = ordered.map(labelPartyId);
   const full = names.join(" + ");
-  const compact = names.join("+");
-  const dot = DOT_SIZE[size];
+  const px = DOT_PX[size];
+  const overlap = Math.round(px * 0.25);
 
   return (
     <span
@@ -29,29 +34,24 @@ export function CoalitionLabel({
       role="group"
       aria-label={full}
     >
-      <span className="inline-flex shrink-0 -space-x-1.5" aria-hidden>
-        {partyIds.map((id) => (
+      <span className="inline-flex shrink-0 items-center" aria-hidden>
+        {ordered.map((id, i) => (
           <span
-            key={id}
-            className={`${PARTY_SWATCH_CLASS} ${dot} ring-2 ring-paper`}
-            style={{ background: partyColor(id) }}
+            key={`${id}-${i}`}
+            className="inline-block shrink-0 rounded-full"
+            style={{
+              width: px,
+              height: px,
+              background: partyColor(id),
+              boxShadow: `0 0 0 2px ${MIST}`,
+              marginLeft: i === 0 ? 0 : -overlap,
+            }}
           />
         ))}
       </span>
-      {compactOnNarrow ? (
-        <>
-          <span className="hidden min-w-0 truncate sm:inline" aria-hidden>
-            {full}
-          </span>
-          <span className="min-w-0 truncate sm:hidden" aria-hidden>
-            {compact}
-          </span>
-        </>
-      ) : (
-        <span className="min-w-0 truncate" aria-hidden>
-          {full}
-        </span>
-      )}
+      <span className="min-w-0 truncate" aria-hidden>
+        {full}
+      </span>
     </span>
   );
 }

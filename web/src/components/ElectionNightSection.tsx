@@ -10,6 +10,8 @@ import {
   type ExclusionRule,
 } from "@/lib/api";
 import { CoalitionLabel } from "@/components/CoalitionLabel";
+import { CoalitionMajorityCards } from "@/components/CoalitionMajorityCards";
+import { CoalitionUncertaintyList } from "@/components/CoalitionUncertaintyList";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { PartyLabel } from "@/components/PartyLabel";
@@ -493,28 +495,15 @@ export function ElectionNightSection({
               Mögliche Mehrheiten
               <InfoTooltip text={TIP_POSSIBLE_COALITIONS} />
             </h3>
-            {coalitions.length === 0 ? (
-              <p className="text-sm text-ink/50">Keine Mehrheitskoalition.</p>
-            ) : (
-              <ul className="space-y-2 text-sm">
-                {coalitions.slice(0, 12).map((c, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
-                  >
-                    <span className="flex min-w-0 flex-wrap items-center gap-2">
-                      <CoalitionLabel partyIds={c.parties} />
-                      {c.parties.length === 1 ? (
-                        <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
-                          Alleinregierung
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="tabular-nums text-ink/60">{c.seats}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <CoalitionMajorityCards
+              coalitions={coalitions}
+              totalSeats={result.seats.total_seats}
+              majorityThreshold={result.coalitions.majority_threshold}
+              seatsByParty={result.seats.seats_by_name}
+              sharesByParty={result.uncertainty.mean_seats}
+              onHighlight={() => {}}
+              maxCards={12}
+            />
           </section>
 
           <section className="space-y-3">
@@ -578,30 +567,15 @@ export function ElectionNightSection({
               Aus {result.n_simulations} Ziehungen mit Wahlabend-SD (
               {result.model_sd_pp.toFixed(2)} Pp)
             </p>
-            {probs.length === 0 ? (
-              <p className="text-sm text-ink/50">Keine Mehrheitskoalitionen.</p>
-            ) : (
-              <ul className="space-y-2 text-sm">
-                {probs.slice(0, 10).map((c, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
-                  >
-                    <span className="flex min-w-0 flex-wrap items-center gap-2">
-                      <CoalitionLabel partyIds={c.parties} />
-                      {c.parties.length === 1 ? (
-                        <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
-                          Alleinregierung
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="font-display tabular-nums font-medium text-ink">
-                      {(c.majority_probability * 100).toFixed(0)} %
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <CoalitionUncertaintyList
+              rows={probs}
+              seatsByParty={result.seats.seats_by_name}
+              sharesByParty={result.uncertainty.mean_seats}
+              governmentParties={result.uncertainty.current_government_parties}
+              governmentProbability={
+                result.uncertainty.current_government_majority_probability
+              }
+            />
           </section>
         </>
       ) : null}
