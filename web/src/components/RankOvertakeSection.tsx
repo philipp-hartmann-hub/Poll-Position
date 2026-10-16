@@ -21,10 +21,6 @@ function formatPp(value: number): string {
   });
 }
 
-function formatPct(prob: number): string {
-  return Math.round(prob * 100).toLocaleString("de-DE");
-}
-
 function PairRow({
   pair,
   nSimulations,
@@ -98,11 +94,17 @@ function PairRow({
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div
+          className="grid items-center gap-x-2"
+          style={{ gridTemplateColumns: "3.5ch 1fr 3.5ch" }}
+        >
+          <span className="text-right text-sm font-normal tabular-nums text-ink/55">
+            {stayPct}&nbsp;%
+          </span>
           <div
-            className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-ink/10"
+            className="h-2 min-w-0 overflow-hidden rounded-full bg-ink/10"
             role="img"
-            aria-label={`${formatPct(pair.overtake_probability)} Prozent Wahrscheinlichkeit für Platztausch`}
+            aria-label={`${pair.higher_party_name} ${stayPct} Prozent, ${pair.lower_party_name} ${pct} Prozent Wahrscheinlichkeit, vorne zu liegen`}
           >
             <div className="flex h-full w-full">
               <div
@@ -115,8 +117,8 @@ function PairRow({
               />
             </div>
           </div>
-          <span className="shrink-0 text-sm font-semibold tabular-nums text-ink">
-            {formatPct(pair.overtake_probability)}&nbsp;%
+          <span className="text-left text-sm font-semibold tabular-nums text-ink">
+            {pct}&nbsp;%
           </span>
         </div>
       </button>

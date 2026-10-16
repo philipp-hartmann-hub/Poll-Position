@@ -1,7 +1,12 @@
+/**
+ * Parteifarben für dunklen Chrome (paper/mist).
+ * Union (CDU/CDU-CSU): helles Grau statt Schwarz — sonst unsichtbar auf Dark.
+ * CSU-Blau bleibt Markenfarbe und ist auf Dark lesbar.
+ */
 export const PARTY_COLORS: Record<string, string> = {
   AfD: "#009EE0",
-  "CDU/CSU": "#000000",
-  CDU: "#000000",
+  "CDU/CSU": "#9aa0a6",
+  CDU: "#9aa0a6",
   CSU: "#0080C8",
   SPD: "#E3000F",
   Grüne: "#64A12D",

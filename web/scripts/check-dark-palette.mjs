@@ -5,8 +5,8 @@
 
 const PARTY_COLORS = {
   AfD: "#009EE0",
-  "CDU/CSU": "#000000",
-  CDU: "#000000",
+  "CDU/CSU": "#9aa0a6",
+  CDU: "#9aa0a6",
   CSU: "#0080C8",
   SPD: "#E3000F",
   Grüne: "#64A12D",
