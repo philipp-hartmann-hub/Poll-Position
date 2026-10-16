@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { fetchAverages, fetchLastElection } from "@/lib/api";
+import { PartyLabel } from "@/components/PartyLabel";
 import { partyColor } from "@/lib/colors";
-import { INK, NEUTRAL_MUTED, PAPER, PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { INK, NEUTRAL_MUTED, PAPER } from "@/lib/theme";
 import { DE_PARLIAMENTS } from "@/lib/deParliaments";
 
 const WIDTH = 560;
@@ -242,12 +243,8 @@ export function GermanyMap({
           </p>
           {hoverLeader?.partyName ? (
             <>
-              <p className="mt-0.5 text-ink/70">
-                <span
-                  className={`mr-1.5 ${PARTY_SWATCH_CLASS} h-2 w-2`}
-                  style={{ background: partyColor(hoverLeader.partyName) }}
-                />
-                {hoverLeader.partyName}
+              <p className="mt-0.5 inline-flex flex-wrap items-center gap-1 text-ink/70">
+                <PartyLabel partyId={hoverLeader.partyName} size="sm" />
                 {hoverLeader.share != null
                   ? ` · ${hoverLeader.share.toFixed(1)} %`
                   : ""}

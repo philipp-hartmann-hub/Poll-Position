@@ -9,10 +9,10 @@ import {
   type ElectionNightResponse,
   type ExclusionRule,
 } from "@/lib/api";
+import { CoalitionLabel } from "@/components/CoalitionLabel";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
-import { displayPartyName, labelPartyId, partyColor } from "@/lib/colors";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { PartyLabel } from "@/components/PartyLabel";
 import {
   TIP_COALITION_UNCERTAINTY,
   TIP_ELECTION_NIGHT,
@@ -336,13 +336,10 @@ export function ElectionNightSection({
                 className="rounded-md border border-ink/10 bg-mist/50 px-3 py-2"
               >
                 <label className="flex items-center gap-2">
-                  <span
-                    className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
-                    style={{ background: partyColor(p.partyName) }}
+                  <PartyLabel
+                    partyId={p.partyId}
+                    className="min-w-0 flex-1 text-sm font-medium text-ink"
                   />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
-                    {p.partyName}
-                  </span>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -387,13 +384,10 @@ export function ElectionNightSection({
             return (
               <div className="rounded-md border border-dashed border-ink/15 bg-mist/30 px-3 py-2">
                 <div className="flex items-center gap-2">
-                  <span
-                    className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
-                    style={{ background: partyColor("Sonstige") }}
+                  <PartyLabel
+                    partyId="Sonstige"
+                    className="min-w-0 flex-1 text-sm font-medium text-ink/70"
                   />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink/70">
-                    Sonstige
-                  </span>
                   <span className="w-20 text-right text-sm tabular-nums text-ink/70">
                     {residualTo100.toFixed(1)}
                   </span>
@@ -450,7 +444,10 @@ export function ElectionNightSection({
                           }))
                         }
                       />
-                      {labelPartyId(a)} + {labelPartyId(b)} ausschließen
+                      <span className="inline-flex flex-wrap items-center gap-1">
+                        <CoalitionLabel partyIds={[a, b]} />
+                        <span>ausschließen</span>
+                      </span>
                     </label>
                   </li>
                 );
@@ -505,10 +502,10 @@ export function ElectionNightSection({
                     key={i}
                     className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
                   >
-                    <span>
-                      {c.parties.map(labelPartyId).join(" + ")}
+                    <span className="flex min-w-0 flex-wrap items-center gap-2">
+                      <CoalitionLabel partyIds={c.parties} />
                       {c.parties.length === 1 ? (
-                        <span className="ml-2 rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
+                        <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
                           Alleinregierung
                         </span>
                       ) : null}
@@ -527,18 +524,13 @@ export function ElectionNightSection({
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {result.party_forecast.parties.map((party) => {
-                const name = displayPartyName(party.party_id, party.party_name);
                 return (
                   <div
                     key={party.party_id}
                     className="rounded-2xl border border-accent/25 bg-accent/5 px-4 py-4"
                   >
-                    <p className="flex items-center gap-2 text-sm font-medium text-ink">
-                      <span
-                        className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
-                        style={{ background: partyColor(name) }}
-                      />
-                      {name}
+                    <p className="text-sm font-medium text-ink">
+                      <PartyLabel partyId={party.party_id} />
                     </p>
                     <p className="mt-1 text-xs text-ink/45">
                       Eingabe {party.average_share.toFixed(1)} %
@@ -595,10 +587,10 @@ export function ElectionNightSection({
                     key={i}
                     className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
                   >
-                    <span>
-                      {c.parties.map(labelPartyId).join(" + ")}
+                    <span className="flex min-w-0 flex-wrap items-center gap-2">
+                      <CoalitionLabel partyIds={c.parties} />
                       {c.parties.length === 1 ? (
-                        <span className="ml-2 rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
+                        <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
                           Alleinregierung
                         </span>
                       ) : null}

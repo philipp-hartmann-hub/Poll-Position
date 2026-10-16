@@ -5,13 +5,12 @@ import {
   fetchPartyForecast,
   type PartyForecastParty,
 } from "@/lib/api";
-import { displayPartyName, partyColor } from "@/lib/colors";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { PartyLabel } from "@/components/PartyLabel";
 import {
   TIP_PARTY_FORECAST,
   TIP_PARTY_INDISPENSABLE,
 } from "@/lib/tooltipCopy";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 function ForecastTile({
   party,
@@ -20,7 +19,6 @@ function ForecastTile({
   party: PartyForecastParty;
   thresholdLabel: string;
 }) {
-  const name = displayPartyName(party.party_id, party.party_name);
   const strongestPct = Math.round(party.probability_strongest * 100);
   const abovePct = Math.round(party.probability_above_threshold * 100);
   const indispensablePct = Math.round(
@@ -29,12 +27,8 @@ function ForecastTile({
 
   return (
     <div className="rounded-2xl border border-accent/25 bg-accent/5 px-4 py-4 transition hover:border-accent/50">
-      <p className="flex items-center gap-2 text-sm font-medium text-ink">
-        <span
-          className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
-          style={{ background: partyColor(name) }}
-        />
-        {name}
+      <p className="text-sm font-medium text-ink">
+        <PartyLabel partyId={party.party_id} />
       </p>
       <p className="mt-1 text-xs text-ink/45">
         Mittel {party.average_share.toFixed(1)} %

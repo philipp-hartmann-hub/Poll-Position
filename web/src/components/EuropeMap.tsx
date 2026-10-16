@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { EuropeOverviewResponse } from "@/lib/api";
+import { PartyLabel } from "@/components/PartyLabel";
 import { familyColor } from "@/lib/colors";
 import { EUROPE_COUNTRIES, europeHref } from "@/lib/europe";
 import { INK, MIST } from "@/lib/theme";
@@ -93,8 +94,8 @@ export function EuropeMap({ data }: { data: EuropeOverviewResponse }) {
           <dl className="mt-4 space-y-3 text-sm">
             <div>
               <dt className="text-ink/50">Stärkste Partei</dt>
-              <dd className="text-lg text-ink">
-                {detail.top_party_name}{" "}
+              <dd className="flex flex-wrap items-baseline gap-1.5 text-lg text-ink">
+                <PartyLabel partyId={detail.top_party_name} size="md" />
                 <span className="text-ink/50">
                   ({detail.top_party_share.toFixed(1)} %)
                 </span>

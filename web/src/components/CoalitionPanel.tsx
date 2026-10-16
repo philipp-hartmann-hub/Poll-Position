@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Coalition, ExclusionRule, FetchCoalitionsFn } from "@/lib/api";
 import { fetchCoalitionRules, fetchCoalitions } from "@/lib/api";
+import { CoalitionLabel } from "@/components/CoalitionLabel";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { labelPartyId } from "@/lib/colors";
@@ -24,11 +25,6 @@ function pairParties(rule: ExclusionRule): [string, string] {
     return [rule.parties[0], rule.parties[1]];
   }
   return [rule.party, rule.excludes[0] ?? rule.party];
-}
-
-function pairLabel(rule: ExclusionRule): string {
-  const [a, b] = pairParties(rule);
-  return `${labelPartyId(a)} + ${labelPartyId(b)}`;
 }
 
 export function CoalitionPanel({
@@ -196,7 +192,10 @@ export function CoalitionPanel({
                 disabled={!applyExclusions}
                 onChange={(e) => togglePair(r.id, e.target.checked)}
               />
-              <span>{pairLabel(r)}</span>
+              <span className="inline-flex flex-wrap items-center gap-1">
+                <CoalitionLabel partyIds={[...pairParties(r)]} />
+                <span className="text-ink/55">ausschließen</span>
+              </span>
             </label>
           ))
         )}
@@ -241,7 +240,7 @@ export function CoalitionPanel({
                     onMouseLeave={() => setHighlightParties(null)}
                   >
                     <td className="px-3 py-2">
-                      {c.parties.map(labelPartyId).join(" + ")}
+                      <CoalitionLabel partyIds={c.parties} />
                     </td>
                     <td className="px-3 py-2 font-display tabular-nums">
                       {c.seats}

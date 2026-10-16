@@ -33,8 +33,8 @@ import { LastElectionSection } from "@/components/LastElectionSection";
 import { PartyForecast } from "@/components/PartyForecast";
 import { RankOvertakeSection } from "@/components/RankOvertakeSection";
 import { SurveysSection } from "@/components/SurveysSection";
-import { labelPartyId, partyColor } from "@/lib/colors";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
+import { PartyLabel } from "@/components/PartyLabel";
+import { labelPartyId } from "@/lib/colors";
 import {
   TIP_AVERAGES_TREND,
   TIP_REELECTION,
@@ -218,21 +218,14 @@ function IncumbentCoalitionCard({
       </p>
       <p className="mt-1 font-display text-xl text-ink">{gov.label}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        {gov.parties.map((pid) => {
-          const name = labelPartyId(pid);
-          return (
-            <span
-              key={pid}
-              className="inline-flex items-center gap-1.5 rounded-md border border-ink/10 bg-mist/40 px-2 py-1 text-xs font-medium text-ink"
-            >
-              <span
-                className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5`}
-                style={{ background: partyColor(name) }}
-              />
-              {name}
-            </span>
-          );
-        })}
+        {gov.parties.map((pid) => (
+          <span
+            key={pid}
+            className="inline-flex items-center rounded-md border border-ink/10 bg-mist/40 px-2 py-1 text-xs font-medium text-ink"
+          >
+            <PartyLabel partyId={pid} />
+          </span>
+        ))}
       </div>
       {reelectionLoading ? (
         <div

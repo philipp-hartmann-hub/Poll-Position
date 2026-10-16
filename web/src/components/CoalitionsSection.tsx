@@ -14,8 +14,8 @@ import {
   CoalitionPanel,
   type ExclusionUiState,
 } from "@/components/CoalitionPanel";
+import { CoalitionLabel } from "@/components/CoalitionLabel";
 import { InfoTooltip } from "@/components/InfoTooltip";
-import { labelPartyId } from "@/lib/colors";
 import {
   DEFAULT_EXCLUSION_UI,
   exclusionFromSearchParams,
@@ -270,10 +270,10 @@ export function CoalitionsSection({ parliamentId }: { parliamentId: string }) {
                   key={i}
                   className="flex items-center justify-between rounded-lg border border-ink/10 bg-mist/40 px-3 py-2"
                 >
-                  <span>
-                    {c.parties.map(labelPartyId).join(" + ")}
+                  <span className="flex min-w-0 flex-wrap items-center gap-2">
+                    <CoalitionLabel partyIds={c.parties} />
                     {c.parties.length === 1 ? (
-                      <span className="ml-2 rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
+                      <span className="rounded bg-sea/10 px-1.5 py-0.5 text-xs font-medium text-sea">
                         Alleinregierung
                       </span>
                     ) : null}

@@ -22,6 +22,7 @@ import {
   NO_COLOR,
   YES_COLOR,
 } from "@/lib/bundesratColors";
+import { PartyLabel } from "@/components/PartyLabel";
 import { labelPartyId } from "@/lib/colors";
 import {
   TIP_BUNDESRAT_MAJORITY,
@@ -284,12 +285,10 @@ function VoteCounter({
 
 function PartyStanceChip({
   partyId,
-  label,
   value,
   onChange,
 }: {
   partyId: string;
-  label: string;
   value: "yes" | "no" | null;
   onChange: (next: "yes" | "no" | null) => void;
 }) {
@@ -317,7 +316,7 @@ function PartyStanceChip({
       className="inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-mist/70 px-2 py-1.5"
       data-party={partyId}
     >
-      <span className="mr-1 text-xs font-medium text-ink">{label}</span>
+      <PartyLabel partyId={partyId} className="mr-1 text-xs font-medium text-ink" />
       {btn("yes", "Ja", "bg-emerald-500/15 text-emerald-300")}
       {btn(null, "Enth.", "bg-stone-500/20 text-stone-300")}
       {btn("no", "Nein", "bg-red-500/15 text-red-300")}
@@ -509,7 +508,6 @@ export function BundesratSandbox() {
             <PartyStanceChip
               key={p.id}
               partyId={p.id}
-              label={p.label}
               value={partyStance[p.id] ?? null}
               onChange={(next) => setPartyValue(p.id, next)}
             />

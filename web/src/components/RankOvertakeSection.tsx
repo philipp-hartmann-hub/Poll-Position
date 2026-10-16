@@ -7,8 +7,8 @@ import {
   type RankOvertakePair,
 } from "@/lib/api";
 import { InfoTooltip } from "@/components/InfoTooltip";
+import { PartyLabel } from "@/components/PartyLabel";
 import { partyColor } from "@/lib/colors";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { TIP_RANK_OVERTAKE } from "@/lib/tooltipCopy";
 
 const VISIBLE_MIN_PROB = 0.02;
@@ -38,8 +38,8 @@ function PairRow({
 
   const pct = Math.round(pair.overtake_probability * 100);
   const stayPct = 100 - pct;
-  const higherColor = partyColor(pair.higher_party_name);
-  const lowerColor = partyColor(pair.lower_party_name);
+  const higherColor = partyColor(pair.higher_party_id);
+  const lowerColor = partyColor(pair.lower_party_id);
   const isOpen = pair.overtake_probability >= OPEN_DUEL_MIN;
   const nOvertake = Math.round(pair.overtake_probability * nSimulations);
   const panelId = `overtake-detail-${pair.higher_party_id}-${pair.lower_party_id}`;
@@ -71,19 +71,15 @@ function PairRow({
         }}
       >
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm">
-          <span
-            className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
-            style={{ background: higherColor }}
-            aria-hidden
+          <PartyLabel
+            partyId={pair.higher_party_id}
+            className="font-medium text-ink"
           />
-          <span className="font-medium text-ink">{pair.higher_party_name}</span>
           <span className="text-ink/45">vor</span>
-          <span
-            className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
-            style={{ background: lowerColor }}
-            aria-hidden
+          <PartyLabel
+            partyId={pair.lower_party_id}
+            className="font-medium text-ink"
           />
-          <span className="font-medium text-ink">{pair.lower_party_name}</span>
           {isOpen ? (
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent">
               offen

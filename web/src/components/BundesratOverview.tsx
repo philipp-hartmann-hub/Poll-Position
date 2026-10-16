@@ -7,7 +7,8 @@ import {
   type BundesratMajorityCheckItem,
   type BundesratMajorityCheckResponse,
 } from "@/lib/api";
-import { labelPartyId, partyColor } from "@/lib/colors";
+import { CoalitionLabel } from "@/components/CoalitionLabel";
+import { partyColor } from "@/lib/colors";
 
 function MajorityBadge({ ok }: { ok: boolean }) {
   return (
@@ -21,11 +22,6 @@ function MajorityBadge({ ok }: { ok: boolean }) {
       {ok ? "Mehrheit" : "Keine Mehrheit"}
     </span>
   );
-}
-
-function coalitionTitle(row: BundesratMajorityCheckItem): string {
-  if (row.label?.trim()) return row.label.trim();
-  return row.parties.map(labelPartyId).join(" + ");
 }
 
 function BalanceBar({
@@ -157,18 +153,22 @@ export function BundesratOverview() {
                   className="border-b border-ink/8"
                 >
                   <td className="py-2 pr-2">
-                    <span className="font-medium text-ink">
-                      {coalitionTitle(row)}
+                    <span className="inline-flex flex-wrap items-center gap-1.5 font-medium text-ink">
+                      {row.label?.trim() ? (
+                        <span>{row.label.trim()}</span>
+                      ) : (
+                        <CoalitionLabel partyIds={row.parties} />
+                      )}
+                      {row.is_incumbent ? (
+                        <span className="text-[11px] font-normal text-ink/40">
+                          amtierend
+                        </span>
+                      ) : row.bundestag_seats > 0 ? (
+                        <span className="text-[11px] font-normal text-ink/40">
+                          {row.bundestag_seats} BT-Sitze
+                        </span>
+                      ) : null}
                     </span>
-                    {row.is_incumbent ? (
-                      <span className="ml-1.5 text-[11px] text-ink/40">
-                        amtierend
-                      </span>
-                    ) : row.bundestag_seats > 0 ? (
-                      <span className="ml-1.5 text-[11px] text-ink/40">
-                        {row.bundestag_seats} BT-Sitze
-                      </span>
-                    ) : null}
                   </td>
                   <td className="py-2 pr-2 tabular-nums text-ink/70">
                     {row.yes_votes}

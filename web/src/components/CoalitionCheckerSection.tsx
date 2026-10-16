@@ -11,11 +11,11 @@ import {
   type CoalitionCheckResponse,
   type SeatsResponse,
 } from "@/lib/api";
+import { CoalitionLabel } from "@/components/CoalitionLabel";
 import { Hemicycle } from "@/components/charts";
 import { InfoTooltip } from "@/components/InfoTooltip";
-import { labelPartyId, partyColor } from "@/lib/colors";
+import { PartyLabel } from "@/components/PartyLabel";
 import { leftRightPosition } from "@/lib/partyPositions";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 import { TIP_COALITION_CHECKER } from "@/lib/tooltipCopy";
 import { isAbortError } from "@/lib/parliamentCache";
 
@@ -329,11 +329,10 @@ export function CoalitionCheckerSection({
                       checked={on}
                       onChange={() => toggle(o.canonicalId)}
                     />
-                    <span
-                      className={`${PARTY_SWATCH_CLASS} h-2.5 w-2.5 shrink-0`}
-                      style={{ background: partyColor(o.name) }}
+                    <PartyLabel
+                      partyId={o.canonicalId}
+                      className="font-medium text-ink"
                     />
-                    <span className="font-medium text-ink">{o.name}</span>
                     <span className="ml-auto tabular-nums text-ink/50">
                       {o.seats}
                     </span>
@@ -366,7 +365,7 @@ export function CoalitionCheckerSection({
                     : ""}
                 </p>
                 <p className="mt-2 text-xs text-ink/45">
-                  {selectedList.map(labelPartyId).join(" + ")}
+                  <CoalitionLabel partyIds={selectedList} />
                 </p>
               </div>
 

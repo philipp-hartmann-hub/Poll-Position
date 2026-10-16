@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchRawSurveys, type RawSurveysResponse } from "@/lib/api";
 import { ExportButtons } from "@/components/ExportButtons";
-import { partyColor } from "@/lib/colors";
+import { PartyLabel } from "@/components/PartyLabel";
 import {
   downloadCsv,
   downloadJson,
@@ -11,7 +11,6 @@ import {
   formatDeNumber,
   toCsv,
 } from "@/lib/download";
-import { PARTY_SWATCH_CLASS } from "@/lib/theme";
 
 const PAGE_SIZE = 20;
 
@@ -167,15 +166,12 @@ export function RawSurveysTable({
                           {s.results.map((r) => (
                             <span
                               key={r.party_id}
-                              className="whitespace-nowrap"
+                              className="inline-flex items-center gap-1 whitespace-nowrap"
                             >
-                              <span
-                                className={`mr-1 ${PARTY_SWATCH_CLASS} h-1.5 w-1.5`}
-                                style={{
-                                  background: partyColor(r.party_name),
-                                }}
-                              />
-                              {r.party_name} {r.share.toFixed(1)}
+                              <PartyLabel partyId={r.party_id} size="sm" />
+                              <span className="tabular-nums text-ink/70">
+                                {r.share.toFixed(1)}
+                              </span>
                             </span>
                           ))}
                         </div>
