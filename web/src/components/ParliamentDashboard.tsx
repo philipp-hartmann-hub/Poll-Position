@@ -11,6 +11,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   fetchAverages,
   fetchBundesratStatus,
@@ -64,6 +65,16 @@ const TAGS: { key: TagKey; label: string }[] = [
   { key: "wahlabend", label: "Wahlabend" },
   { key: "letzte-wahl", label: "Letzte Wahl" },
 ];
+
+const TAG_KEYS = new Set<string>(TAGS.map((t) => t.key));
+
+function tagFromSearchParams(
+  params: { get: (key: string) => string | null },
+): TagKey {
+  const raw = params.get("tab");
+  if (raw && TAG_KEYS.has(raw)) return raw as TagKey;
+  return "umfragen";
+}
 
 type IncumbentGov = {
   label: string;
@@ -258,6 +269,10 @@ export function ParliamentDashboard({
 }: {
   parliamentId: string;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [lastElection, setLastElection] = useState<LastElectionResponse | null>(
     null,
   );
@@ -276,7 +291,9 @@ export function ParliamentDashboard({
   const [cacheUpdatedAt, setCacheUpdatedAt] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [activeTag, setActiveTag] = useState<TagKey>("umfragen");
+  const [activeTag, setActiveTag] = useState<TagKey>(() =>
+    tagFromSearchParams(searchParams),
+  );
   const baseId = useId();
   const tabRefs = useRef<Partial<Record<TagKey, HTMLButtonElement | null>>>({});
   const abortRef = useRef<AbortController | null>(null);
@@ -287,6 +304,40 @@ export function ParliamentDashboard({
     missing: string[];
   }>({ probability: null, missing: [] });
 
+  const syncTabToUrl = useCallback(
+    (key: TagKey) => {
+      const next = new URLSearchParams(searchParams.toString());
+      if (key === "umfragen") next.delete("tab");
+      else next.set("tab", key);
+      const qs = next.toString();
+      const href = qs ? `${pathname}?${qs}` : pathname;
+      if (qs === searchParams.toString()) return;
+      router.replace(href, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const selectTab = useCallback(
+    (key: TagKey) => {
+      setActiveTag(key);
+      syncTabToUrl(key);
+    },
+    [syncTabToUrl],
+  );
+
+  useEffect(() => {
+    const fromUrl = tagFromSearchParams(searchParams);
+    setActiveTag(fromUrl);
+  }, [searchParams]);
+
+  useEffect(() => {
+    tabRefs.current[activeTag]?.scrollIntoView({
+      behavior: "smooth",
+      inline: "nearest",
+      block: "nearest",
+    });
+  }, [activeTag]);
+
   // Schnelle Static-Exports: steuern headerLoading unabhängig von Wiederwahl-MC.
   useEffect(() => {
     abortRef.current?.abort();
@@ -295,7 +346,7 @@ export function ParliamentDashboard({
     const { signal } = ac;
 
     setHeaderError(null);
-    setActiveTag("umfragen");
+    setActiveTag(tagFromSearchParams(searchParams));
 
     const cached = readOverviewCache(parliamentId);
     if (cached) {
@@ -415,6 +466,8 @@ export function ParliamentDashboard({
     return () => {
       ac.abort();
     };
+    // tab aus URL nur beim Parlamentwechsel; weitere Sync über searchParams-Effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- parliamentId
   }, [parliamentId]);
 
   // Wiederwahl-Badge: eigener Abort/Load — blockiert headerLoading nicht.
@@ -488,10 +541,13 @@ export function ParliamentDashboard({
     };
   }, [parliamentId]);
 
-  const focusTab = useCallback((key: TagKey) => {
-    setActiveTag(key);
-    tabRefs.current[key]?.focus();
-  }, []);
+  const focusTab = useCallback(
+    (key: TagKey) => {
+      selectTab(key);
+      tabRefs.current[key]?.focus();
+    },
+    [selectTab],
+  );
 
   const onTabKeyDown = useCallback(
     (e: KeyboardEvent<HTMLButtonElement>, key: TagKey) => {
@@ -586,7 +642,7 @@ export function ParliamentDashboard({
       </section>
 
       <div
-        className="flex flex-wrap gap-2"
+        className="flex flex-nowrap gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="Analyse-Bereiche"
       >
@@ -604,12 +660,12 @@ export function ParliamentDashboard({
               aria-selected={selected}
               aria-controls={panelId(tag.key)}
               tabIndex={selected ? 0 : -1}
-              onClick={() => setActiveTag(tag.key)}
+              onClick={() => selectTab(tag.key)}
               onKeyDown={(e) => onTabKeyDown(e, tag.key)}
               className={
                 selected
-                  ? "rounded-md border border-sea/40 bg-sea/10 px-3 py-1.5 text-sm font-medium text-ink"
-                  : "rounded-md border border-ink/15 bg-mist px-3 py-1.5 text-sm text-ink/65 transition hover:border-ink/25 hover:text-ink"
+                  ? "shrink-0 rounded-md border border-sea/40 bg-sea/10 px-3 py-1.5 text-sm font-medium text-ink"
+                  : "shrink-0 rounded-md border border-ink/15 bg-mist px-3 py-1.5 text-sm text-ink/65 transition hover:border-ink/25 hover:text-ink"
               }
             >
               {tag.label}

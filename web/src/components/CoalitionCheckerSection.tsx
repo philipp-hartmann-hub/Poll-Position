@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   coalitionCheckCombinationKey,
   fetchCoalitionCheckAll,
@@ -82,11 +83,22 @@ function resultFromStaticEntry(
   };
 }
 
+function partiesFromSearchParams(
+  params: { get: (key: string) => string | null },
+): string[] {
+  const raw = params.get("parties") ?? "";
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 export function CoalitionCheckerSection({
   parliamentId,
 }: {
   parliamentId: string;
 }) {
+  const searchParams = useSearchParams();
   const [seats, setSeats] = useState<SeatsResponse | null>(null);
   const [comboMap, setComboMap] = useState<Map<string, CoalitionCheckAllEntry>>(
     () => new Map(),
@@ -96,7 +108,9 @@ export function CoalitionCheckerSection({
     totalSeats: number;
     majorityThreshold: number;
   } | null>(null);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<string>>(
+    () => new Set(partiesFromSearchParams(searchParams)),
+  );
   const [result, setResult] = useState<CoalitionCheckResponse | null>(null);
   const [loadingSeats, setLoadingSeats] = useState(true);
   const [checking, setChecking] = useState(false);
@@ -108,7 +122,7 @@ export function CoalitionCheckerSection({
     const ac = new AbortController();
     setLoadingSeats(true);
     setError(null);
-    setSelected(new Set());
+    setSelected(new Set(partiesFromSearchParams(searchParams)));
     setResult(null);
     setComboMap(new Map());
     setComboMeta(null);
@@ -142,7 +156,16 @@ export function CoalitionCheckerSection({
       cancelled = true;
       ac.abort();
     };
+    // searchParams nur beim Parlamentwechsel initial lesen; danach über parties-Param.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- parliamentId
   }, [parliamentId]);
+
+  const partiesParam = searchParams.get("parties") ?? "";
+  useEffect(() => {
+    const ids = partiesFromSearchParams(searchParams);
+    if (ids.length === 0) return;
+    setSelected(new Set(ids));
+  }, [partiesParam, searchParams]);
 
   const options: PartyOption[] = useMemo(() => {
     if (!seats?.seats_by_name) return [];

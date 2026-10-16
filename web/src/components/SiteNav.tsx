@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { features } from "@/lib/features";
 
@@ -39,27 +40,40 @@ function isActive(
 
 export function SiteNav() {
   const pathname = usePathname();
+  const activeRef = useRef<HTMLAnchorElement | null>(null);
+
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({
+      behavior: "smooth",
+      inline: "nearest",
+      block: "nearest",
+    });
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/80 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
         <Link
           href="/parlament/de_bundestag"
-          className="font-display text-xl tracking-tight text-ink"
+          className="shrink-0 font-display text-xl tracking-tight text-ink"
         >
           Poll-Position
         </Link>
-        <nav className="flex flex-wrap gap-1 text-sm">
+        <nav
+          className="flex min-w-0 flex-nowrap gap-1 overflow-x-auto whitespace-nowrap text-sm [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Hauptnavigation"
+        >
           {links.map((l) => {
             const active = isActive(pathname, l.href, l.match);
             return (
               <Link
                 key={l.href}
                 href={l.href}
+                ref={active ? activeRef : undefined}
                 className={
                   active
-                    ? "rounded-md bg-mist/70 px-2.5 py-1.5 font-medium text-ink underline decoration-sea decoration-2 underline-offset-4"
-                    : "rounded-md px-2.5 py-1.5 text-ink/70 transition hover:bg-mist/60 hover:text-ink"
+                    ? "shrink-0 rounded-md bg-mist/70 px-2.5 py-1.5 font-medium text-ink underline decoration-sea decoration-2 underline-offset-4"
+                    : "shrink-0 rounded-md px-2.5 py-1.5 text-ink/70 transition hover:bg-mist/60 hover:text-ink"
                 }
                 aria-current={active ? "page" : undefined}
               >

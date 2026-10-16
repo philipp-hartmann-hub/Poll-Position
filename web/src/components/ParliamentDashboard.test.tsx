@@ -29,8 +29,17 @@ vi.mock("@/components/PartyForecast", () => ({
 vi.mock("@/components/SurveysSection", () => ({
   SurveysSection: () => null,
 }));
+vi.mock("@/components/RankOvertakeSection", () => ({
+  RankOvertakeSection: () => null,
+}));
 vi.mock("@/components/InfoTooltip", () => ({
   InfoTooltip: () => null,
+}));
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/parlament/de_bundestag",
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 const {
