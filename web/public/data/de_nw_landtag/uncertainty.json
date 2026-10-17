@@ -3,39 +3,59 @@
   "n_simulations": 200,
   "n_deadlock": 0,
   "mean_seats": {
-    "dawum:party:101": 57.94,
-    "dawum:party:2": 28.03,
-    "dawum:party:3": 0.375,
-    "dawum:party:4": 35.45,
-    "dawum:party:5": 15.69,
-    "dawum:party:7": 43.515,
+    "dawum:party:101": 52.93,
+    "dawum:party:2": 33.43,
+    "dawum:party:3": 1.385,
+    "dawum:party:4": 32.54,
+    "dawum:party:5": 18.81,
+    "dawum:party:7": 41.905,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
     {
       "parties": [
         "de:cdu",
+        "de:spd",
         "de:gruene"
       ],
-      "majority_probability": 0.81,
-      "n_majority": 162,
+      "majority_probability": 0.775,
+      "n_majority": 155,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:spd",
+        "de:fdp"
+      ],
+      "majority_probability": 0.1,
+      "n_majority": 20,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "majority_probability": 0.095,
+      "n_majority": 19,
       "n_simulations": 200
     }
   ],
   "party_indispensability": [
     {
+      "party_id": "de:spd",
+      "probability": 0.845,
+      "n_simulations_considered": 200
+    },
+    {
       "party_id": "de:cdu",
-      "probability": 0.995,
+      "probability": 0.825,
       "n_simulations_considered": 200
     },
     {
       "party_id": "de:gruene",
-      "probability": 0.895,
-      "n_simulations_considered": 200
-    },
-    {
-      "party_id": "de:spd",
-      "probability": 0.165,
+      "probability": 0.75,
       "n_simulations_considered": 200
     },
     {
@@ -57,8 +77,8 @@
   "party_id_to_canonical": {
     "dawum:party:101": "de:cdu",
     "dawum:party:7": "de:afd",
-    "dawum:party:4": "de:gruene",
     "dawum:party:2": "de:spd",
+    "dawum:party:4": "de:gruene",
     "dawum:party:5": "de:linke",
     "dawum:party:3": "de:fdp",
     "de:sonstige": "de:sonstige"
@@ -68,6 +88,6 @@
     "de:gruene"
   ],
   "current_government_label": "CDU + Grüne",
-  "current_government_majority_probability": 0.81,
+  "current_government_majority_probability": 0.095,
   "current_government_missing_parties": []
 }

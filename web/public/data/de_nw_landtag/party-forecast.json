@@ -7,58 +7,58 @@
     {
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 29.053456976850843,
+      "average_share": 26.70365543416062,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.9975,
+      "probability_strongest": 0.985,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.9975
+      "probability_indispensable": 0.8375
     },
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 21.91629530732756,
+      "average_share": 21.211156134566497,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.0025,
+      "probability_strongest": 0.015,
       "probability_above_threshold": 1.0,
       "probability_indispensable": 0.0
     },
     {
-      "party_id": "dawum:party:4",
-      "party_name": "Grüne",
-      "average_share": 17.949868803408872,
-      "threshold_percent": 5.0,
-      "probability_strongest": 0.0,
-      "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.875
-    },
-    {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 14.05079024405405,
+      "average_share": 17.089922364559573,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.1925
+      "probability_indispensable": 0.7975
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "average_share": 16.449338500532583,
+      "threshold_percent": 5.0,
+      "probability_strongest": 0.0,
+      "probability_above_threshold": 1.0,
+      "probability_indispensable": 0.7475
     },
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 7.969380804888936,
+      "average_share": 9.532052934695546,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.985,
+      "probability_above_threshold": 1.0,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 3.031905944715455,
+      "average_share": 3.7769070768168755,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.0375,
+      "probability_above_threshold": 0.135,
       "probability_indispensable": 0.0
     }
   ],
-  "current_government_majority_probability": 0.7775,
+  "current_government_majority_probability": 0.1025,
   "current_government_missing_parties": []
 }
