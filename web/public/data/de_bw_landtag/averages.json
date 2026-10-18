@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_bw_landtag",
-  "as_of": "2026-10-17",
+  "as_of": "2026-10-18",
   "parties": [
     {
       "parliament_id": "de_bw_landtag",
@@ -15,7 +15,7 @@
       "parliament_id": "de_bw_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 23.000582013971986,
+      "average_share": 23.00058201397199,
       "n_surveys": 9,
       "swing": null,
       "trend_share": 23.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_bw_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.0000000000000004,
+      "average_share": 3.0,
       "n_surveys": 2,
       "swing": null,
       "trend_share": 3.0
