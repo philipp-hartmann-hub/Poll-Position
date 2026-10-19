@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_hh_buergerschaft",
-  "as_of": "2026-10-18",
+  "as_of": "2026-10-19",
   "parties": [
     {
       "parliament_id": "de_hh_buergerschaft",
@@ -42,7 +42,7 @@
       "parliament_id": "de_hh_buergerschaft",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 12.018178676365729,
+      "average_share": 12.01817867636573,
       "n_surveys": 3,
       "swing": null,
       "trend_share": 12.0

@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_bb_landtag",
-  "as_of": "2026-10-18",
+  "as_of": "2026-10-19",
   "parties": [
     {
       "parliament_id": "de_bb_landtag",
@@ -60,9 +60,9 @@
       "parliament_id": "de_bb_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 7.994370152959204,
+      "average_share": 7.9943701529592035,
       "n_surveys": 5,
-      "swing": 3.3743701529592043,
+      "swing": 3.3743701529592034,
       "trend_share": 8.0
     }
   ]

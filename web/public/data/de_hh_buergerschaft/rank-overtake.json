@@ -38,18 +38,18 @@
       "higher_share": 13.990910661817134,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
-      "lower_share": 12.018178676365729,
-      "gap_points": 1.9727319854514054,
+      "lower_share": 12.01817867636573,
+      "gap_points": 1.9727319854514036,
       "overtake_probability": 0.175
     },
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 12.018178676365729,
+      "higher_share": 12.01817867636573,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 3.0,
-      "gap_points": 9.018178676365729,
+      "gap_points": 9.01817867636573,
       "overtake_probability": 0.0
     },
     {

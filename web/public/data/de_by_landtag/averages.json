@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_by_landtag",
-  "as_of": "2026-10-18",
+  "as_of": "2026-10-19",
   "parties": [
     {
       "parliament_id": "de_by_landtag",
@@ -24,7 +24,7 @@
       "parliament_id": "de_by_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 13.059897015264394,
+      "average_share": 13.059897015264395,
       "n_surveys": 15,
       "swing": null,
       "trend_share": 13.0
