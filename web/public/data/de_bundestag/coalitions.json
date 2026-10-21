@@ -2,7 +2,7 @@
   "parliament_id": "de_bundestag",
   "total_seats": 630,
   "majority_threshold": 316,
-  "excluded_by_rules": 12,
+  "excluded_by_rules": 11,
   "coalitions": [
     {
       "parties": [

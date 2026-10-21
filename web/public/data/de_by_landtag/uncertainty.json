@@ -3,15 +3,15 @@
   "n_simulations": 200,
   "n_deadlock": 0,
   "mean_seats": {
-    "dawum:party:102": 77.605,
+    "dawum:party:102": 75.82,
     "dawum:party:11": 0.0,
-    "dawum:party:2": 10.745,
+    "dawum:party:2": 10.395,
     "dawum:party:23": 0.32,
-    "dawum:party:3": 0.05,
-    "dawum:party:4": 26.37,
-    "dawum:party:5": 0.315,
-    "dawum:party:7": 40.455,
-    "dawum:party:8": 24.14,
+    "dawum:party:3": 0.0,
+    "dawum:party:4": 28.905,
+    "dawum:party:5": 0.265,
+    "dawum:party:7": 43.1,
+    "dawum:party:8": 21.195,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
@@ -29,8 +29,28 @@
         "de:csu",
         "de:fw"
       ],
-      "majority_probability": 0.995,
-      "n_majority": 199,
+      "majority_probability": 0.895,
+      "n_majority": 179,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:csu",
+        "de:spd",
+        "de:fw"
+      ],
+      "majority_probability": 0.1,
+      "n_majority": 20,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:csu",
+        "de:bsw",
+        "de:fw"
+      ],
+      "majority_probability": 0.025,
+      "n_majority": 5,
       "n_simulations": 200
     }
   ],
@@ -47,11 +67,6 @@
     },
     {
       "party_id": "de:bsw",
-      "probability": 0.0,
-      "n_simulations_considered": 200
-    },
-    {
-      "party_id": "de:fdp",
       "probability": 0.0,
       "n_simulations_considered": 200
     },
@@ -92,6 +107,6 @@
     "de:fw"
   ],
   "current_government_label": "CSU + Freie Wähler",
-  "current_government_majority_probability": 0.995,
+  "current_government_majority_probability": 0.895,
   "current_government_missing_parties": []
 }
