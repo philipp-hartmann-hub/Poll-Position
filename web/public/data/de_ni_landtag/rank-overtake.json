@@ -5,31 +5,31 @@
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 25.999024407656574,
+      "higher_share": 25.999024407656567,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
-      "lower_share": 22.00301552951921,
-      "gap_points": 3.9960088781373635,
+      "lower_share": 22.003015529519207,
+      "gap_points": 3.99600887813736,
       "overtake_probability": 0.0275
     },
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 22.00301552951921,
+      "higher_share": 22.003015529519207,
       "lower_party_id": "dawum:party:7",
       "lower_party_name": "AfD",
-      "lower_share": 20.999023920223262,
+      "lower_share": 20.99902392022326,
       "gap_points": 1.003991609295948,
       "overtake_probability": 0.3175
     },
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 20.999023920223262,
+      "higher_share": 20.99902392022326,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
       "lower_share": 14.996984957914101,
-      "gap_points": 6.002038962309161,
+      "gap_points": 6.0020389623091575,
       "overtake_probability": 0.005
     },
     {
@@ -38,18 +38,18 @@
       "higher_share": 14.996984957914101,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 6.000992952894566,
-      "gap_points": 8.995992005019534,
+      "lower_share": 6.000992952894564,
+      "gap_points": 8.995992005019538,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 6.000992952894566,
+      "higher_share": 6.000992952894564,
       "lower_party_id": "dawum:party:3",
       "lower_party_name": "FDP",
       "lower_share": 4.9989887116876774,
-      "gap_points": 1.0020042412068886,
+      "gap_points": 1.0020042412068868,
       "overtake_probability": 0.2825
     },
     {

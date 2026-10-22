@@ -9,7 +9,7 @@
         "de:csu",
         "de:gruene"
       ],
-      "seats": 104,
+      "seats": 103,
       "is_minimal_winning": true,
       "compatibility_span": 4.0
     },
@@ -18,7 +18,7 @@
         "de:csu",
         "de:fw"
       ],
-      "seats": 96,
+      "seats": 94,
       "is_minimal_winning": true,
       "compatibility_span": null
     }

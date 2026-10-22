@@ -53,8 +53,8 @@
         "de:gruene"
       ],
       "label": "Kenia",
-      "majority_probability": 0.955,
-      "n_majority": 382,
+      "majority_probability": 0.9525,
+      "n_majority": 381,
       "n_simulations": 400
     },
     {
@@ -65,8 +65,8 @@
         "de:gruene"
       ],
       "label": "CDU/CSU + SPD + Grüne + FDP",
-      "majority_probability": 0.0325,
-      "n_majority": 13,
+      "majority_probability": 0.035,
+      "n_majority": 14,
       "n_simulations": 400
     },
     {

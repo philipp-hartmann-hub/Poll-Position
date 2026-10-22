@@ -1,75 +1,75 @@
 {
   "parliament_id": "de_bundestag",
-  "as_of": "2026-10-21",
+  "as_of": "2026-10-22",
   "parties": [
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 28.381434648302438,
-      "n_surveys": 242,
+      "average_share": 28.415151255912185,
+      "n_surveys": 243,
       "swing": null,
-      "trend_share": 28.583205919122214
+      "trend_share": 28.627835768541516
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
-      "average_share": 19.292142317182968,
-      "n_surveys": 242,
+      "average_share": 19.22171054248875,
+      "n_surveys": 243,
       "swing": null,
-      "trend_share": 18.778299123921943
+      "trend_share": 18.694959714133166
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 15.079778907495024,
-      "n_surveys": 242,
+      "average_share": 15.020922585152716,
+      "n_surveys": 243,
       "swing": null,
-      "trend_share": 15.2846837837498
+      "trend_share": 15.147121264389108
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 13.26694741586773,
-      "n_surveys": 242,
+      "average_share": 13.361412218634147,
+      "n_surveys": 243,
       "swing": null,
-      "trend_share": 13.384500351160606
+      "trend_share": 13.557486267641934
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 10.934597786412485,
-      "n_surveys": 242,
+      "average_share": 10.938162714138047,
+      "n_surveys": 243,
       "swing": null,
-      "trend_share": 10.727340487151505
+      "trend_share": 10.756536566365346
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 4.200399442625703,
-      "n_surveys": 229,
+      "average_share": 4.243984455406899,
+      "n_surveys": 230,
       "swing": null,
-      "trend_share": 4.207272832443358
+      "trend_share": 4.292157181194502
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.3657878512282124,
-      "n_surveys": 193,
+      "average_share": 3.4129610789520712,
+      "n_surveys": 194,
       "swing": null,
-      "trend_share": 3.346950104962601
+      "trend_share": 3.444043300468639
     },
     {
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 1.000836140966783,
+      "average_share": 1.0008361409667828,
       "n_surveys": 7,
       "swing": null,
       "trend_share": 1.0
@@ -78,10 +78,10 @@
       "parliament_id": "de_bundestag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 6.369713740729016,
-      "n_surveys": 242,
-      "swing": -7.330286259270983,
-      "trend_share": 6.630668540598474
+      "average_share": 6.240545968683068,
+      "n_surveys": 243,
+      "swing": -7.459454031316931,
+      "trend_share": 6.348979461445189
     }
   ]
 }
