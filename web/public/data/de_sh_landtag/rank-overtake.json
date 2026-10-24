@@ -5,51 +5,51 @@
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 27.067044776666467,
+      "higher_share": 27.06704477666647,
       "lower_party_id": "dawum:party:7",
       "lower_party_name": "AfD",
-      "lower_share": 17.966477611666765,
+      "lower_share": 17.966477611666768,
       "gap_points": 9.100567164999703,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 17.966477611666765,
+      "higher_share": 17.966477611666768,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 17.022348258888822,
+      "lower_share": 17.022348258888826,
       "gap_points": 0.9441293527779422,
       "overtake_probability": 0.32
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 17.022348258888822,
+      "higher_share": 17.022348258888826,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 14.966477611666766,
-      "gap_points": 2.055870647222056,
+      "lower_share": 14.966477611666765,
+      "gap_points": 2.0558706472220614,
       "overtake_probability": 0.1875
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 14.966477611666766,
+      "higher_share": 14.966477611666765,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 6.988825870555589,
-      "gap_points": 7.977651741111178,
+      "lower_share": 6.988825870555588,
+      "gap_points": 7.977651741111177,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 6.988825870555589,
+      "higher_share": 6.988825870555588,
       "lower_party_id": "dawum:party:10",
       "lower_party_name": "SSW",
       "lower_share": 5.988825870555589,
-      "gap_points": 1.0,
+      "gap_points": 0.9999999999999991,
       "overtake_probability": 0.2875
     },
     {
@@ -58,8 +58,8 @@
       "higher_share": 5.988825870555589,
       "lower_party_id": "dawum:party:3",
       "lower_party_name": "FDP",
-      "lower_share": 5.977651741111178,
-      "gap_points": 0.011174129444411207,
+      "lower_share": 5.977651741111177,
+      "gap_points": 0.011174129444412095,
       "overtake_probability": 0.48
     }
   ]

@@ -7,10 +7,6 @@
       "party_name": "AfD",
       "points": [
         {
-          "as_of": "2025-10-23",
-          "trend_share": 25.882192003350696
-        },
-        {
           "as_of": "2025-10-24",
           "trend_share": 25.860453453132575
         },
@@ -656,10 +652,6 @@
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
       "points": [
-        {
-          "as_of": "2025-10-23",
-          "trend_share": 25.12300236929317
-        },
         {
           "as_of": "2025-10-24",
           "trend_share": 25.146200452668307
@@ -1307,10 +1299,6 @@
       "party_name": "Grüne",
       "points": [
         {
-          "as_of": "2025-10-23",
-          "trend_share": 11.490032145066692
-        },
-        {
           "as_of": "2025-10-24",
           "trend_share": 11.51149995037848
         },
@@ -1956,10 +1944,6 @@
       "party_id": "dawum:party:2",
       "party_name": "SPD",
       "points": [
-        {
-          "as_of": "2025-10-23",
-          "trend_share": 14.373647479530044
-        },
         {
           "as_of": "2025-10-24",
           "trend_share": 14.408306147693875
@@ -2607,10 +2591,6 @@
       "party_name": "Linke",
       "points": [
         {
-          "as_of": "2025-10-23",
-          "trend_share": 10.97020076069889
-        },
-        {
           "as_of": "2025-10-24",
           "trend_share": 10.944637125159097
         },
@@ -3256,10 +3236,6 @@
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
       "points": [
-        {
-          "as_of": "2025-10-23",
-          "trend_share": 5.789971262370293
-        },
         {
           "as_of": "2025-10-24",
           "trend_share": 5.814783778206996
