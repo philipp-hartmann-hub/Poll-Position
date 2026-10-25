@@ -38,18 +38,18 @@
       "higher_share": 16.449338500532583,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 9.532052934695546,
-      "gap_points": 6.917285565837037,
+      "lower_share": 9.532052934695544,
+      "gap_points": 6.917285565837039,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 9.532052934695546,
+      "higher_share": 9.532052934695544,
       "lower_party_id": "dawum:party:3",
       "lower_party_name": "FDP",
-      "lower_share": 3.776907076816875,
-      "gap_points": 5.755145857878671,
+      "lower_share": 3.7769070768168755,
+      "gap_points": 5.755145857878668,
       "overtake_probability": 0.0
     }
   ]
