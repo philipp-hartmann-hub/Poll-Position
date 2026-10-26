@@ -7,25 +7,25 @@
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 28.357869184900775,
+      "average_share": 28.307965858376843,
       "threshold_percent": 5.0,
-      "probability_strongest": 1.0,
+      "probability_strongest": 0.9975,
       "probability_above_threshold": 1.0,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
-      "average_share": 19.374647020451675,
+      "average_share": 19.567249110316048,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.0,
+      "probability_strongest": 0.0025,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.9323308270676691
+      "probability_indispensable": 0.9473684210526315
     },
     {
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 14.979597988325798,
+      "average_share": 14.880179269623008,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -34,7 +34,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 13.387260784045585,
+      "average_share": 13.43063714413536,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -43,7 +43,7 @@
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 10.940665746388435,
+      "average_share": 10.897509287842189,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -52,25 +52,25 @@
     {
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 4.234108397899328,
+      "average_share": 4.099054364133071,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.2275,
-      "probability_indispensable": 0.03007518796992481
+      "probability_above_threshold": 0.19,
+      "probability_indispensable": 0.02756892230576441
     },
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.412961078188449,
+      "average_share": 3.352792466866908,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.085,
-      "probability_indispensable": 0.007518796992481203
+      "probability_above_threshold": 0.0775,
+      "probability_indispensable": 0.005012531328320802
     },
     {
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 1.000836140966783,
+      "average_share": 1.0008361409667828,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.0,
