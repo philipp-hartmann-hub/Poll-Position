@@ -188,12 +188,13 @@
       "default_government_label": "CDU + SPD",
       "coalition_options": [
         {
-          "key": "de:cdu+de:spd",
+          "key": "de:cdu+de:gruene+de:spd",
           "parties": [
             "de:cdu",
+            "de:gruene",
             "de:spd"
           ],
-          "seats": 57,
+          "seats": 72,
           "is_minimal_winning": true
         }
       ]

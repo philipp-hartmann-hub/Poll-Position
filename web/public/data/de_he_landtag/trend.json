@@ -17,6 +17,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 30.0
+        },
+        {
+          "as_of": "2026-10-22",
+          "trend_share": 25.0
         }
       ]
     },
@@ -35,6 +39,32 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 22.0
+        },
+        {
+          "as_of": "2026-10-22",
+          "trend_share": 23.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 14.0
+        },
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 13.0
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 13.0
+        },
+        {
+          "as_of": "2026-10-22",
+          "trend_share": 16.0
         }
       ]
     },
@@ -53,24 +83,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 15.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:4",
-      "party_name": "Grüne",
-      "points": [
-        {
-          "as_of": "2026-01-29",
-          "trend_share": 13.999999999999998
         },
         {
-          "as_of": "2026-03-12",
-          "trend_share": 13.0
-        },
-        {
-          "as_of": "2026-04-21",
-          "trend_share": 13.0
+          "as_of": "2026-10-22",
+          "trend_share": 14.999999999999998
         }
       ]
     },
@@ -84,10 +100,14 @@
         },
         {
           "as_of": "2026-03-12",
-          "trend_share": 6.0
+          "trend_share": 5.999999999999999
         },
         {
           "as_of": "2026-04-21",
+          "trend_share": 6.999999999999999
+        },
+        {
+          "as_of": "2026-10-22",
           "trend_share": 7.0
         }
       ]
@@ -107,30 +127,10 @@
         {
           "as_of": "2026-04-21",
           "trend_share": 6.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:8",
-      "party_name": "Freie Wähler",
-      "points": [
-        {
-          "as_of": "2026-03-12",
-          "trend_share": 3.0
         },
         {
-          "as_of": "2026-04-21",
-          "trend_share": 4.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:23",
-      "party_name": "BSW",
-      "points": [
-        {
-          "as_of": "2026-03-12",
-          "trend_share": 3.0000000000000004
+          "as_of": "2026-10-22",
+          "trend_share": 7.0
         }
       ]
     },
@@ -148,6 +148,38 @@
         },
         {
           "as_of": "2026-04-21",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-10-22",
+          "trend_share": 4.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 3.0000000000000004
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:8",
+      "party_name": "Freie Wähler",
+      "points": [
+        {
+          "as_of": "2026-03-12",
+          "trend_share": 2.9999999999999996
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-10-22",
           "trend_share": 3.0
         }
       ]
