@@ -56,30 +56,6 @@
       "majority_probability": 0.9625,
       "n_majority": 385,
       "n_simulations": 400
-    },
-    {
-      "parties": [
-        "de:cdu_csu",
-        "de:spd",
-        "de:fdp",
-        "de:gruene"
-      ],
-      "label": "CDU/CSU + SPD + Grüne + FDP",
-      "majority_probability": 0.03,
-      "n_majority": 12,
-      "n_simulations": 400
-    },
-    {
-      "parties": [
-        "de:cdu_csu",
-        "de:spd",
-        "de:bsw",
-        "de:gruene"
-      ],
-      "label": "CDU/CSU + BSW + SPD + Grüne",
-      "majority_probability": 0.0075,
-      "n_majority": 3,
-      "n_simulations": 400
     }
   ]
 }

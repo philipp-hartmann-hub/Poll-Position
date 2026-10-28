@@ -7,7 +7,7 @@
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 21.683352812042934,
+      "average_share": 21.68335281204293,
       "threshold_percent": 5.0,
       "probability_strongest": 0.765,
       "probability_above_threshold": 1.0,
@@ -52,7 +52,7 @@
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 4.245277728384685,
+      "average_share": 4.245277728384684,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.23,
