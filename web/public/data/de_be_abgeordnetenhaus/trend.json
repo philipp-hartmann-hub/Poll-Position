@@ -7,10 +7,6 @@
       "party_name": "Linke",
       "points": [
         {
-          "as_of": "2025-10-28",
-          "trend_share": 17.01468597698985
-        },
-        {
           "as_of": "2025-11-17",
           "trend_share": 18.340599407958614
         },
@@ -128,10 +124,6 @@
       "party_id": "dawum:party:101",
       "party_name": "CDU",
       "points": [
-        {
-          "as_of": "2025-10-28",
-          "trend_share": 22.992657011505077
-        },
         {
           "as_of": "2025-11-17",
           "trend_share": 22.659106902968695
@@ -251,10 +243,6 @@
       "party_name": "AfD",
       "points": [
         {
-          "as_of": "2025-10-28",
-          "trend_share": 15.007342988494925
-        },
-        {
           "as_of": "2025-11-17",
           "trend_share": 15.999706310927312
         },
@@ -372,10 +360,6 @@
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
       "points": [
-        {
-          "as_of": "2025-10-28",
-          "trend_share": 14.014685976989847
-        },
         {
           "as_of": "2025-11-17",
           "trend_share": 15.340599407958614
@@ -495,10 +479,6 @@
       "party_name": "SPD",
       "points": [
         {
-          "as_of": "2025-10-28",
-          "trend_share": 15.977971034515228
-        },
-        {
           "as_of": "2025-11-17",
           "trend_share": 13.000881067218064
         },
@@ -616,10 +596,6 @@
       "party_id": "dawum:party:23",
       "party_name": "BSW",
       "points": [
-        {
-          "as_of": "2025-10-28",
-          "trend_share": 4.9926570115050755
-        },
         {
           "as_of": "2025-11-17",
           "trend_share": 4.659106902968696
@@ -739,10 +715,6 @@
       "party_name": "Sonstige",
       "points": [
         {
-          "as_of": "2025-10-28",
-          "trend_share": 6.029371953979699
-        },
-        {
           "as_of": "2025-11-17",
           "trend_share": 8.022385602021222
         },
@@ -860,10 +832,6 @@
       "party_id": "dawum:party:3",
       "party_name": "FDP",
       "points": [
-        {
-          "as_of": "2025-10-28",
-          "trend_share": 4.0
-        },
         {
           "as_of": "2025-11-26",
           "trend_share": 3.0
