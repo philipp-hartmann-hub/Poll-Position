@@ -2,18 +2,16 @@
   "parliament_id": "de_mv_landtag",
   "total_seats": 71,
   "seats": {
-    "dawum:party:7": 28,
-    "dawum:party:2": 26,
+    "dawum:party:7": 31,
+    "dawum:party:2": 27,
     "dawum:party:5": 8,
-    "dawum:party:101": 5,
-    "dawum:party:4": 4
+    "dawum:party:101": 5
   },
   "seats_by_name": {
-    "AfD": 28,
-    "SPD": 26,
+    "AfD": 31,
+    "SPD": 27,
     "Linke": 8,
-    "CDU": 5,
-    "Grüne": 4
+    "CDU": 5
   },
   "reason": null
 }

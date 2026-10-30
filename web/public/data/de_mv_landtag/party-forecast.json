@@ -2,61 +2,61 @@
   "parliament_id": "de_mv_landtag",
   "threshold_percent": 5.0,
   "n_simulations": 400,
-  "n_deadlock": 93,
+  "n_deadlock": 84,
   "parties": [
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 36.523584672064615,
+      "average_share": 37.869678222903346,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.8025,
+      "probability_strongest": 0.9775,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.006514657980456026
+      "probability_indispensable": 0.03164556962025317
     },
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 33.31139187862053,
+      "average_share": 32.5985647003519,
       "threshold_percent": 5.0,
-      "probability_strongest": 0.1975,
+      "probability_strongest": 0.0225,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.990228013029316
+      "probability_indispensable": 0.9240506329113924
     },
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 10.196821553730125,
+      "average_share": 9.546270833579301,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.6026058631921825
+      "probability_indispensable": 0.6993670886075949
     },
     {
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 7.033547982871098,
+      "average_share": 5.9281817730172595,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.945,
-      "probability_indispensable": 0.019543973941368076
+      "probability_above_threshold": 0.745,
+      "probability_indispensable": 0.006329113924050633
     },
     {
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 5.121638939309413,
+      "average_share": 5.055520227359842,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.5475,
-      "probability_indispensable": 0.5504885993485342
+      "probability_above_threshold": 0.5225,
+      "probability_indispensable": 0.45569620253164556
     },
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.9788495115349467,
+      "average_share": 4.533911528577384,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.21,
-      "probability_indispensable": 0.13680781758957655
+      "probability_above_threshold": 0.365,
+      "probability_indispensable": 0.2689873417721519
     },
     {
       "party_id": "dawum:party:3",
@@ -65,9 +65,9 @@
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 0.0,
-      "probability_indispensable": 0.006514657980456026
+      "probability_indispensable": 0.006329113924050633
     }
   ],
-  "current_government_majority_probability": 0.2425,
+  "current_government_majority_probability": 0.2125,
   "current_government_missing_parties": []
 }

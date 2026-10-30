@@ -18,18 +18,18 @@
       "higher_share": 19.636288531880123,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 14.90488679045186,
-      "gap_points": 4.731401741428263,
+      "lower_share": 14.904886790451862,
+      "gap_points": 4.731401741428261,
       "overtake_probability": 0.0325
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 14.90488679045186,
+      "higher_share": 14.904886790451862,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
       "lower_share": 13.436597152886238,
-      "gap_points": 1.468289637565622,
+      "gap_points": 1.4682896375656238,
       "overtake_probability": 0.2775
     },
     {

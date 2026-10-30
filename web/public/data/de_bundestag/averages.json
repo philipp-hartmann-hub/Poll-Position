@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_bundestag",
-  "as_of": "2026-10-29",
+  "as_of": "2026-10-30",
   "parties": [
     {
       "parliament_id": "de_bundestag",
@@ -24,7 +24,7 @@
       "parliament_id": "de_bundestag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 14.90488679045186,
+      "average_share": 14.904886790451862,
       "n_surveys": 245,
       "swing": null,
       "trend_share": 14.885903235958372

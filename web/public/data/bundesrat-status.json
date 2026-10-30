@@ -208,18 +208,7 @@
         "de:linke"
       ],
       "default_government_label": "SPD + Linke",
-      "coalition_options": [
-        {
-          "key": "de:gruene+de:linke+de:spd",
-          "parties": [
-            "de:gruene",
-            "de:linke",
-            "de:spd"
-          ],
-          "seats": 38,
-          "is_minimal_winning": true
-        }
-      ]
+      "coalition_options": []
     },
     {
       "parliament_id": "de_ni_landtag",
