@@ -5,31 +5,31 @@
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 37.869678222903346,
+      "higher_share": 37.86967822290334,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 32.5985647003519,
+      "lower_share": 32.59856470035189,
       "gap_points": 5.271113522551445,
       "overtake_probability": 0.0225
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 32.5985647003519,
+      "higher_share": 32.59856470035189,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 9.546270833579301,
-      "gap_points": 23.0522938667726,
+      "lower_share": 9.5462708335793,
+      "gap_points": 23.052293866772594,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 9.546270833579301,
+      "higher_share": 9.5462708335793,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
       "lower_share": 5.9281817730172595,
-      "gap_points": 3.618089060562042,
+      "gap_points": 3.61808906056204,
       "overtake_probability": 0.025
     },
     {
@@ -38,18 +38,18 @@
       "higher_share": 5.9281817730172595,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 5.055520227359842,
-      "gap_points": 0.8726615456574178,
+      "lower_share": 5.055520227359841,
+      "gap_points": 0.8726615456574187,
       "overtake_probability": 0.335
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 5.055520227359842,
+      "higher_share": 5.055520227359841,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 4.533911528577384,
-      "gap_points": 0.5216086987824573,
+      "gap_points": 0.5216086987824564,
       "overtake_probability": 0.3875
     },
     {
