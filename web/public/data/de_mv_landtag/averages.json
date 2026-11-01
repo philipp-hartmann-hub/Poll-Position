@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_mv_landtag",
-  "as_of": "2026-10-31",
+  "as_of": "2026-11-01",
   "parties": [
     {
       "parliament_id": "de_mv_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 37.86967822290334,
+      "average_share": 37.869678222903346,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 39.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_mv_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 5.055520227359841,
+      "average_share": 5.055520227359842,
       "n_surveys": 16,
       "swing": null,
       "trend_share": 5.0

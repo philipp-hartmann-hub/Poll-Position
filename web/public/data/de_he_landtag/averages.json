@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_he_landtag",
-  "as_of": "2026-10-31",
+  "as_of": "2026-11-01",
   "parties": [
     {
       "parliament_id": "de_he_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 25.0006050433933,
+      "average_share": 25.000605043393293,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 25.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_he_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 15.999649517145148,
+      "average_share": 15.999649517145146,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 16.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_he_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 6.9999841003376515,
+      "average_share": 6.999984100337652,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 7.0
