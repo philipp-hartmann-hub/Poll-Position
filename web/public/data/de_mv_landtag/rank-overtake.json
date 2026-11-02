@@ -38,18 +38,18 @@
       "higher_share": 5.9281817730172595,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 5.055520227359842,
-      "gap_points": 0.8726615456574178,
+      "lower_share": 5.055520227359841,
+      "gap_points": 0.8726615456574187,
       "overtake_probability": 0.335
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 5.055520227359842,
+      "higher_share": 5.055520227359841,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 4.533911528577384,
-      "gap_points": 0.5216086987824573,
+      "gap_points": 0.5216086987824564,
       "overtake_probability": 0.3875
     },
     {

@@ -5,11 +5,11 @@
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 25.000605043393293,
+      "higher_share": 25.000605043393296,
       "lower_party_id": "dawum:party:7",
       "lower_party_name": "AfD",
       "lower_share": 22.999864769899606,
-      "gap_points": 2.0007402734936868,
+      "gap_points": 2.0007402734936903,
       "overtake_probability": 0.185
     },
     {
