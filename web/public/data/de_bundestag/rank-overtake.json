@@ -8,18 +8,18 @@
       "higher_share": 28.332242385330133,
       "lower_party_id": "dawum:party:1",
       "lower_party_name": "CDU/CSU",
-      "lower_share": 19.657885646115297,
-      "gap_points": 8.674356739214836,
+      "lower_share": 19.6578856461153,
+      "gap_points": 8.674356739214833,
       "overtake_probability": 0.0025
     },
     {
       "higher_party_id": "dawum:party:1",
       "higher_party_name": "CDU/CSU",
-      "higher_share": 19.657885646115297,
+      "higher_share": 19.6578856461153,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
       "lower_share": 14.910534598281728,
-      "gap_points": 4.747351047833568,
+      "gap_points": 4.747351047833572,
       "overtake_probability": 0.03
     },
     {
@@ -28,18 +28,18 @@
       "higher_share": 14.910534598281728,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 13.470051906948104,
-      "gap_points": 1.4404826913336244,
+      "lower_share": 13.470051906948106,
+      "gap_points": 1.4404826913336226,
       "overtake_probability": 0.275
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 13.470051906948104,
+      "higher_share": 13.470051906948106,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
       "lower_share": 10.794882105617692,
-      "gap_points": 2.675169801330412,
+      "gap_points": 2.675169801330414,
       "overtake_probability": 0.105
     },
     {
@@ -58,18 +58,18 @@
       "higher_share": 4.202344414971368,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
-      "lower_share": 3.2898687330073986,
-      "gap_points": 0.912475681963969,
+      "lower_share": 3.289868733007399,
+      "gap_points": 0.9124756819639686,
       "overtake_probability": 0.3
     },
     {
       "higher_party_id": "dawum:party:23",
       "higher_party_name": "BSW",
-      "higher_share": 3.2898687330073986,
+      "higher_share": 3.289868733007399,
       "lower_party_id": "dawum:party:8",
       "lower_party_name": "Freie Wähler",
-      "lower_share": 1.000836140966783,
-      "gap_points": 2.2890325920406154,
+      "lower_share": 1.0008361409667828,
+      "gap_points": 2.2890325920406163,
       "overtake_probability": 0.065
     }
   ]
