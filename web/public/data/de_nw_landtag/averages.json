@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_nw_landtag",
-  "as_of": "2026-11-03",
+  "as_of": "2026-11-04",
   "parties": [
     {
       "parliament_id": "de_nw_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 26.70365543416062,
+      "average_share": 26.703655434160616,
       "n_surveys": 7,
       "swing": null,
       "trend_share": 26.0
