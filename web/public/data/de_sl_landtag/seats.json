@@ -2,18 +2,18 @@
   "parliament_id": "de_sl_landtag",
   "total_seats": 51,
   "seats": {
-    "dawum:party:2": 16,
-    "dawum:party:101": 14,
-    "dawum:party:7": 13,
-    "dawum:party:4": 4,
-    "dawum:party:5": 4
+    "dawum:party:2": 19,
+    "dawum:party:7": 12,
+    "dawum:party:101": 12,
+    "dawum:party:4": 5,
+    "dawum:party:5": 3
   },
   "seats_by_name": {
-    "SPD": 16,
-    "CDU": 14,
-    "AfD": 13,
-    "Grüne": 4,
-    "Linke": 4
+    "SPD": 19,
+    "AfD": 12,
+    "CDU": 12,
+    "Grüne": 5,
+    "Linke": 3
   },
   "reason": null
 }

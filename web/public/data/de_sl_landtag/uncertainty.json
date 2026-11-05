@@ -3,12 +3,13 @@
   "n_simulations": 200,
   "n_deadlock": 0,
   "mean_seats": {
-    "dawum:party:101": 14.565,
-    "dawum:party:2": 15.8,
-    "dawum:party:23": 0.09,
-    "dawum:party:4": 3.685,
-    "dawum:party:5": 3.585,
-    "dawum:party:7": 13.275,
+    "dawum:party:101": 11.555,
+    "dawum:party:2": 19.485,
+    "dawum:party:23": 0.105,
+    "dawum:party:3": 0.145,
+    "dawum:party:4": 4.84,
+    "dawum:party:5": 2.61,
+    "dawum:party:7": 12.26,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
@@ -19,6 +20,16 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 200,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:spd",
+        "de:gruene",
+        "de:linke"
+      ],
+      "majority_probability": 0.69,
+      "n_majority": 138,
       "n_simulations": 200
     },
     {
@@ -38,7 +49,7 @@
     },
     {
       "party_id": "de:cdu",
-      "probability": 0.98,
+      "probability": 0.09,
       "n_simulations_considered": 200
     },
     {
@@ -48,6 +59,11 @@
     },
     {
       "party_id": "de:bsw",
+      "probability": 0.0,
+      "n_simulations_considered": 200
+    },
+    {
+      "party_id": "de:fdp",
       "probability": 0.0,
       "n_simulations_considered": 200
     },
@@ -64,11 +80,12 @@
   ],
   "party_id_to_canonical": {
     "dawum:party:2": "de:spd",
-    "dawum:party:101": "de:cdu",
     "dawum:party:7": "de:afd",
+    "dawum:party:101": "de:cdu",
     "dawum:party:4": "de:gruene",
     "dawum:party:5": "de:linke",
     "dawum:party:23": "de:bsw",
+    "dawum:party:3": "de:fdp",
     "de:sonstige": "de:sonstige"
   },
   "current_government_parties": [

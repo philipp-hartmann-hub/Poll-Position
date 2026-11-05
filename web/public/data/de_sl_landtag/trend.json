@@ -9,16 +9,10 @@
         {
           "as_of": "2025-11-26",
           "trend_share": 27.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:101",
-      "party_name": "CDU",
-      "points": [
+        },
         {
-          "as_of": "2025-11-26",
-          "trend_share": 25.0
+          "as_of": "2026-11-01",
+          "trend_share": 33.0
         }
       ]
     },
@@ -29,16 +23,24 @@
         {
           "as_of": "2025-11-26",
           "trend_share": 23.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 21.0
         }
       ]
     },
     {
-      "party_id": "de:sonstige",
-      "party_name": "Sonstige",
+      "party_id": "dawum:party:101",
+      "party_name": "CDU",
       "points": [
         {
           "as_of": "2025-11-26",
-          "trend_share": 8.0
+          "trend_share": 25.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 20.0
         }
       ]
     },
@@ -49,6 +51,10 @@
         {
           "as_of": "2025-11-26",
           "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 9.0
         }
       ]
     },
@@ -59,6 +65,24 @@
         {
           "as_of": "2025-11-26",
           "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "de:sonstige",
+      "party_name": "Sonstige",
+      "points": [
+        {
+          "as_of": "2025-11-26",
+          "trend_share": 8.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 5.0
         }
       ]
     },
@@ -68,6 +92,20 @@
       "points": [
         {
           "as_of": "2025-11-26",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-11-01",
+          "trend_share": 3.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2026-11-01",
           "trend_share": 3.0
         }
       ]

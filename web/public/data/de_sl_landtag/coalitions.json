@@ -2,14 +2,24 @@
   "parliament_id": "de_sl_landtag",
   "total_seats": 51,
   "majority_threshold": 26,
-  "excluded_by_rules": 8,
+  "excluded_by_rules": 6,
   "coalitions": [
+    {
+      "parties": [
+        "de:gruene",
+        "de:linke",
+        "de:spd"
+      ],
+      "seats": 27,
+      "is_minimal_winning": true,
+      "compatibility_span": 2.5
+    },
     {
       "parties": [
         "de:cdu",
         "de:spd"
       ],
-      "seats": 30,
+      "seats": 31,
       "is_minimal_winning": true,
       "compatibility_span": 3.0
     }
