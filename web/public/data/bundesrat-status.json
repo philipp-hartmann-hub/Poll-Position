@@ -47,7 +47,7 @@
             "de:csu",
             "de:gruene"
           ],
-          "seats": 103,
+          "seats": 104,
           "is_minimal_winning": true
         },
         {
@@ -56,7 +56,7 @@
             "de:csu",
             "de:fw"
           ],
-          "seats": 94,
+          "seats": 98,
           "is_minimal_winning": true
         }
       ]
@@ -426,7 +426,7 @@
             "de:afd",
             "de:bsw"
           ],
-          "seats": 46,
+          "seats": 45,
           "is_minimal_winning": true
         }
       ]

@@ -2,18 +2,18 @@
   "parliament_id": "de_th_landtag",
   "total_seats": 88,
   "seats": {
-    "dawum:party:7": 39,
-    "dawum:party:101": 21,
-    "dawum:party:5": 15,
-    "dawum:party:23": 7,
-    "dawum:party:2": 6
+    "dawum:party:7": 40,
+    "dawum:party:101": 18,
+    "dawum:party:5": 17,
+    "dawum:party:2": 8,
+    "dawum:party:23": 5
   },
   "seats_by_name": {
-    "AfD": 39,
-    "CDU": 21,
-    "Linke": 15,
-    "BSW": 7,
-    "SPD": 6
+    "AfD": 40,
+    "CDU": 18,
+    "Linke": 17,
+    "SPD": 8,
+    "BSW": 5
   },
   "reason": null
 }

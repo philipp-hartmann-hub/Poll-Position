@@ -9,7 +9,7 @@
         "de:afd",
         "de:bsw"
       ],
-      "seats": 46,
+      "seats": 45,
       "is_minimal_winning": true,
       "compatibility_span": 7.0
     }

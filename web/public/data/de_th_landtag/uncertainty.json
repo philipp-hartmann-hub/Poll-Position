@@ -1,14 +1,15 @@
 {
   "parliament_id": "de_th_landtag",
   "n_simulations": 200,
-  "n_deadlock": 63,
+  "n_deadlock": 117,
   "mean_seats": {
-    "dawum:party:101": 21.3,
-    "dawum:party:2": 4.9,
-    "dawum:party:23": 6.665,
-    "dawum:party:4": 0.995,
-    "dawum:party:5": 15.345,
-    "dawum:party:7": 38.795,
+    "dawum:party:101": 18.295,
+    "dawum:party:2": 7.98,
+    "dawum:party:23": 2.77,
+    "dawum:party:29": 0.52,
+    "dawum:party:4": 0.72,
+    "dawum:party:5": 17.12,
+    "dawum:party:7": 40.595,
     "de:sonstige": 0.0
   },
   "coalition_probabilities": [
@@ -17,8 +18,16 @@
         "de:bsw",
         "de:afd"
       ],
-      "majority_probability": 0.685,
-      "n_majority": 137,
+      "majority_probability": 0.275,
+      "n_majority": 55,
+      "n_simulations": 200
+    },
+    {
+      "parties": [
+        "de:afd"
+      ],
+      "majority_probability": 0.065,
+      "n_majority": 13,
       "n_simulations": 200
     },
     {
@@ -36,40 +45,45 @@
     {
       "party_id": "de:afd",
       "probability": 1.0,
-      "n_simulations_considered": 137
+      "n_simulations_considered": 83
     },
     {
       "party_id": "de:bsw",
-      "probability": 1.0,
-      "n_simulations_considered": 137
+      "probability": 0.7590361445783133,
+      "n_simulations_considered": 83
+    },
+    {
+      "party_id": "dawum:party:29",
+      "probability": 0.18072289156626506,
+      "n_simulations_considered": 83
     },
     {
       "party_id": "de:cdu",
       "probability": 0.0,
-      "n_simulations_considered": 137
+      "n_simulations_considered": 83
     },
     {
       "party_id": "de:gruene",
       "probability": 0.0,
-      "n_simulations_considered": 137
+      "n_simulations_considered": 83
     },
     {
       "party_id": "de:linke",
       "probability": 0.0,
-      "n_simulations_considered": 137
+      "n_simulations_considered": 83
     },
     {
       "party_id": "de:spd",
       "probability": 0.0,
-      "n_simulations_considered": 137
+      "n_simulations_considered": 83
     }
   ],
   "party_id_to_canonical": {
     "dawum:party:7": "de:afd",
     "dawum:party:101": "de:cdu",
     "dawum:party:5": "de:linke",
-    "dawum:party:23": "de:bsw",
     "dawum:party:2": "de:spd",
+    "dawum:party:23": "de:bsw",
     "dawum:party:4": "de:gruene",
     "de:sonstige": "de:sonstige"
   },

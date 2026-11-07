@@ -2,17 +2,17 @@
   "parliament_id": "de_by_landtag",
   "total_seats": 180,
   "seats": {
-    "dawum:party:102": 74,
-    "dawum:party:7": 43,
-    "dawum:party:4": 29,
-    "dawum:party:8": 20,
+    "dawum:party:102": 76,
+    "dawum:party:7": 40,
+    "dawum:party:4": 28,
+    "dawum:party:8": 22,
     "dawum:party:2": 14
   },
   "seats_by_name": {
-    "CSU": 74,
-    "AfD": 43,
-    "Grüne": 29,
-    "Freie Wähler": 20,
+    "CSU": 76,
+    "AfD": 40,
+    "Grüne": 28,
+    "Freie Wähler": 22,
     "SPD": 14
   },
   "reason": null
