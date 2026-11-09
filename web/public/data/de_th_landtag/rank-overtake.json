@@ -8,58 +8,58 @@
       "higher_share": 39.99995322330182,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
-      "lower_share": 18.011287413883966,
-      "gap_points": 21.988665809417856,
+      "lower_share": 18.01128741388396,
+      "gap_points": 21.988665809417864,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 18.011287413883966,
+      "higher_share": 18.01128741388396,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
-      "lower_share": 16.997110696681236,
-      "gap_points": 1.01417671720273,
+      "lower_share": 16.997110696681233,
+      "gap_points": 1.0141767172027265,
       "overtake_probability": 0.2925
     },
     {
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
-      "higher_share": 16.997110696681236,
+      "higher_share": 16.997110696681233,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 7.994403069756195,
-      "gap_points": 9.00270762692504,
+      "lower_share": 7.994403069756194,
+      "gap_points": 9.002707626925039,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 7.994403069756195,
+      "higher_share": 7.994403069756194,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
-      "lower_share": 5.005598740376798,
+      "lower_share": 5.005598740376797,
       "gap_points": 2.9888043293793967,
       "overtake_probability": 0.05
     },
     {
       "higher_party_id": "dawum:party:23",
       "higher_party_name": "BSW",
-      "higher_share": 5.005598740376798,
+      "higher_share": 5.005598740376797,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 3.9999550334348175,
+      "lower_share": 3.9999550334348166,
       "gap_points": 1.0056437069419806,
       "overtake_probability": 0.2775
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 3.9999550334348175,
+      "higher_share": 3.9999550334348166,
       "lower_party_id": "dawum:party:29",
       "lower_party_name": "Thüringen.Gerecht",
       "lower_share": 2.0,
-      "gap_points": 1.9999550334348175,
+      "gap_points": 1.9999550334348166,
       "overtake_probability": 0.1925
     }
   ]
