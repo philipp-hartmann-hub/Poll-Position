@@ -7,10 +7,6 @@
       "party_name": "AfD",
       "points": [
         {
-          "as_of": "2025-11-09",
-          "trend_share": 25.84744858043524
-        },
-        {
           "as_of": "2025-11-10",
           "trend_share": 25.862900056467048
         },
@@ -652,10 +648,6 @@
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
       "points": [
-        {
-          "as_of": "2025-11-09",
-          "trend_share": 25.30673997741062
-        },
         {
           "as_of": "2025-11-10",
           "trend_share": 25.315812630586954
@@ -1299,10 +1291,6 @@
       "party_name": "Grüne",
       "points": [
         {
-          "as_of": "2025-11-09",
-          "trend_share": 11.575248654323108
-        },
-        {
           "as_of": "2025-11-10",
           "trend_share": 11.57106253958977
         },
@@ -1944,10 +1932,6 @@
       "party_id": "dawum:party:2",
       "party_name": "SPD",
       "points": [
-        {
-          "as_of": "2025-11-09",
-          "trend_share": 14.534991681119132
-        },
         {
           "as_of": "2025-11-10",
           "trend_share": 14.53285799909915
@@ -2591,10 +2575,6 @@
       "party_name": "Linke",
       "points": [
         {
-          "as_of": "2025-11-09",
-          "trend_share": 10.723327969794175
-        },
-        {
           "as_of": "2025-11-10",
           "trend_share": 10.703033403026467
         },
@@ -3236,10 +3216,6 @@
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
       "points": [
-        {
-          "as_of": "2025-11-09",
-          "trend_share": 6.165172065701592
-        },
         {
           "as_of": "2025-11-10",
           "trend_share": 6.181193750556438
@@ -3883,10 +3859,6 @@
       "party_name": "FDP",
       "points": [
         {
-          "as_of": "2025-11-09",
-          "trend_share": 3.197021855097302
-        },
-        {
           "as_of": "2025-11-10",
           "trend_share": 3.193129632476141
         },
@@ -4500,10 +4472,6 @@
       "party_id": "dawum:party:23",
       "party_name": "BSW",
       "points": [
-        {
-          "as_of": "2025-11-09",
-          "trend_share": 3.647718173780222
-        },
         {
           "as_of": "2025-11-10",
           "trend_share": 3.6507600683950603
