@@ -5,8 +5,8 @@
   "mean_seats": {
     "dawum:party:101": 11.555,
     "dawum:party:2": 19.485,
-    "dawum:party:23": 0.105,
-    "dawum:party:3": 0.145,
+    "dawum:party:23": 0.145,
+    "dawum:party:3": 0.105,
     "dawum:party:4": 4.84,
     "dawum:party:5": 2.61,
     "dawum:party:7": 12.26,
@@ -84,8 +84,8 @@
     "dawum:party:101": "de:cdu",
     "dawum:party:4": "de:gruene",
     "dawum:party:5": "de:linke",
-    "dawum:party:23": "de:bsw",
     "dawum:party:3": "de:fdp",
+    "dawum:party:23": "de:bsw",
     "de:sonstige": "de:sonstige"
   },
   "current_government_parties": [

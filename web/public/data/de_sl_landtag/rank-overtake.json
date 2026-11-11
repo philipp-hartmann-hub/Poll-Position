@@ -8,18 +8,18 @@
       "higher_share": 32.99999972071933,
       "lower_party_id": "dawum:party:7",
       "lower_party_name": "AfD",
-      "lower_share": 21.000000093093554,
-      "gap_points": 11.999999627625776,
+      "lower_share": 21.000000093093558,
+      "gap_points": 11.999999627625773,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 21.000000093093554,
+      "higher_share": 21.000000093093558,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
       "lower_share": 20.00000023273389,
-      "gap_points": 0.9999998603596651,
+      "gap_points": 0.9999998603596687,
       "overtake_probability": 0.315
     },
     {
@@ -46,19 +46,19 @@
       "higher_party_id": "dawum:party:5",
       "higher_party_name": "Linke",
       "higher_share": 6.000000046546778,
-      "lower_party_id": "dawum:party:23",
-      "lower_party_name": "BSW",
-      "lower_share": 3.0000000000000004,
-      "gap_points": 3.0000000465467775,
-      "overtake_probability": 0.045
-    },
-    {
-      "higher_party_id": "dawum:party:23",
-      "higher_party_name": "BSW",
-      "higher_share": 3.0000000000000004,
       "lower_party_id": "dawum:party:3",
       "lower_party_name": "FDP",
       "lower_share": 3.0,
+      "gap_points": 3.000000046546778,
+      "overtake_probability": 0.045
+    },
+    {
+      "higher_party_id": "dawum:party:3",
+      "higher_party_name": "FDP",
+      "higher_share": 3.0,
+      "lower_party_id": "dawum:party:23",
+      "lower_party_name": "BSW",
+      "lower_share": 2.9999999999999996,
       "gap_points": 4.440892098500626e-16,
       "overtake_probability": 0.48
     }
