@@ -1,9 +1,61 @@
 {
   "parliament_id": "de_bundestag",
-  "total": 2700,
+  "total": 2701,
   "limit": 20,
   "offset": 0,
   "surveys": [
+    {
+      "id": "dawum:survey:4378",
+      "institute_id": "dawum:institute:17",
+      "institute_name": "Ipsos",
+      "field_date_from": "2026-11-04",
+      "field_date_to": "2026-11-08",
+      "publication_date": "2026-11-11",
+      "sample_size": 2019,
+      "source_url": "https://dawum.de/",
+      "results": [
+        {
+          "party_id": "dawum:party:7",
+          "party_name": "AfD",
+          "share": 27.0
+        },
+        {
+          "party_id": "dawum:party:1",
+          "party_name": "CDU/CSU",
+          "share": 20.0
+        },
+        {
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
+          "share": 16.0
+        },
+        {
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
+          "share": 14.0
+        },
+        {
+          "party_id": "dawum:party:5",
+          "party_name": "Linke",
+          "share": 10.0
+        },
+        {
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
+          "share": 5.0
+        },
+        {
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
+          "share": 5.0
+        },
+        {
+          "party_id": "dawum:party:23",
+          "party_name": "BSW",
+          "share": 3.0
+        }
+      ]
+    },
     {
       "id": "dawum:survey:4377",
       "institute_id": "dawum:institute:5",
@@ -139,13 +191,13 @@
           "share": 10.0
         },
         {
-          "party_id": "dawum:party:3",
-          "party_name": "FDP",
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
           "share": 5.0
         },
         {
-          "party_id": "de:sonstige",
-          "party_name": "Sonstige",
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
           "share": 5.0
         },
         {
@@ -196,13 +248,13 @@
           "share": 7.0
         },
         {
-          "party_id": "dawum:party:23",
-          "party_name": "BSW",
+          "party_id": "dawum:party:3",
+          "party_name": "FDP",
           "share": 3.0
         },
         {
-          "party_id": "dawum:party:3",
-          "party_name": "FDP",
+          "party_id": "dawum:party:23",
+          "party_name": "BSW",
           "share": 3.0
         }
       ]
@@ -696,13 +748,13 @@
           "share": 5.0
         },
         {
-          "party_id": "dawum:party:23",
-          "party_name": "BSW",
+          "party_id": "de:sonstige",
+          "party_name": "Sonstige",
           "share": 4.0
         },
         {
-          "party_id": "de:sonstige",
-          "party_name": "Sonstige",
+          "party_id": "dawum:party:23",
+          "party_name": "BSW",
           "share": 4.0
         }
       ]
@@ -775,13 +827,13 @@
           "share": 18.0
         },
         {
-          "party_id": "dawum:party:4",
-          "party_name": "Grüne",
+          "party_id": "dawum:party:2",
+          "party_name": "SPD",
           "share": 14.0
         },
         {
-          "party_id": "dawum:party:2",
-          "party_name": "SPD",
+          "party_id": "dawum:party:4",
+          "party_name": "Grüne",
           "share": 14.0
         },
         {
@@ -956,66 +1008,14 @@
           "share": 7.0
         },
         {
-          "party_id": "dawum:party:3",
-          "party_name": "FDP",
-          "share": 4.0
-        },
-        {
           "party_id": "dawum:party:23",
           "party_name": "BSW",
           "share": 4.0
-        }
-      ]
-    },
-    {
-      "id": "dawum:survey:4349",
-      "institute_id": "dawum:institute:5",
-      "institute_name": "INSA",
-      "field_date_from": "2026-10-09",
-      "field_date_to": "2026-10-12",
-      "publication_date": "2026-10-13",
-      "sample_size": 2006,
-      "source_url": "https://dawum.de/",
-      "results": [
-        {
-          "party_id": "dawum:party:7",
-          "party_name": "AfD",
-          "share": 30.0
-        },
-        {
-          "party_id": "dawum:party:1",
-          "party_name": "CDU/CSU",
-          "share": 18.5
-        },
-        {
-          "party_id": "dawum:party:4",
-          "party_name": "Grüne",
-          "share": 14.0
-        },
-        {
-          "party_id": "dawum:party:2",
-          "party_name": "SPD",
-          "share": 13.5
-        },
-        {
-          "party_id": "dawum:party:5",
-          "party_name": "Linke",
-          "share": 10.0
-        },
-        {
-          "party_id": "de:sonstige",
-          "party_name": "Sonstige",
-          "share": 6.0
         },
         {
           "party_id": "dawum:party:3",
           "party_name": "FDP",
-          "share": 4.5
-        },
-        {
-          "party_id": "dawum:party:23",
-          "party_name": "BSW",
-          "share": 3.5
+          "share": 4.0
         }
       ]
     }
