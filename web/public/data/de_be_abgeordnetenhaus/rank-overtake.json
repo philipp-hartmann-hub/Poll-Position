@@ -28,28 +28,28 @@
       "higher_share": 17.68533382009767,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 15.3740929632074,
-      "gap_points": 2.3112408568902723,
+      "lower_share": 15.374092963207397,
+      "gap_points": 2.311240856890274,
       "overtake_probability": 0.1825
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 15.3740929632074,
+      "higher_share": 15.374092963207397,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 12.152209869205572,
+      "lower_share": 12.15220986920557,
       "gap_points": 3.221883094001827,
       "overtake_probability": 0.065
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 12.152209869205572,
+      "higher_share": 12.15220986920557,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 4.2452777221921245,
-      "gap_points": 7.906932147013448,
+      "gap_points": 7.906932147013446,
       "overtake_probability": 0.0
     },
     {
