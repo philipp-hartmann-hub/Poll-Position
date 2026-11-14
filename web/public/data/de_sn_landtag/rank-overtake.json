@@ -5,21 +5,21 @@
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 41.0001793145996,
+      "higher_share": 41.00017931459959,
       "lower_party_id": "dawum:party:101",
       "lower_party_name": "CDU",
-      "lower_share": 20.00018443516778,
-      "gap_points": 20.999994879431817,
+      "lower_share": 20.000184435167778,
+      "gap_points": 20.999994879431814,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:101",
       "higher_party_name": "CDU",
-      "higher_share": 20.00018443516778,
+      "higher_share": 20.000184435167778,
       "lower_party_id": "dawum:party:5",
       "lower_party_name": "Linke",
       "lower_share": 9.000000341371212,
-      "gap_points": 11.00018409379657,
+      "gap_points": 11.000184093796566,
       "overtake_probability": 0.0
     },
     {
@@ -28,28 +28,28 @@
       "higher_share": 9.000000341371212,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
-      "lower_share": 7.999818637173129,
-      "gap_points": 1.0001817041980834,
+      "lower_share": 7.999818637173128,
+      "gap_points": 1.0001817041980843,
       "overtake_probability": 0.3075
     },
     {
       "higher_party_id": "dawum:party:23",
       "higher_party_name": "BSW",
-      "higher_share": 7.999818637173129,
+      "higher_share": 7.999818637173128,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 6.999818295801916,
+      "lower_share": 6.999818295801915,
       "gap_points": 1.000000341371213,
       "overtake_probability": 0.31
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 6.999818295801916,
+      "higher_share": 6.999818295801915,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
       "lower_share": 6.0,
-      "gap_points": 0.9998182958019157,
+      "gap_points": 0.9998182958019148,
       "overtake_probability": 0.2725
     },
     {

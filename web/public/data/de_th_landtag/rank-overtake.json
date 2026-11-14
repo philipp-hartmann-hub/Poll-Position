@@ -48,18 +48,18 @@
       "higher_share": 5.005598740376798,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
-      "lower_share": 3.9999550334348166,
-      "gap_points": 1.0056437069419815,
+      "lower_share": 3.999955033434817,
+      "gap_points": 1.005643706941981,
       "overtake_probability": 0.2775
     },
     {
       "higher_party_id": "dawum:party:4",
       "higher_party_name": "Grüne",
-      "higher_share": 3.9999550334348166,
+      "higher_share": 3.999955033434817,
       "lower_party_id": "dawum:party:29",
       "lower_party_name": "Thüringen.Gerecht",
       "lower_share": 2.0,
-      "gap_points": 1.9999550334348166,
+      "gap_points": 1.999955033434817,
       "overtake_probability": 0.1925
     }
   ]
