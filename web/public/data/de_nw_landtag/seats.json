@@ -2,18 +2,18 @@
   "parliament_id": "de_nw_landtag",
   "total_seats": 181,
   "seats": {
-    "dawum:party:101": 53,
-    "dawum:party:7": 42,
-    "dawum:party:2": 34,
-    "dawum:party:4": 33,
-    "dawum:party:5": 19
+    "dawum:party:101": 60,
+    "dawum:party:7": 38,
+    "dawum:party:4": 35,
+    "dawum:party:2": 33,
+    "dawum:party:5": 15
   },
   "seats_by_name": {
-    "CDU": 53,
-    "AfD": 42,
-    "SPD": 34,
-    "Grüne": 33,
-    "Linke": 19
+    "CDU": 60,
+    "AfD": 38,
+    "Grüne": 35,
+    "SPD": 33,
+    "Linke": 15
   },
   "reason": null
 }

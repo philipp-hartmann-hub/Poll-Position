@@ -253,13 +253,21 @@
       "default_government_label": "CDU + Grüne",
       "coalition_options": [
         {
-          "key": "de:cdu+de:gruene+de:spd",
+          "key": "de:cdu+de:spd",
           "parties": [
             "de:cdu",
-            "de:gruene",
             "de:spd"
           ],
-          "seats": 120,
+          "seats": 93,
+          "is_minimal_winning": true
+        },
+        {
+          "key": "de:cdu+de:gruene",
+          "parties": [
+            "de:cdu",
+            "de:gruene"
+          ],
+          "seats": 95,
           "is_minimal_winning": true
         }
       ]

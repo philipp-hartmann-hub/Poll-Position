@@ -33,6 +33,10 @@
         {
           "as_of": "2026-10-13",
           "trend_share": 26.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 29.999999999999996
         }
       ]
     },
@@ -67,6 +71,48 @@
         {
           "as_of": "2026-10-13",
           "trend_share": 21.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 18.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:4",
+      "party_name": "Grüne",
+      "points": [
+        {
+          "as_of": "2025-11-18",
+          "trend_share": 12.0
+        },
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 13.0
+        },
+        {
+          "as_of": "2026-04-14",
+          "trend_share": 17.0
+        },
+        {
+          "as_of": "2026-05-05",
+          "trend_share": 14.999999999999998
+        },
+        {
+          "as_of": "2026-06-25",
+          "trend_share": 15.0
+        },
+        {
+          "as_of": "2026-09-18",
+          "trend_share": 18.0
+        },
+        {
+          "as_of": "2026-10-13",
+          "trend_share": 16.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 17.0
         }
       ]
     },
@@ -96,44 +142,14 @@
         },
         {
           "as_of": "2026-09-18",
-          "trend_share": 13.999999999999998
+          "trend_share": 14.0
         },
         {
           "as_of": "2026-10-13",
           "trend_share": 18.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:4",
-      "party_name": "Grüne",
-      "points": [
-        {
-          "as_of": "2025-11-18",
-          "trend_share": 12.0
         },
         {
-          "as_of": "2026-01-29",
-          "trend_share": 13.0
-        },
-        {
-          "as_of": "2026-04-14",
-          "trend_share": 17.0
-        },
-        {
-          "as_of": "2026-05-05",
-          "trend_share": 15.0
-        },
-        {
-          "as_of": "2026-06-25",
-          "trend_share": 15.000000000000002
-        },
-        {
-          "as_of": "2026-09-18",
-          "trend_share": 18.0
-        },
-        {
-          "as_of": "2026-10-13",
+          "as_of": "2026-11-12",
           "trend_share": 16.0
         }
       ]
@@ -169,6 +185,10 @@
         {
           "as_of": "2026-10-13",
           "trend_share": 10.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 7.0
         }
       ]
     },
@@ -203,6 +223,20 @@
         {
           "as_of": "2026-10-13",
           "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 6.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 3.0
         }
       ]
     },
@@ -237,6 +271,10 @@
         {
           "as_of": "2026-10-13",
           "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-11-12",
+          "trend_share": 3.0
         }
       ]
     }

@@ -7,7 +7,7 @@
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 27.96812830276538,
+      "average_share": 27.970047110691482,
       "threshold_percent": 5.0,
       "probability_strongest": 0.9975,
       "probability_above_threshold": 1.0,
@@ -16,16 +16,16 @@
     {
       "party_id": "dawum:party:1",
       "party_name": "CDU/CSU",
-      "average_share": 19.862926352364823,
+      "average_share": 19.810974618750706,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0025,
       "probability_above_threshold": 1.0,
-      "probability_indispensable": 0.9448621553884712
+      "probability_indispensable": 0.9398496240601504
     },
     {
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 15.208018632760092,
+      "average_share": 15.19549505115164,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -34,7 +34,7 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 13.532774878567745,
+      "average_share": 13.560903762313098,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -43,7 +43,7 @@
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 10.566343213218037,
+      "average_share": 10.532247010608584,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -52,19 +52,19 @@
     {
       "party_id": "dawum:party:3",
       "party_name": "FDP",
-      "average_share": 4.22908376410555,
+      "average_share": 4.275496314902998,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.2225,
+      "probability_above_threshold": 0.245,
       "probability_indispensable": 0.022556390977443608
     },
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.258675966236731,
+      "average_share": 3.2350809703874055,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.065,
+      "probability_above_threshold": 0.0625,
       "probability_indispensable": 0.005012531328320802
     },
     {

@@ -2,15 +2,23 @@
   "parliament_id": "de_nw_landtag",
   "total_seats": 181,
   "majority_threshold": 91,
-  "excluded_by_rules": 12,
+  "excluded_by_rules": 4,
   "coalitions": [
     {
       "parties": [
         "de:cdu",
-        "de:gruene",
         "de:spd"
       ],
-      "seats": 120,
+      "seats": 93,
+      "is_minimal_winning": true,
+      "compatibility_span": 3.0
+    },
+    {
+      "parties": [
+        "de:cdu",
+        "de:gruene"
+      ],
+      "seats": 95,
       "is_minimal_winning": true,
       "compatibility_span": 3.5
     }
