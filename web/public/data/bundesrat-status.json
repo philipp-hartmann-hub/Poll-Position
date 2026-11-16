@@ -424,10 +424,10 @@
       "votes": 4,
       "default_government": [
         "de:cdu",
-        "de:bsw",
+        "de:thueringen_gerecht",
         "de:spd"
       ],
-      "default_government_label": "CDU + BSW + SPD",
+      "default_government_label": "CDU + Thüringen.Gerecht + SPD",
       "coalition_options": [
         {
           "key": "de:afd+de:bsw",
@@ -637,10 +637,10 @@
         "stance": "yes",
         "government": [
           "de:cdu",
-          "de:bsw",
+          "de:thueringen_gerecht",
           "de:spd"
         ],
-        "government_label": "CDU + BSW + SPD",
+        "government_label": "CDU + Thüringen.Gerecht + SPD",
         "source": "default"
       }
     ]

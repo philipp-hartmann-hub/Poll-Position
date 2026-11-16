@@ -15,6 +15,7 @@ parties:
   - { party_id: de:linke, country: DE, short_name: Linke, family: Left }
   - { party_id: de:afd, country: DE, short_name: AfD, family: ID }
   - { party_id: de:bsw, country: DE, short_name: BSW, family: NI }
+  - { party_id: de:thueringen_gerecht, country: DE, short_name: "Thüringen.Gerecht", family: NI }
   - { party_id: de:ssw, country: DE, short_name: SSW, family: "Greens/EFA" }
   - { party_id: de:sonstige, country: DE, short_name: Sonstige, family: NI }
 

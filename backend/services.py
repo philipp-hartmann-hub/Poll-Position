@@ -83,6 +83,7 @@ SHORT_TO_CANONICAL: dict[str, str] = {
     "FDP": "de:fdp",
     "Linke": "de:linke",
     "BSW": "de:bsw",
+    "Thüringen.Gerecht": "de:thueringen_gerecht",
     "SSW": "de:ssw",
     "Sonstige": "de:sonstige",
     "Freie Wähler": "de:fw",

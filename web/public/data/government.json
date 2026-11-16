@@ -9,10 +9,6 @@
   },
   "known_parties": [
     {
-      "id": "de:bsw",
-      "label": "BSW"
-    },
-    {
       "id": "de:cdu",
       "label": "CDU"
     },
@@ -43,6 +39,10 @@
     {
       "id": "de:spd",
       "label": "SPD"
+    },
+    {
+      "id": "de:thueringen_gerecht",
+      "label": "Thüringen.Gerecht"
     }
   ],
   "poll_presets": [

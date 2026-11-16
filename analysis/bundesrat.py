@@ -28,6 +28,7 @@ _PARTY_DISPLAY: dict[str, str] = {
     "de:linke": "Linke",
     "de:afd": "AfD",
     "de:bsw": "BSW",
+    "de:thueringen_gerecht": "Thüringen.Gerecht",
     "de:fw": "Freie Wähler",
     "de:ssw": "SSW",
 }
@@ -187,6 +188,7 @@ def informal_coalition_label(parties: Sequence[str]) -> str:
         "de:cdu",
         "de:csu",
         "de:cdu_csu",
+        "de:thueringen_gerecht",
         "de:bsw",
         "de:spd",
         "de:gruene",

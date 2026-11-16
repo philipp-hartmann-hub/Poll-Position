@@ -8,6 +8,7 @@ import { labelPartyId } from "@/lib/colors";
 const BY_ID: Record<string, number> = {
   "de:linke": 1.0,
   "de:bsw": 2.5,
+  "de:thueringen_gerecht": 2.7,
   "de:gruene": 3.0,
   "de:spd": 3.5,
   "de:ssw": 4.0,
@@ -32,6 +33,7 @@ const BY_ID: Record<string, number> = {
 const BY_NAME: Record<string, number> = {
   Linke: 1.0,
   BSW: 2.5,
+  "Thüringen.Gerecht": 2.7,
   Grüne: 3.0,
   SPD: 3.5,
   SSW: 4.0,

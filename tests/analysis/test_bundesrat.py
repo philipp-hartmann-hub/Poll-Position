@@ -154,7 +154,7 @@ def test_group_votes_by_coalition_current_16_states(bundesrat_cfg):
     assert by_label["Alleinregierung (SPD)"].votes == 3  # SL
     assert by_label["Deutschland-Koalition"].votes == 4  # ST
     assert by_label["CSU + Freie Wähler"].votes == 6  # BY
-    assert by_label["CDU + BSW + SPD"].votes == 4  # TH — kein etablierter Name
+    assert by_label["CDU + Thüringen.Gerecht + SPD"].votes == 4  # TH — kein etablierter Name
 
     # Bundesregierung Schwarz-Rot → Slice markiert
     assert by_label["Schwarz-Rot"].matches_federal is True

@@ -30,6 +30,7 @@ const NAME_TO_CANONICAL: Record<string, string> = {
   FDP: "de:fdp",
   Linke: "de:linke",
   BSW: "de:bsw",
+  "Thüringen.Gerecht": "de:thueringen_gerecht",
   "Freie Wähler": "de:fw",
   SSW: "de:ssw",
   BIW: "de:biw",

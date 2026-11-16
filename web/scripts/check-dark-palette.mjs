@@ -13,6 +13,7 @@ const PARTY_COLORS = {
   FDP: "#FFED00",
   Linke: "#BE3075",
   BSW: "#7B2D8E",
+  "Thüringen.Gerecht": "#9B4F96",
   "Freie Wähler": "#F7A800",
   Sonstige: "#A0A0A0",
   SSW: "#A0C8E0",

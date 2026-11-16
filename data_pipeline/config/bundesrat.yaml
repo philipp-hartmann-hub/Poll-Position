@@ -6,8 +6,8 @@
 # Mehrheiten: absolute Mehrheit 35/69, Zwei-Drittel 46/69.
 #
 # Regierungen: manuell gepflegt, KEINE Umfrage-Projektion.
-# Stand: 2026-11-16 (MV: Rot-Rot-Grün unter SPD; übrige Länder unverändert
-# gegenüber 2026-08-25 / Wikipedia-Stand Juli 2026).
+# Stand: 2026-11-16 (MV: Rot-Rot-Grün unter SPD; TH: CDU + Thüringen.Gerecht + SPD
+# nach BSW-Fraktionsbruch Sept. 2026; übrige Länder unverändert ggü. Aug. 2026).
 
 stand: "2026-11-16"
 votes_total: 69
@@ -119,5 +119,5 @@ states:
   - parliament_id: de_th_landtag
     name: Thüringen
     votes: 4
-    government_parties: [de:cdu, de:bsw, de:spd]
-    government_label: "CDU + BSW + SPD"
+    government_parties: [de:cdu, de:thueringen_gerecht, de:spd]
+    government_label: "CDU + Thüringen.Gerecht + SPD"

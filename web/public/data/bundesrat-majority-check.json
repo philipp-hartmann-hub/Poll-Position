@@ -87,11 +87,11 @@
       "matches_federal": false
     },
     {
-      "key": "de:bsw+de:spd+union",
-      "label": "CDU + BSW + SPD",
+      "key": "de:spd+de:thueringen_gerecht+union",
+      "label": "CDU + Thüringen.Gerecht + SPD",
       "parties_normalized": [
-        "de:bsw",
         "de:spd",
+        "de:thueringen_gerecht",
         "union"
       ],
       "votes": 4,
