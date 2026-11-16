@@ -191,10 +191,7 @@ export default function MethodikPage() {
         </p>
         <p className="text-sm leading-relaxed text-ink/80">
           Persönlicher / nicht-kommerzieller Gebrauch, sofern keine
-          kommerzielle Lizenz für europäische Zusatzdaten vorliegt. Hinterlegte
-          Wahlergebnisse oder Regierungsdaten können veralten; die App zeigt
-          dann ggf. einen Hinweis — ohne die Zahlen automatisch zu
-          korrigieren.
+          kommerzielle Lizenz für europäische Zusatzdaten vorliegt.
         </p>
       </section>
 

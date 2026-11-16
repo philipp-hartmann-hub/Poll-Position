@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-25",
+  "as_of": "2026-11-16",
   "disclaimer": "Basierend auf den aktuell amtierenden Landesregierungen (Stand siehe Datum), nicht auf Umfragen-Projektionen der Landtage — die kannst du über die Dropdowns selbst durchspielen.",
   "sources": [
     "https://www.bundesrat.de/DE/bundesrat/verteilung/verteilung.html",
@@ -205,9 +205,10 @@
       "votes": 3,
       "default_government": [
         "de:spd",
+        "de:gruene",
         "de:linke"
       ],
-      "default_government_label": "SPD + Linke",
+      "default_government_label": "SPD + Grüne + Linke",
       "coalition_options": []
     },
     {
@@ -531,9 +532,10 @@
         "stance": "yes",
         "government": [
           "de:spd",
+          "de:gruene",
           "de:linke"
         ],
-        "government_label": "SPD + Linke",
+        "government_label": "SPD + Grüne + Linke",
         "source": "default"
       },
       {

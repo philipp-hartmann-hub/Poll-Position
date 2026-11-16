@@ -149,8 +149,8 @@ def test_group_votes_by_coalition_current_16_states(bundesrat_cfg):
     assert by_label["Schwarz-Rot"].votes == 21  # BE+BB+HE+RP+SN
     assert by_label["Schwarz-Grün"].votes == 16  # BW+NW+SH
     assert by_label["Rot-Grün"].votes == 9  # HH+NI
-    assert by_label["Rot-Rot-Grün"].votes == 3  # HB
-    assert by_label["Rot-Rot"].votes == 3  # MV
+    assert by_label["Rot-Rot-Grün"].votes == 6  # HB+MV
+    assert "Rot-Rot" not in by_label
     assert by_label["Alleinregierung (SPD)"].votes == 3  # SL
     assert by_label["Deutschland-Koalition"].votes == 4  # ST
     assert by_label["CSU + Freie Wähler"].votes == 6  # BY
@@ -173,7 +173,7 @@ def test_check_government_config_age_current_vs_old(bundesrat_cfg):
     from analysis.bundesrat import check_government_config_age
 
     as_of = date(2026, 9, 14)
-    # Stand 2026-08-25 → 20 Tage < 60
+    # Config-Stand liegt nicht vor as_of bzw. ist jünger als 60 Tage
     assert check_government_config_age(bundesrat_cfg, max_age_days=60, as_of=as_of) == []
 
     old = bundesrat_cfg.model_copy(

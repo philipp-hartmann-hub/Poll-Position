@@ -26,7 +26,6 @@ import {
 import { Hemicycle, PollAndSwingAlignedCharts, PollShareBarChart } from "@/components/charts";
 import { CoalitionsSection } from "@/components/CoalitionsSection";
 import { CoalitionCheckerSection } from "@/components/CoalitionCheckerSection";
-import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 import { ElectionNightSection } from "@/components/ElectionNightSection";
 import { InfoTooltip } from "@/components/InfoTooltip";
 import { LastElectionSection } from "@/components/LastElectionSection";
@@ -601,8 +600,6 @@ export function ParliamentDashboard({
 
   return (
     <div className="space-y-8">
-      <DataFreshnessBanner />
-
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-2">
           <h2 className="font-display text-2xl text-ink">

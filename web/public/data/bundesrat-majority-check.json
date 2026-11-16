@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-25",
+  "as_of": "2026-11-16",
   "total_votes": 69,
   "majority_threshold": 35,
   "two_thirds_threshold": 46,
@@ -72,6 +72,21 @@
       "matches_federal": false
     },
     {
+      "key": "de:gruene+de:linke+de:spd",
+      "label": "Rot-Rot-Grün",
+      "parties_normalized": [
+        "de:gruene",
+        "de:linke",
+        "de:spd"
+      ],
+      "votes": 6,
+      "parliament_ids": [
+        "de_hb_buergerschaft",
+        "de_mv_landtag"
+      ],
+      "matches_federal": false
+    },
+    {
       "key": "de:bsw+de:spd+union",
       "label": "CDU + BSW + SPD",
       "parties_normalized": [
@@ -108,33 +123,6 @@
       "votes": 3,
       "parliament_ids": [
         "de_sl_landtag"
-      ],
-      "matches_federal": false
-    },
-    {
-      "key": "de:linke+de:spd",
-      "label": "Rot-Rot",
-      "parties_normalized": [
-        "de:linke",
-        "de:spd"
-      ],
-      "votes": 3,
-      "parliament_ids": [
-        "de_mv_landtag"
-      ],
-      "matches_federal": false
-    },
-    {
-      "key": "de:gruene+de:linke+de:spd",
-      "label": "Rot-Rot-Grün",
-      "parties_normalized": [
-        "de:gruene",
-        "de:linke",
-        "de:spd"
-      ],
-      "votes": 3,
-      "parliament_ids": [
-        "de_hb_buergerschaft"
       ],
       "matches_federal": false
     }

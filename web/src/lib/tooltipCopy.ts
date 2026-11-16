@@ -42,9 +42,6 @@ export const TIP_INSTITUTE_BACKTEST =
 export const TIP_BUNDESRAT_MAJORITY =
   "Im Bundesrat braucht ein Beschluss die Mehrheit der Stimmen aller Länder (mindestens 35 von 69). Die Markierung zeigt diese Schwelle. Ja-Stimmen zählen für den Beschluss, Enthaltungen und Nein-Stimmen nicht — Enthaltung wirkt deshalb wie ein Nein gegen die Vorlage.";
 
-export const TIP_DATA_FRESHNESS =
-  "Hinweise, wenn hinterlegte Wahlergebnisse oder Regierungsdaten möglicherweise veraltet sind oder noch als Entwurf vorliegen. Die App zeigt dann eine Erinnerung — keine automatische Korrektur der Zahlen.";
-
 export const TIP_POSSIBLE_COALITIONS =
   "Listet Parteien-Kombinationen, die nach der aktuellen Sitzhochrechnung gemeinsam mehr als die Hälfte der Sitze hätten. Ob sie politisch zustande kämen, sagt die Liste nicht — nur, dass die Sitze rechnerisch reichen würden.";
 

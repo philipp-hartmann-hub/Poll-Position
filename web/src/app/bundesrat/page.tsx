@@ -1,6 +1,5 @@
 import { BundesratOverview } from "@/components/BundesratOverview";
 import { BundesratSandbox } from "@/components/BundesratSandbox";
-import { DataFreshnessBanner } from "@/components/DataFreshnessBanner";
 
 export default function BundesratPage() {
   return (
@@ -14,7 +13,6 @@ export default function BundesratPage() {
           Wie stehen amtierende Bundesregierung und mögliche Bundestags-Koalitionen
           im Bundesrat da — und wie setzen sich die 69 Stimmen heute zusammen?
         </p>
-        <DataFreshnessBanner />
       </div>
 
       <section className="space-y-3">

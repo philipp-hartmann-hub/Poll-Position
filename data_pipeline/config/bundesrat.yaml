@@ -6,10 +6,10 @@
 # Mehrheiten: absolute Mehrheit 35/69, Zwei-Drittel 46/69.
 #
 # Regierungen: manuell gepflegt, KEINE Umfrage-Projektion.
-# Stand: 2026-08-25 (Quellen: Wikipedia „Liste der Ministerpräsidenten…“,
-# Stand 28.07.2026; dewiki „Landesregierung (Deutschland)“).
+# Stand: 2026-11-16 (MV: Rot-Rot-Grün unter SPD; übrige Länder unverändert
+# gegenüber 2026-08-25 / Wikipedia-Stand Juli 2026).
 
-stand: "2026-08-25"
+stand: "2026-11-16"
 votes_total: 69
 majority_simple: 35
 majority_two_thirds: 46
@@ -71,8 +71,8 @@ states:
   - parliament_id: de_mv_landtag
     name: Mecklenburg-Vorpommern
     votes: 3
-    government_parties: [de:spd, de:linke]
-    government_label: "SPD + Linke"
+    government_parties: [de:spd, de:gruene, de:linke]
+    government_label: "SPD + Grüne + Linke"
 
   - parliament_id: de_ni_landtag
     name: Niedersachsen

@@ -14,9 +14,6 @@ vi.mock("@/components/CoalitionsSection", () => ({
 vi.mock("@/components/CoalitionCheckerSection", () => ({
   CoalitionCheckerSection: () => null,
 }));
-vi.mock("@/components/DataFreshnessBanner", () => ({
-  DataFreshnessBanner: () => null,
-}));
 vi.mock("@/components/ElectionNightSection", () => ({
   ElectionNightSection: () => null,
 }));
