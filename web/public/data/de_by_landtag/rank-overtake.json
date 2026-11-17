@@ -8,18 +8,18 @@
       "higher_share": 37.30779622588495,
       "lower_party_id": "dawum:party:7",
       "lower_party_name": "AfD",
-      "lower_share": 19.79925689576628,
-      "gap_points": 17.50853933011867,
+      "lower_share": 19.799256895766277,
+      "gap_points": 17.508539330118673,
       "overtake_probability": 0.0
     },
     {
       "higher_party_id": "dawum:party:7",
       "higher_party_name": "AfD",
-      "higher_share": 19.79925689576628,
+      "higher_share": 19.799256895766277,
       "lower_party_id": "dawum:party:4",
       "lower_party_name": "Grüne",
       "lower_share": 13.923711463403354,
-      "gap_points": 5.875545432362927,
+      "gap_points": 5.875545432362923,
       "overtake_probability": 0.01
     },
     {
