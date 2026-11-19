@@ -17,6 +17,10 @@
         {
           "as_of": "2026-09-08",
           "trend_share": 26.0
+        },
+        {
+          "as_of": "2026-11-17",
+          "trend_share": 27.0
         }
       ]
     },
@@ -35,6 +39,10 @@
         {
           "as_of": "2026-09-08",
           "trend_share": 22.0
+        },
+        {
+          "as_of": "2026-11-17",
+          "trend_share": 21.0
         }
       ]
     },
@@ -52,6 +60,10 @@
         },
         {
           "as_of": "2026-09-08",
+          "trend_share": 21.0
+        },
+        {
+          "as_of": "2026-11-17",
           "trend_share": 21.0
         }
       ]
@@ -71,56 +83,10 @@
         {
           "as_of": "2026-09-08",
           "trend_share": 15.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:5",
-      "party_name": "Linke",
-      "points": [
-        {
-          "as_of": "2026-01-29",
-          "trend_share": 7.0
         },
         {
-          "as_of": "2026-04-21",
-          "trend_share": 7.0
-        },
-        {
-          "as_of": "2026-09-08",
-          "trend_share": 6.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:3",
-      "party_name": "FDP",
-      "points": [
-        {
-          "as_of": "2026-01-29",
-          "trend_share": 3.0
-        },
-        {
-          "as_of": "2026-04-21",
-          "trend_share": 4.0
-        },
-        {
-          "as_of": "2026-09-08",
-          "trend_share": 5.0
-        }
-      ]
-    },
-    {
-      "party_id": "dawum:party:23",
-      "party_name": "BSW",
-      "points": [
-        {
-          "as_of": "2026-04-21",
-          "trend_share": 3.0
-        },
-        {
-          "as_of": "2026-09-08",
-          "trend_share": 3.0
+          "as_of": "2026-11-17",
+          "trend_share": 15.0
         }
       ]
     },
@@ -139,6 +105,68 @@
         {
           "as_of": "2026-09-08",
           "trend_share": 2.0
+        },
+        {
+          "as_of": "2026-11-17",
+          "trend_share": 7.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:5",
+      "party_name": "Linke",
+      "points": [
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 7.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 6.0
+        },
+        {
+          "as_of": "2026-11-17",
+          "trend_share": 5.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:3",
+      "party_name": "FDP",
+      "points": [
+        {
+          "as_of": "2026-01-29",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 4.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 5.0
+        },
+        {
+          "as_of": "2026-11-17",
+          "trend_share": 4.0
+        }
+      ]
+    },
+    {
+      "party_id": "dawum:party:23",
+      "party_name": "BSW",
+      "points": [
+        {
+          "as_of": "2026-04-21",
+          "trend_share": 3.0
+        },
+        {
+          "as_of": "2026-09-08",
+          "trend_share": 3.0
         }
       ]
     }

@@ -6,10 +6,9 @@
   "capped": false,
   "eligible_parties": [
     "de:spd",
-    "de:cdu",
     "de:afd",
-    "de:gruene",
-    "de:linke"
+    "de:cdu",
+    "de:gruene"
   ],
   "combinations": {
     "de:spd": {
@@ -18,16 +17,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 39,
-      "point_has_majority": false
-    },
-    "de:cdu": {
-      "parties": [
-        "de:cdu"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 33,
+      "point_seats": 43,
       "point_has_majority": false
     },
     "de:afd": {
@@ -36,7 +26,16 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 32,
+      "point_seats": 34,
+      "point_has_majority": false
+    },
+    "de:cdu": {
+      "parties": [
+        "de:cdu"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 34,
       "point_has_majority": false
     },
     "de:gruene": {
@@ -45,36 +44,27 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 22,
+      "point_seats": 24,
       "point_has_majority": false
-    },
-    "de:linke": {
-      "parties": [
-        "de:linke"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 9,
-      "point_has_majority": false
-    },
-    "de:cdu|de:spd": {
-      "parties": [
-        "de:cdu",
-        "de:spd"
-      ],
-      "majority_probability": 0.755,
-      "n_majority": 302,
-      "point_seats": 72,
-      "point_has_majority": true
     },
     "de:afd|de:spd": {
       "parties": [
         "de:afd",
         "de:spd"
       ],
-      "majority_probability": 0.655,
-      "n_majority": 262,
-      "point_seats": 71,
+      "majority_probability": 0.95,
+      "n_majority": 380,
+      "point_seats": 77,
+      "point_has_majority": true
+    },
+    "de:cdu|de:spd": {
+      "parties": [
+        "de:cdu",
+        "de:spd"
+      ],
+      "majority_probability": 0.9675,
+      "n_majority": 387,
+      "point_seats": 77,
       "point_has_majority": true
     },
     "de:gruene|de:spd": {
@@ -82,19 +72,9 @@
         "de:gruene",
         "de:spd"
       ],
-      "majority_probability": 0.025,
-      "n_majority": 10,
-      "point_seats": 61,
-      "point_has_majority": false
-    },
-    "de:linke|de:spd": {
-      "parties": [
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 48,
+      "majority_probability": 0.245,
+      "n_majority": 98,
+      "point_seats": 67,
       "point_has_majority": false
     },
     "de:afd|de:cdu": {
@@ -102,9 +82,19 @@
         "de:afd",
         "de:cdu"
       ],
-      "majority_probability": 0.105,
-      "n_majority": 42,
-      "point_seats": 65,
+      "majority_probability": 0.2475,
+      "n_majority": 99,
+      "point_seats": 68,
+      "point_has_majority": true
+    },
+    "de:afd|de:gruene": {
+      "parties": [
+        "de:afd",
+        "de:gruene"
+      ],
+      "majority_probability": 0.0,
+      "n_majority": 0,
+      "point_seats": 58,
       "point_has_majority": false
     },
     "de:cdu|de:gruene": {
@@ -114,47 +104,7 @@
       ],
       "majority_probability": 0.0,
       "n_majority": 0,
-      "point_seats": 55,
-      "point_has_majority": false
-    },
-    "de:cdu|de:linke": {
-      "parties": [
-        "de:cdu",
-        "de:linke"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 42,
-      "point_has_majority": false
-    },
-    "de:afd|de:gruene": {
-      "parties": [
-        "de:afd",
-        "de:gruene"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 54,
-      "point_has_majority": false
-    },
-    "de:afd|de:linke": {
-      "parties": [
-        "de:afd",
-        "de:linke"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 41,
-      "point_has_majority": false
-    },
-    "de:gruene|de:linke": {
-      "parties": [
-        "de:gruene",
-        "de:linke"
-      ],
-      "majority_probability": 0.0,
-      "n_majority": 0,
-      "point_seats": 31,
+      "point_seats": 58,
       "point_has_majority": false
     },
     "de:afd|de:cdu|de:spd": {
@@ -165,29 +115,7 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 104,
-      "point_has_majority": true
-    },
-    "de:cdu|de:gruene|de:spd": {
-      "parties": [
-        "de:cdu",
-        "de:gruene",
-        "de:spd"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 94,
-      "point_has_majority": true
-    },
-    "de:cdu|de:linke|de:spd": {
-      "parties": [
-        "de:cdu",
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 0.995,
-      "n_majority": 398,
-      "point_seats": 81,
+      "point_seats": 111,
       "point_has_majority": true
     },
     "de:afd|de:gruene|de:spd": {
@@ -198,29 +126,18 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 93,
+      "point_seats": 101,
       "point_has_majority": true
     },
-    "de:afd|de:linke|de:spd": {
+    "de:cdu|de:gruene|de:spd": {
       "parties": [
-        "de:afd",
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 0.985,
-      "n_majority": 394,
-      "point_seats": 80,
-      "point_has_majority": true
-    },
-    "de:gruene|de:linke|de:spd": {
-      "parties": [
+        "de:cdu",
         "de:gruene",
-        "de:linke",
         "de:spd"
       ],
-      "majority_probability": 0.51,
-      "n_majority": 204,
-      "point_seats": 70,
+      "majority_probability": 1.0,
+      "n_majority": 400,
+      "point_seats": 101,
       "point_has_majority": true
     },
     "de:afd|de:cdu|de:gruene": {
@@ -231,108 +148,14 @@
       ],
       "majority_probability": 1.0,
       "n_majority": 400,
-      "point_seats": 87,
+      "point_seats": 92,
       "point_has_majority": true
-    },
-    "de:afd|de:cdu|de:linke": {
-      "parties": [
-        "de:afd",
-        "de:cdu",
-        "de:linke"
-      ],
-      "majority_probability": 0.7725,
-      "n_majority": 309,
-      "point_seats": 74,
-      "point_has_majority": true
-    },
-    "de:cdu|de:gruene|de:linke": {
-      "parties": [
-        "de:cdu",
-        "de:gruene",
-        "de:linke"
-      ],
-      "majority_probability": 0.055,
-      "n_majority": 22,
-      "point_seats": 64,
-      "point_has_majority": false
-    },
-    "de:afd|de:gruene|de:linke": {
-      "parties": [
-        "de:afd",
-        "de:gruene",
-        "de:linke"
-      ],
-      "majority_probability": 0.0275,
-      "n_majority": 11,
-      "point_seats": 63,
-      "point_has_majority": false
     },
     "de:afd|de:cdu|de:gruene|de:spd": {
       "parties": [
         "de:afd",
         "de:cdu",
         "de:gruene",
-        "de:spd"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 126,
-      "point_has_majority": true
-    },
-    "de:afd|de:cdu|de:linke|de:spd": {
-      "parties": [
-        "de:afd",
-        "de:cdu",
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 113,
-      "point_has_majority": true
-    },
-    "de:cdu|de:gruene|de:linke|de:spd": {
-      "parties": [
-        "de:cdu",
-        "de:gruene",
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 103,
-      "point_has_majority": true
-    },
-    "de:afd|de:gruene|de:linke|de:spd": {
-      "parties": [
-        "de:afd",
-        "de:gruene",
-        "de:linke",
-        "de:spd"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 102,
-      "point_has_majority": true
-    },
-    "de:afd|de:cdu|de:gruene|de:linke": {
-      "parties": [
-        "de:afd",
-        "de:cdu",
-        "de:gruene",
-        "de:linke"
-      ],
-      "majority_probability": 1.0,
-      "n_majority": 400,
-      "point_seats": 96,
-      "point_has_majority": true
-    },
-    "de:afd|de:cdu|de:gruene|de:linke|de:spd": {
-      "parties": [
-        "de:afd",
-        "de:cdu",
-        "de:gruene",
-        "de:linke",
         "de:spd"
       ],
       "majority_probability": 1.0,

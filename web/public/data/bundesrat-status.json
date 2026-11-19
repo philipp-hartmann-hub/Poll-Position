@@ -222,22 +222,12 @@
       "default_government_label": "SPD + Grüne",
       "coalition_options": [
         {
-          "key": "de:gruene+de:linke+de:spd",
-          "parties": [
-            "de:gruene",
-            "de:linke",
-            "de:spd"
-          ],
-          "seats": 70,
-          "is_minimal_winning": true
-        },
-        {
           "key": "de:cdu+de:spd",
           "parties": [
             "de:cdu",
             "de:spd"
           ],
-          "seats": 72,
+          "seats": 77,
           "is_minimal_winning": true
         }
       ]
