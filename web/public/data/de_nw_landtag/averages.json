@@ -1,6 +1,6 @@
 {
   "parliament_id": "de_nw_landtag",
-  "as_of": "2026-11-20",
+  "as_of": "2026-11-21",
   "parties": [
     {
       "parliament_id": "de_nw_landtag",
@@ -42,7 +42,7 @@
       "parliament_id": "de_nw_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 7.540934263025107,
+      "average_share": 7.5409342630251075,
       "n_surveys": 7,
       "swing": null,
       "trend_share": 7.0
@@ -60,7 +60,7 @@
       "parliament_id": "de_nw_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 3.0,
+      "average_share": 3.0000000000000004,
       "n_surveys": 1,
       "swing": null,
       "trend_share": 3.0
@@ -69,9 +69,9 @@
       "parliament_id": "de_nw_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 5.836989838271401,
+      "average_share": 5.836989838271402,
       "n_surveys": 7,
-      "swing": -0.16301016172859928,
+      "swing": -0.1630101617285984,
       "trend_share": 6.0
     }
   ]

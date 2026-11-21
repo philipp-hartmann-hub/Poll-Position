@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_th_landtag",
-  "as_of": "2026-11-20",
+  "as_of": "2026-11-21",
   "parties": [
     {
       "parliament_id": "de_th_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 39.99995322330183,
+      "average_share": 39.99995322330182,
       "n_surveys": 5,
       "swing": null,
       "trend_share": 40.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_th_landtag",
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 5.005598740376798,
+      "average_share": 5.005598740376799,
       "n_surveys": 5,
       "swing": null,
       "trend_share": 5.0

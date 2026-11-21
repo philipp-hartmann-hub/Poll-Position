@@ -7,7 +7,7 @@
     {
       "party_id": "dawum:party:102",
       "party_name": "CSU",
-      "average_share": 37.30779622588494,
+      "average_share": 36.48742843391713,
       "threshold_percent": 5.0,
       "probability_strongest": 1.0,
       "probability_above_threshold": 1.0,
@@ -16,7 +16,7 @@
     {
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 19.799256895766277,
+      "average_share": 19.925181083276108,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -25,7 +25,7 @@
     {
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 13.923711463403354,
+      "average_share": 13.971566516875386,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -34,7 +34,7 @@
     {
       "party_id": "dawum:party:8",
       "party_name": "Freie Wähler",
-      "average_share": 10.853898206339391,
+      "average_share": 10.318256206282456,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
       "probability_above_threshold": 1.0,
@@ -43,28 +43,28 @@
     {
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 6.898893249382785,
+      "average_share": 6.962316525972193,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.9575,
+      "probability_above_threshold": 0.9625,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 3.2282500382502537,
+      "average_share": 3.712361247275553,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.05,
+      "probability_above_threshold": 0.115,
       "probability_indispensable": 0.0
     },
     {
       "party_id": "dawum:party:23",
       "party_name": "BSW",
-      "average_share": 2.1829215779186546,
+      "average_share": 2.8012157870064494,
       "threshold_percent": 5.0,
       "probability_strongest": 0.0,
-      "probability_above_threshold": 0.0,
+      "probability_above_threshold": 0.015,
       "probability_indispensable": 0.0
     },
     {
@@ -86,6 +86,6 @@
       "probability_indispensable": 0.0
     }
   ],
-  "current_government_majority_probability": 0.9475,
+  "current_government_majority_probability": 0.865,
   "current_government_missing_parties": []
 }
