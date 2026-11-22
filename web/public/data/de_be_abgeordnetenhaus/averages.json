@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_be_abgeordnetenhaus",
-  "as_of": "2026-11-21",
+  "as_of": "2026-11-22",
   "parties": [
     {
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 21.68335291498556,
+      "average_share": 21.683352914985555,
       "n_surveys": 30,
       "swing": null,
       "trend_share": 24.9381887647653
@@ -15,7 +15,7 @@
       "parliament_id": "de_be_abgeordnetenhaus",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 19.4988475618052,
+      "average_share": 19.498847561805196,
       "n_surveys": 30,
       "swing": null,
       "trend_share": 18.03438111083478

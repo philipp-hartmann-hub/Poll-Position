@@ -53,8 +53,8 @@
         "de:gruene"
       ],
       "label": "Kenia",
-      "majority_probability": 0.9725,
-      "n_majority": 389,
+      "majority_probability": 0.97,
+      "n_majority": 388,
       "n_simulations": 400
     }
   ]
