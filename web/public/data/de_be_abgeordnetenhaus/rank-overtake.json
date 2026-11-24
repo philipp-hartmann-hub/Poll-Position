@@ -38,18 +38,18 @@
       "higher_share": 15.37409294815884,
       "lower_party_id": "dawum:party:2",
       "lower_party_name": "SPD",
-      "lower_share": 12.152209848822322,
-      "gap_points": 3.2218830993365177,
+      "lower_share": 12.152209848822324,
+      "gap_points": 3.221883099336516,
       "overtake_probability": 0.065
     },
     {
       "higher_party_id": "dawum:party:2",
       "higher_party_name": "SPD",
-      "higher_share": 12.152209848822322,
+      "higher_share": 12.152209848822324,
       "lower_party_id": "dawum:party:23",
       "lower_party_name": "BSW",
       "lower_share": 4.245277728089288,
-      "gap_points": 7.906932120733034,
+      "gap_points": 7.906932120733035,
       "overtake_probability": 0.0
     },
     {
