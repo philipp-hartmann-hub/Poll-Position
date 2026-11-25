@@ -1,12 +1,12 @@
 {
   "parliament_id": "de_ni_landtag",
-  "as_of": "2026-11-24",
+  "as_of": "2026-11-25",
   "parties": [
     {
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 26.971653307002278,
+      "average_share": 26.97165330700228,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 27.0
@@ -24,7 +24,7 @@
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 20.999972372123427,
+      "average_share": 20.99997237212343,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 21.0
@@ -33,7 +33,7 @@
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 14.999914658196195,
+      "average_share": 14.999914658196197,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 15.0
@@ -42,7 +42,7 @@
       "parliament_id": "de_ni_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 5.0283471846325405,
+      "average_share": 5.028347184632541,
       "n_surveys": 4,
       "swing": null,
       "trend_share": 5.0

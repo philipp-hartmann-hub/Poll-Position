@@ -3,13 +3,13 @@
   "n_simulations": 200,
   "n_deadlock": 1,
   "mean_seats": {
-    "dawum:party:1": 140.665,
-    "dawum:party:2": 98.385,
-    "dawum:party:23": 0.185,
-    "dawum:party:3": 8.825,
-    "dawum:party:4": 107.715,
-    "dawum:party:5": 74.905,
-    "dawum:party:7": 199.32,
+    "dawum:party:1": 141.345,
+    "dawum:party:2": 98.21,
+    "dawum:party:23": 0.365,
+    "dawum:party:3": 9.06,
+    "dawum:party:4": 107.985,
+    "dawum:party:5": 74.595,
+    "dawum:party:7": 198.44,
     "dawum:party:8": 0.0,
     "de:sonstige": 0.0
   },
@@ -20,8 +20,8 @@
         "de:spd",
         "de:gruene"
       ],
-      "majority_probability": 0.965,
-      "n_majority": 193,
+      "majority_probability": 0.97,
+      "n_majority": 194,
       "n_simulations": 200
     },
     {
@@ -52,7 +52,7 @@
     },
     {
       "party_id": "de:fdp",
-      "probability": 0.03015075376884422,
+      "probability": 0.02512562814070352,
       "n_simulations_considered": 199
     },
     {
