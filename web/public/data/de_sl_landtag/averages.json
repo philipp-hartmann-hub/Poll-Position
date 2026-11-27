@@ -1,13 +1,13 @@
 {
   "parliament_id": "de_sl_landtag",
-  "as_of": "2026-11-26",
+  "as_of": "2026-11-27",
   "parties": [
     {
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:2",
       "party_name": "SPD",
-      "average_share": 32.99999972071933,
-      "n_surveys": 2,
+      "average_share": 33.0,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 33.0
     },
@@ -15,8 +15,8 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:7",
       "party_name": "AfD",
-      "average_share": 21.000000093093554,
-      "n_surveys": 2,
+      "average_share": 21.0,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 21.0
     },
@@ -24,8 +24,8 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:101",
       "party_name": "CDU",
-      "average_share": 20.000000232733885,
-      "n_surveys": 2,
+      "average_share": 20.0,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 20.0
     },
@@ -33,8 +33,8 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
-      "average_share": 8.999999906906444,
-      "n_surveys": 2,
+      "average_share": 9.0,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 9.0
     },
@@ -42,8 +42,8 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "dawum:party:5",
       "party_name": "Linke",
-      "average_share": 6.000000046546777,
-      "n_surveys": 2,
+      "average_share": 6.0,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 6.0
     },
@@ -52,7 +52,7 @@
       "party_id": "dawum:party:23",
       "party_name": "BSW",
       "average_share": 3.0,
-      "n_surveys": 2,
+      "n_surveys": 1,
       "swing": null,
       "trend_share": 3.0
     },
@@ -69,9 +69,9 @@
       "parliament_id": "de_sl_landtag",
       "party_id": "de:sonstige",
       "party_name": "Sonstige",
-      "average_share": 5.000000139640333,
-      "n_surveys": 2,
-      "swing": -4.899999860359667,
+      "average_share": 5.0,
+      "n_surveys": 1,
+      "swing": -4.9,
       "trend_share": 5.0
     }
   ]

@@ -7,10 +7,6 @@
       "party_name": "Linke",
       "points": [
         {
-          "as_of": "2025-11-26",
-          "trend_share": 18.240342893828345
-        },
-        {
           "as_of": "2026-01-14",
           "trend_share": 17.25800448330992
         },
@@ -120,10 +116,6 @@
       "party_id": "dawum:party:101",
       "party_name": "CDU",
       "points": [
-        {
-          "as_of": "2025-11-26",
-          "trend_share": 22.75965710617166
-        },
         {
           "as_of": "2026-01-14",
           "trend_share": 22.0
@@ -235,10 +227,6 @@
       "party_name": "AfD",
       "points": [
         {
-          "as_of": "2025-11-26",
-          "trend_share": 16.0
-        },
-        {
           "as_of": "2026-01-14",
           "trend_share": 16.25800448330992
         },
@@ -348,10 +336,6 @@
       "party_id": "dawum:party:4",
       "party_name": "Grüne",
       "points": [
-        {
-          "as_of": "2025-11-26",
-          "trend_share": 15.240342893828343
-        },
         {
           "as_of": "2026-01-14",
           "trend_share": 16.0273354733442
@@ -463,10 +447,6 @@
       "party_name": "SPD",
       "points": [
         {
-          "as_of": "2025-11-26",
-          "trend_share": 13.000000000000002
-        },
-        {
           "as_of": "2026-01-14",
           "trend_share": 15.218435545587331
         },
@@ -576,10 +556,6 @@
       "party_id": "dawum:party:23",
       "party_name": "BSW",
       "points": [
-        {
-          "as_of": "2025-11-26",
-          "trend_share": 4.759657106171658
-        },
         {
           "as_of": "2026-01-14",
           "trend_share": 3.238220014448627
@@ -691,10 +667,6 @@
       "party_name": "Sonstige",
       "points": [
         {
-          "as_of": "2025-11-26",
-          "trend_share": 7.721028681485026
-        },
-        {
           "as_of": "2026-01-14",
           "trend_share": 7.774013449929764
         },
@@ -804,10 +776,6 @@
       "party_id": "dawum:party:3",
       "party_name": "FDP",
       "points": [
-        {
-          "as_of": "2025-11-26",
-          "trend_share": 3.0
-        },
         {
           "as_of": "2026-01-14",
           "trend_share": 3.0000000000000004
